@@ -1,7 +1,7 @@
 composer.phar
 /.idea/
 /vendor/
-/config/config.local.neon
+/config/config.product.neon
 /temp/cache/
 /log/
 /trash/

@@ -1,0 +1,29 @@
+session:
+    autoStart: yes
+    cookieParth: '/'
+    expiration: 10 days
+    identity: UserIdentity
+
+services:
+    routerFactory: Router(%consoleMode%)
+    router: @routerFactory::createRouter
+    authenticator: UserManager
+    authorizator: UserAuthorizator
+    - PageManager
+    - FormFactory
+    - LanguageManager
+    - SettingsManager
+    - TagManager
+    - HeaderManager
+
+#application:
+ #   mapping:
+  #      admin: admin\presenter\*Presenter
+   #     front: front\presenter\*Presenter
+
+extensions:
+    translation: Kdyby\Translation\DI\TranslationExtension
+
+translation:
+    debugger: on
+    default: en_US
