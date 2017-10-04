@@ -1,0 +1,14 @@
+RewriteEngine On
+
+Options -Indexes
+
+# Nette Framework - taken from https://kb.wedos.com/cs/aplikace/nette-instalace.html
+#RewriteCond %{HTTP_HOST} ^(public.)?(.*).([^.]*).([^.]*)$
+#RewriteCond %{DOCUMENT_ROOT}/domains/%2.%3.%4 !-d
+#RewriteCond %{DOCUMENT_ROOT}/subdom/%2 !-d
+#RewriteCond %{HTTP_HOST} ^(public.)?([^.]*).([^.]*){2,4}$
+RewriteCond %{REQUEST_URI} !^public/
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteCond %{DOCUMENT_ROOT}/public -d
+RewriteRule (.*) public/$1 [DPI]
+# Nette Framework
