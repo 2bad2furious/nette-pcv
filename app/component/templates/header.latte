@@ -1,0 +1,20 @@
+<header>
+    <nav>
+        <ul>
+            {foreach $header->getChildren() as $page}
+                <li>
+                    <a href="{$page->getUrl()}">{$page->getTitle()}</a>
+                    {if $page->getChildren()}
+                        <ul>
+                            {foreach $page->getChildren() as $child}
+                                <li>
+                                    <a href="{$child->getUrl()}">{$child->getTitle()}</a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    {/if}
+                </li>
+            {/foreach}
+        </ul>
+    </nav>
+</header>
