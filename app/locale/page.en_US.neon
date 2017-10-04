@@ -1,0 +1,5 @@
+default:
+    404:
+        title: "Page not FOUND :/"
+        description: "404, Page not found"
+        content: "Page not found :/"

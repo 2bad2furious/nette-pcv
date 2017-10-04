@@ -1,0 +1,12 @@
+login:
+    error:
+        password: "Invalid password or identification"
+        rights: ""
+    identification:
+        label: "Username or email:"
+    password:
+        label: "Password:"
+    submit:
+        label: "Log In"
+    page:
+        title: "Log In"

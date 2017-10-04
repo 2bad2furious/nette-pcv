@@ -1,0 +1,11 @@
+page:
+    rebuid:
+        not_in_database: "Cannot rebuild this page, It is not located in database. PageId = %s"
+        no_pages: "Cannot rebuild pages, no pages found."
+        db_error: "No local versions for this page. PageId = %s"
+    global:
+        title: "Administration"
+    home:
+        title: "Home"
+    login:
+        title: "Login"
