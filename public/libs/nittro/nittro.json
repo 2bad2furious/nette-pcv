@@ -1,0 +1,40 @@
+{
+    "vendor": {
+        "js": [],
+        "css": []
+    },
+    "base": {
+        "core": true,
+        "datetime": true,
+        "neon": true,
+        "di": true,
+        "ajax": true,
+        "forms": true,
+        "page": true,
+        "flashes": true,
+        "routing": true
+    },
+    "extras": {
+        "checklist": true,
+        "dialogs": true,
+        "confirm": true,
+        "dropzone": true,
+        "paginator": true
+    },
+    "libraries": {
+        "js": [],
+        "css": []
+    },
+    "bootstrap": {
+        "params": {
+            "page": {
+                "whitelistLinks": true,
+                "whitelistRedirects": true
+            }
+        },
+        "extensions": null,
+        "services": null,
+        "factories": null
+    },
+    "stack": true
+}
