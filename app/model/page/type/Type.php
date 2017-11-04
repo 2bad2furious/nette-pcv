@@ -10,9 +10,9 @@ abstract class Type {
     const SECTION_TYPE = SectionType::class;
 
     const BY_ID = [
-        1  => PageType::class,
-        0  => PostType::class,
-        -1 => SectionType::class,
+        PageManager::TYPE_PAGE    => PageType::class,
+        PageManager::TYPE_POST    => PostType::class,
+        PageManager::TYPE_SECTION => SectionType::class,
     ];
 
     const SCHEMA_URL = "http://schema.org/";
@@ -23,10 +23,13 @@ abstract class Type {
 
     /**
      * @param int $number
-     * @return Type
+     * @return Type|null
      */
-    public static function getById(int $number): self {
+    public static function getById(int $number): ?self {
+        if (!isset(self::BY_ID[$number])) return null;
         $className = self::BY_ID[$number];
         return new $className;
     }
+
+    public abstract function __toString(): string;
 }

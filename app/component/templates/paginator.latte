@@ -1,0 +1,17 @@
+<div class="pagination">
+    {if $page > 1}
+        <a data-ajax="true" href="{plink this, $page_key=>1}">First</a>
+        &nbsp;|&nbsp;
+        <a data-ajax="true" href="{plink this, $page_key=>$page-1}">Previous</a>
+        &nbsp;|&nbsp;
+    {/if}
+
+    {if $page < $numberOfPages || $page > 1}{_"admin.paginator.label" [page=>$page,all=>$numberOfPages]}{/if}
+
+    {if $page < $numberOfPages}
+        &nbsp;|&nbsp;
+        <a data-ajax="true" href="{plink this, $page_key=>$page+1}">Next</a>
+        &nbsp;|&nbsp;
+        <a data-ajax="true" href="{plink this, $page_key=>$numberOfPages}">Last</a>
+    {/if}
+</div>

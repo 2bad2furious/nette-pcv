@@ -1,8 +1,10 @@
 <?php
 
 
+use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 use Nette\Security\Passwords;
+use Nette\Security\User;
 
 class UserManager implements \Nette\Security\IAuthenticator {
 
@@ -49,10 +51,10 @@ class UserManager implements \Nette\Security\IAuthenticator {
 
         ROLES_ADMIN_ADMINISTRATION = [self::ROLE_SUPER_ADMIN];
 
-    /** @var \Nette\Security\User */
+    /** @var User */
     private $user;
 
-    /** @var  \Nette\Database\Context */
+    /** @var  Context */
     private $database;
     /**
      * @var LanguageManager
@@ -65,21 +67,10 @@ class UserManager implements \Nette\Security\IAuthenticator {
 
     /**
      * UserManager constructor.
-     * @param \Nette\Database\Context $database
      * @param \Nette\DI\Container $context
      */
-    public function __construct(\Nette\Database\Context $database, \Nette\DI\Container $context) {
-        $this->database = $database;
+    public function __construct(\Nette\DI\Container $context) {
         $this->context = $context;
-    }
-
-    /* because Nette DI sucks ass :/ */
-    private function getLanguageManger(): LanguageManager {
-        return $this->context->getByType(LanguageManager::class);
-    }
-
-    private function getUser(): \Nette\Security\User {
-        return $this->context->getByType(\Nette\Security\User::class);
     }
 
     /**
@@ -122,7 +113,7 @@ class UserManager implements \Nette\Security\IAuthenticator {
     public function getUserIdentityById(?int $id):?UserIdentity {
         if ($id === null) return null;
 
-        $data = $this->database->table(self::TABLE)->get($id);
+        $data = $this->getDatabase()->table(self::TABLE)->get($id);
 
         if ($data instanceof ActiveRow) {
             return $this->createFromDbRow($data);
@@ -131,11 +122,10 @@ class UserManager implements \Nette\Security\IAuthenticator {
     }
 
     private function getUserIdentityByIdentificationPassword(string $identification, string $password):?UserIdentity {
-        $data = $this->database->table(self::TABLE)->whereOr([
+        $data = $this->getDatabase()->table(self::TABLE)->whereOr([
             self::COLUMN_USERNAME => $identification,
             self::COLUMN_EMAIL    => $identification,
         ])->fetch();
-
         if ($data instanceof ActiveRow && Passwords::verify($password, $data[self::COLUMN_PASSWORD])) {
             return $this->createFromDbRow($data);
         }
@@ -144,5 +134,27 @@ class UserManager implements \Nette\Security\IAuthenticator {
 
     private function createFromDbRow(ActiveRow $data): UserIdentity {
         return new UserIdentity($data[self::COLUMN_ID], $data[self::COLUMN_EMAIL], $this->getLanguageManger()->getById($data[self::COLUMN_CURRENT_LANGUAGE]), $data[self::COLUMN_ROLE]);
+    }
+
+    private function getDatabase(): Context {
+        if (!$this->database instanceof Context) {
+            $this->database = $this->context->getByType(Context::class);
+        }
+        return $this->database;
+    }
+
+    /* because Nette DI sucks ass :/ */
+    private function getLanguageManger(): LanguageManager {
+        if (!$this->languageManager instanceof LanguageManager) {
+            $this->languageManager = $this->context->getByType(LanguageManager::class);
+        }
+        return $this->languageManager;
+    }
+
+    private function getUser(): User {
+        if (!$this->user instanceof User) {
+            $this->user = $this->context->getByType(User::class);
+        }
+        return $this->user;
     }
 }

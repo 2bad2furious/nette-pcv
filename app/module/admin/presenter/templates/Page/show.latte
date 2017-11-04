@@ -1,0 +1,121 @@
+{block content}
+    <div n:snippet="page-show" class="nittro-transition-slide nittro-transition-auto">
+        <div>
+            {_"admin.page.show.filter.search.label"}:
+            {form adminPageSearch}
+                {input search_query}
+                <a data-ajax="true" id="search_cancel"
+                   href="{plink this FormFactory::PAGE_SHOW_SEARCH_NAME=>null}"><i
+                            class="fa fa-times"></i></a>
+                {input submit}
+            {/form}
+        </div>
+        <div id="type-links">
+            {_"admin.page.show.filter.type.label"}:
+            <ul>
+                <li n:foreach="adminModule\PagePresenter::TYPES as $type_val">
+                    <a data-ajax="true"
+                       class="{ifCurrent this adminModule\PagePresenter::TYPE_KEY=>$type_val}active{/ifCurrent}" n:href="this adminModule\PagePresenter::TYPE_KEY=>$type_val">
+                        {_"admin.page.show.filter.type.$type_val"}
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div id="statuses-links">
+            {_"admin.page.show.filter.visibility.label"}:
+            <ul>
+                <li n:foreach="adminModule\PagePresenter::VISIBILITIES as $visibility_val">
+                    <a data-ajax="true"
+                       class="{ifCurrent this adminModule\PagePresenter::VISIBILITY_KEY=>$visibility_val}active{/ifCurrent}"
+                       href="{plink this adminModule\PagePresenter::VISIBILITY_KEY=>$visibility_val}">{_"admin.page.show.filter.visibility.$visibility_val"}</a>
+                </li>
+            </ul>
+        </div>
+        <div id="languages-links">
+            {_"admin.page.show.filter.translation.label"}:
+            <ul>
+                <li>
+                    <a data-ajax="true"
+                       class="{ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL}active{/ifCurrent}"
+                       href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,adminModule\PagePresenter::PAGE_KEY=>1}">
+                        {_"admin.page.show.filter.translation.all"}
+                    </a>
+                </li>
+                <li>
+                    <div class="{if $has_translation === true}active{/if}">{_"admin.page.show.filter.translation.not_missing"}
+                        &nbsp;
+                        <div>
+                            {foreach $languages as $lang}
+                                <a data-ajax="true"
+                                   class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::LANGUAGE_KEY=>$lang}active{/ifCurrent}"
+                                   href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::PAGE_KEY=>1}">
+                                    {_$lang}
+                                </a>
+                            {/foreach}
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="{if $has_translation === false}active{/if}">{_"admin.page.show.filter.translation.missing"}
+                        &nbsp;
+                        <div>
+                            {foreach $languages as $lang}
+                                <a data-ajax="true"
+                                   class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::LANGUAGE_KEY=>$lang}active{/ifCurrent}"
+                                   href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::PAGE_KEY=>1}">
+                                    {_$lang}
+                                </a>
+                            {/foreach}
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div>
+            {_"admin.page.show.create.label"}
+            {foreach adminModule\PagePresenter::TYPES as $type_val}
+                {continueIf $type_val == adminModule\PagePresenter::TYPE_ALL}
+                <a href="{plink create adminModule\PagePresenter::TYPE_KEY=>$type_val,
+                adminModule\PagePresenter::VISIBILITY_KEY=>null,
+                adminModule\PagePresenter::LANGUAGE_KEY=>null,
+                adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,
+                FormFactory::PAGE_SHOW_SEARCH_NAME=>null}"
+                   class="create_new">{_"admin.page.show.create.$type_val"}</a>
+            {/foreach}
+        </div>
+        <div id="pages">
+            {if $pages}
+                <table>
+                    <thead>
+                    <tr>
+                        <td>{_"admin.page.show.table.header.globalId"}</td>
+                        <td>{_"admin.page.show.table.header.title"}</td>
+                        <td>{_"admin.page.show.table.header.type"}</td>
+                        <td>{_"admin.page.show.table.header.edit"}</td>
+                        <td>{_"admin.page.show.table.header.delete"}</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $pages as $page}
+                        <tr>
+                            <td>{$page->getGlobalId()}</td>
+                            <td>{$page->getTitle()}</td>
+                            <td>{_admin.page.show.table.body.type.{$page->getType()}}</td>
+                            <td><a href="{plink edit adminModule\PagePresenter::EDIT_ID_KEY=>$page->getGlobalId(),
+                            adminModule\PagePresenter::LANGUAGE_KEY=>$page->getLang()->getCode(),
+                            adminModule\PagePresenter::TYPE_KEY=>null,
+                            adminModule\PagePresenter::VISIBILITY_KEY=>null,
+                            adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,
+                            FormFactory::PAGE_SHOW_SEARCH_NAME=>null}">Edit</a></td>
+                            <td>delete</td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+                {control paginator}
+            {else}
+                {_"admin.page.show.not_found"}
+            {/if}
+        </div>
+    </div>
+{/block}

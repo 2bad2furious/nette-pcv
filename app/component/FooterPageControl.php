@@ -2,8 +2,8 @@
 
 
 class FooterPageControl extends BaseControl {
-
-    protected function beforeRender(): void {
-        // TODO: Implement beforeRender() method.
+    protected function render() {
+        throw new Exception();
+        $this->template->render();
     }
 }

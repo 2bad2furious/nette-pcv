@@ -5,20 +5,15 @@ namespace frontModule;
 
 
 use Exception;
+use Nette\Application\UI\Presenter;
 
-class TestPresenter extends \BasePresenter {
-    /**
-     * @var \PageManager
-     */
-    protected $pageManager;
+class TestPresenter extends Presenter {
 
-    public function injectPageManager(\PageManager $pageManager){
-        if($this->pageManager instanceof \PageManager) throw new Exception("Page Manager already set");
-        $this->pageManager = $pageManager;
-    }
 
     public function actionDefault() {
-        diedump($this->pageManager->rebuildCache());
+        /** @var \LanguageManager $languageManager */
+        $languageManager = $this->context->getByType(\LanguageManager::class);
+        $languageManager->rebuildCache();
     }
 
     protected function getAllowedRoles(): array {

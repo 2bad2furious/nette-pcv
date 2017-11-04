@@ -29,7 +29,11 @@ class LanguageManager {
     /**
      * @var \Nette\Caching\Cache
      */
-    private $cache;
+    private $codeCache;
+    /**
+     * @var \Nette\Caching\Cache
+     */
+    private $idCache;
     /**
      * @var \Nette\DI\Container
      */
@@ -41,18 +45,22 @@ class LanguageManager {
      * @param \Nette\DI\Container $context
      */
     public function __construct(IStorage $storage, \Nette\DI\Container $context) {
-        $this->cache = new \Nette\Caching\Cache($storage, "language");
+        $cache = new \Nette\Caching\Cache($storage, "language");
+        $this->codeCache = $cache->derive("code");
+        $this->idCache = $cache->derive("id");
         $this->context = $context;
     }
 
     /**
-     * @return string[]
+     * @param bool $asObjects
+     * @return string[]|Language[]
      */
-    public function getAvailableLanguages(): array {
-        $data = $this->getDatabase()->table(self::TABLE)->select(self::COLUMN_CODE)->fetchAll();
+    public function getAvailableLanguages($asObjects = false): array {
+        $data = $this->getDatabase()->table(self::TABLE)->fetchAll();
         $langs = [];
+        /** @var ActiveRow $lang */
         foreach ($data as $lang) {
-            $langs[] = $lang[self::COLUMN_CODE];
+            $langs[] = ($asObjects) ? $this->createFromRow($lang) : $lang[self::COLUMN_CODE];
         }
         return $langs;
     }
@@ -71,16 +79,12 @@ class LanguageManager {
         return $language;
     }
 
-    public function exists(string $lang): bool {
-        return boolval($this->getDatabase()->table(self::TABLE)->where([
-            self::COLUMN_CODE => $lang,
-        ])->fetch());
+    public function exists(string $langCode): bool {
+        return $this->getByCode($langCode) instanceof Language;
     }
 
     public function getByCode(string $langCode): ?Language {
-        return $this->getBy([
-            self::COLUMN_CODE => $langCode,
-        ]);
+        return $this->codeCache->load($langCode);
     }
 
     private function createFromRow(ActiveRow $data): Language {
@@ -91,9 +95,7 @@ class LanguageManager {
     }
 
     public function getById(int $id):?Language {
-        return $this->getBy([
-            self::COLUMN_ID => $id,
-        ]);
+        return $this->idCache->load($id);
     }
 
     protected function getBy(array $where):?Language {
@@ -118,7 +120,7 @@ class LanguageManager {
     /**
      * @return User
      */
-    public function getUser(): User {
+    private function getUser(): User {
         if (!$this->user instanceof User) {
             $this->user = $this->context->getByType(User::class);
         }
@@ -133,5 +135,12 @@ class LanguageManager {
             $this->settingsManager = $this->context->getByType(SettingsManager::class);
         }
         return $this->settingsManager;
+    }
+
+    public function rebuildCache() {
+        foreach ($this->getAvailableLanguages(true) as $language) {
+            $this->idCache->save($language->getId(), $language);
+            $this->codeCache->save($language->getCode(), $language);
+        }
     }
 }

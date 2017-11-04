@@ -4,11 +4,10 @@ namespace frontModule;
 
 class NoLangPresenter extends \BasePresenter {
     public function actionDefault() {
-        $locale = $this->translator->getLocale();
-        if (!$this->getLanguageManager()->exists($locale)) {
-            $locale = $this->getLanguageManager()->getDefaultLanguage()->getCode();
-        }
-        $this->redirectUrl("/$locale/", 302);
+        $language = $this->getLocaleLanguage();
+        if (!$language instanceof \Language) $language = $this->getLanguageManager()->getDefaultLanguage();
+
+        $this->redirect(301, "Page:Default", ["locale" => $language->getCode()]);
         $this->terminate();
     }
 

@@ -6,19 +6,35 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="robots" content="noindex, nofollow">
-    <title>{$page_title} - {$admin} | {$site_title}</title>
+    <title>{if $page_title}{$page_title} - {/if}{$admin} | {$site_title}</title>
+    <link rel="stylesheet" type="text/css" href="/css/admin.css"/>
     <link rel="stylesheet" type="text/css" href="/libs/nittro/nittro.min.css"/>
-    <script type="application/javascript" src="/libs/nittro/nittro.min.js" async defer></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i&amp;subset=cyrillic-ext,latin-ext"
+          rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script type="application/javascript" src="/libs/nittro/nittro.min.js"></script>
+    <script type="application/javascript" src="/js/admin.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/1.0.0-alpha.1/classic/ckeditor.js"></script>
 </head>
 <body>
 {ifset $isLoggin}{else}
     {control adminHeader}
 {/ifset}
-<main>
+<main{ifset $isLoggin} class="no-header"{/ifset}>
+    {ifset $noTitle}{else}{if $page_title}<h1 class="admin-title">{$page_title}</h1>{/if}{/ifset}
+    {ifset $noSubtitle}{else}{if $page_subtitle}<h2 class="admin-subtitle">{$page_subtitle}</h2>{/if}{/ifset}
     {include content}
 </main>
 {ifset $isLoggin}{else}
     {control adminFooter}
 {/ifset}
+{foreach $flashes as $flash}
+    <div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
 </body>
 </html>

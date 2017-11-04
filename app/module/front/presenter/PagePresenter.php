@@ -2,6 +2,7 @@
 
 namespace frontModule;
 
+use ArticlePageControl;
 use BasePresenter;
 use ContentControl;
 use HeaderPageControl;
@@ -9,6 +10,7 @@ use Language;
 use Nette\Application\BadRequestException;
 use Page;
 use PageManager;
+use SectionPageControl;
 use StdClass;
 use Tag;
 
@@ -16,8 +18,7 @@ class PagePresenter extends BasePresenter {
 
     public function renderDefault() {
         $url = $this->getParameter("url");
-        $language = $this->getLanguageManager()->getByCode((string)$this->locale);
-        if (!$language instanceof Language) $this->error("Language not found");
+        $language = $this->getLocaleLanguage();
 
         $page = $this->getPageManager()->getByUrl($language, (string)$url);
         $this->prepareTemplate($page);
@@ -25,7 +26,7 @@ class PagePresenter extends BasePresenter {
 
     public function actionPermanent() {
         $id = $this->getParameter("page_id");
-        $page = $this->getPageManager()->getByGlobalId($this->locale, $id);
+        $page = $this->getPageManager()->getByGlobalId($this->getLocaleLanguage(), $id);
         $this->prepareTemplate($page);
     }
 
@@ -50,7 +51,19 @@ class PagePresenter extends BasePresenter {
         return new ContentControl($this, $name);
     }
 
+    /**
+     * @param string $name
+     * @return ArticlePageControl
+     */
+    public function createComponentArticlePage(string $name): ArticlePageControl {
+        return new ArticlePageControl($this, $name);
+    }
+
     public function createComponentHeader(string $name): HeaderPageControl {
         return new HeaderPageControl($this, $name);
+    }
+
+    public function createComponentSectionPage(string $name): SectionPageControl {
+        return new SectionPageControl($this, $name);
     }
 }

@@ -5,6 +5,7 @@ class ContentControl extends BaseControl {
     const SLIDER_CLASS = SliderControl::class,
         SLIDER_NAME = "slider";
 
+
     const BY_NICK = [
         self::SLIDER_NAME => self::SLIDER_CLASS,
     ];
@@ -45,7 +46,7 @@ class ContentControl extends BaseControl {
                 preg_match(sprintf(self::SEARCH_ID, $presentationName), $matches[$i], $ids);
                 $id = (string)@$ids[0];
 
-                $presentationClassName = @self::BY_NICK[$presentationName];
+                $presentationClassName = $this->getClassNameForPresentation($presentationName);
                 if ($presentationClassName) {
                     $presentation = new $presentationClassName($this->getPresenter(), $presentationName);
                     if (!$presentation instanceof PresentationControl) throw new Exception("Control $presentationClassName not instance of PresentationControl");
@@ -58,5 +59,9 @@ class ContentControl extends BaseControl {
             }
         }
         echo $split[$i];
+    }
+
+    private function getClassNameForPresentation(string $presentationName):?string {
+        return @self::BY_NICK[$presentationName];
     }
 }

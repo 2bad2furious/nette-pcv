@@ -1,5 +1,4 @@
 <?php
-
 require __DIR__ . "/../vendor/autoload.php";
 
 function printcaller() {
@@ -7,24 +6,23 @@ function printcaller() {
         throw new Exception();
     } catch (Exception $exception) {
         if (isset($exception->getTrace()[2]["class"]) && isset($exception->getTrace()[1]["line"]) && isset($exception->getTrace()[2]["function"])) {
-            \Tracy\Debugger::dump(["Called at:" =>
-                                       [
-                                           "class"  => $exception->getTrace()[2]["class"],
-                                           "line"   => $exception->getTrace()[1]["line"],
-                                           "method" => $exception->getTrace()[2]["function"],
-                                       ],
-                ]
-            );
+            $trace = ["Called at:" =>
+                          [
+                              "class"  => $exception->getTrace()[2]["class"],
+                              "line"   => $exception->getTrace()[1]["line"],
+                              "method" => $exception->getTrace()[2]["function"],
+                          ],
+            ];
+            dump($trace);
         } else {
-            \Tracy\Debugger::dump($exception->getTrace()[2]);
-            Tracy\Debugger::barDump($exception->getTrace()[2]);
+            dump($exception->getTrace()[2]);
         }
     }
 }
 
 function dump() {
     foreach (func_get_args() as $arg) {
-        \Tracy\Debugger::dump($arg);
+        //\Tracy\Debugger::dump($arg);
         Tracy\Debugger::barDump($arg);
     }
     //printcaller();
@@ -33,10 +31,18 @@ function dump() {
 //developer function
 function diedump($var) {
     foreach (func_get_args() as $arg) {
-        dump($arg);
+        Tracy\Debugger::dump($arg);
     }
     printcaller();
     exit();
+}
+
+function dumpException() {
+    try {
+        throw new \Exception();
+    } catch (\Exception $exception) {
+        Tracy\Debugger::log($exception);
+    }
 }
 
 set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline, array $errcontext) {

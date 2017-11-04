@@ -1,11 +1,100 @@
+header:
+    siteHome: "Back to the site"
+    home: "Home"
+    page: "Pages"
+    header: "Header"
+    presentation: "Presentations"
+    language: "Languages"
+    setting: "Settings"
+    logout: "Log Out"
+
+global:
+    title: "Administration"
+
+login:
+    title: "Admin Login"
+    default:
+        title: ""
+    form:
+        identification: "Email or Username"
+        password: "Password"
+        submit: "Log In"
+
+    failure:
+        password: "Incorrect combination of password and username."
+    success: "You have been logged in. Heelo :)"
+
+
 page:
-    rebuid:
-        not_in_database: "Cannot rebuild this page, It is not located in database. PageId = %s"
-        no_pages: "Cannot rebuild pages, no pages found."
-        db_error: "No local versions for this page. PageId = %s"
-    global:
-        title: "Administration"
-    home:
-        title: "Home"
-    login:
-        title: "Login"
+    title: "Page Managing"
+    show:
+        title: ""
+
+        filter:
+            search:
+                label: "Search"
+                cancel: "Cancel the search"
+            type:
+                label: "By Type"
+                all: "All"
+                page: "Pages"
+                post: "Posts"
+                section: "Sections"
+
+            visibility:
+                label: "By visibility"
+                all: "All"
+                public: "Public"
+                draft: "Drafts"
+                deleted: "Deleted"
+                change: "Changes"
+
+            translation:
+                label: "By translation"
+                missing: "Missing translation"
+                not_missing: "Has translation"
+                all: "All"
+        table:
+            header:
+                globalId: "ID"
+                title: "Title"
+                type: "Type"
+                edit: "Edit"
+                delete: "Delete"
+            body:
+                type:
+                    Page: "Page"
+                    Post: "Post"
+                    Section: "Section"
+        create:
+            label: "Create a new ..."
+            page: "page"
+            post: "post"
+            section: "section"
+
+        not_found: "Pages not found"
+    create:
+        title: "Page Creation"
+
+    edit:
+        title: "Page Editing"
+        global:
+            parent:
+                label: "Select a parent"
+            visibility:
+                label: "Visibility"
+                public: "Public"
+                draft: "Draft"
+            caption: "Global Settings (these settings apply for all translated pages as well)"
+        local:
+            caption: "Local Settings (these settings apply only for the translation)"
+        action:
+            delete: "Delete"
+            create: "Create"
+            edit: "Save"
+
+logout:
+    success: "You have been logged out."
+
+paginator:
+    label: "Page %page% of %all%"

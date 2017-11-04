@@ -1,0 +1,91 @@
+* {
+  transition: inherit;
+  box-sizing: inherit;
+  text-decoration: inherit;
+  color: inherit;
+  font-family: "Open Sans", "sans-serif"; }
+  *:not(p, span, a) {
+    display: block; }
+
+div.ck-editor__editable {
+  background-color: white; }
+
+ul {
+  list-style-type: none;
+  padding: 0; }
+  ul li a {
+    display: block; }
+
+.clearfix {
+  *zoom: 1; }
+  .clearfix:before, .clearfix:after {
+    content: " ";
+    display: table; }
+  .clearfix:after {
+    clear: both; }
+
+html {
+  transition: 0.3s all linear;
+  box-sizing: border-box; }
+  html body {
+    background-color: #ddd;
+    padding: 0;
+    margin: 0;
+    overflow-y: scroll; }
+    html body header {
+      padding: 10px;
+      background: #000;
+      color: white;
+      height: 100vh;
+      width: 200px;
+      left: 0;
+      top: 0;
+      position: fixed;
+      z-index: 2; }
+      html body header #header-opener {
+        content: "close";
+        color: white;
+        cursor: pointer;
+        text-align: right;
+        width: 100%;
+        display: none; }
+      html body header nav ul {
+        list-style-type: disc;
+        padding-left: 20px; }
+    html body main {
+      width: 100%;
+      padding: 10px 10px 10px 210px;
+      /* 200 + normal padding */
+      overflow-x: hidden; }
+      html body main a.create_new {
+        padding: 6px;
+        border-radius: 1em;
+        border: solid 2px black;
+        color: black;
+        font-weight: 600;
+        display: inline-block; }
+        html body main a.create_new:hover, html body main a.create_new:active, html body main a.create_new:focus {
+          background: #000;
+          color: white; }
+      html body main.no-header {
+        padding-left: 0; }
+      html body main div#snippet--page-show ul li {
+        display: inline-block; }
+        html body main div#snippet--page-show ul li > * {
+          border-radius: 1em;
+          background-color: #fff;
+          padding: 6px;
+          text-decoration: none; }
+          html body main div#snippet--page-show ul li > *.active, html body main div#snippet--page-show ul li > *:hover {
+            background-color: #eee; }
+        html body main div#snippet--page-show ul li div {
+          display: inline-block; }
+          html body main div#snippet--page-show ul li div a {
+            display: inline-block;
+            padding: 3px;
+            background-color: #fff;
+            border-radius: 1em; }
+            html body main div#snippet--page-show ul li div a:hover, html body main div#snippet--page-show ul li div a.active {
+              background-color: #ddd; }
+
+/*# sourceMappingURL=admin.css.map */

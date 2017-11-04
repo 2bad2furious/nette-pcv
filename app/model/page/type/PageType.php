@@ -10,4 +10,8 @@ class PageType extends Type {
     public function getOgType(): string {
         return "website";
     }
+
+    public function __toString(): string {
+        return "Page";
+    }
 }

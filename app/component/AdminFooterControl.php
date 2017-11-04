@@ -3,7 +3,7 @@
 
 class AdminFooterControl extends BaseControl {
 
-    protected function beforeRender(): void {
-
+    public function render() {
+        $this->template->render();
     }
 }

@@ -80,6 +80,14 @@ class Page {
      * @var int
      */
     private $parentId;
+    /**
+     * @var int
+     */
+    private $global_status;
+    /**
+     * @var int
+     */
+    private $local_status;
 
     /**
      * Page constructor.
@@ -97,11 +105,13 @@ class Page {
      * @param UserIdentity|null $author
      * @param DateTime|null $created
      * @param DateTime|null $edited
-     * @param int $status
+     * @param int $global_status
+     * @param int $local_status
      * @param Language $language
      * @param int $parentId
+     * @internal param int $status
      */
-    public function __construct(int $global_id, int $local_id, string $title, string $description, string $url, string $permanentUrl, string $image, string $imageAlt, Type $type, string $content, array $tags, ?UserIdentity $author, ?DateTime $created, ?DateTime $edited, int $status, Language $language, int $parentId) {
+    public function __construct(int $global_id, int $local_id, string $title, string $description, string $url, string $permanentUrl, string $image, string $imageAlt, Type $type, string $content, array $tags, ?UserIdentity $author, ?DateTime $created, ?DateTime $edited, int $global_status, int $local_status, Language $language, int $parentId) {
         $this->global_id = $global_id;
         $this->local_id = $local_id;
         $this->title = $title;
@@ -117,8 +127,10 @@ class Page {
         $this->imageAlt = $imageAlt;
         $this->tags = $tags;
         $this->language = $language;
-        $this->status = $status;
+        $this->status = min($global_status, $local_status);
         $this->parentId = $parentId;
+        $this->global_status = $global_status;
+        $this->local_status = $local_status;
         $this->tagValues = implode(" ", array_map(function (Tag $item) {
             return $item->getName();
         }, $this->getTags()));
@@ -170,7 +182,9 @@ class Page {
     }
 
     public function getSection(): string {
-        return $this->parent->getTitle();
+        // its ok not to check it, why would you call this method if it wasnt an article in section
+        if ($this->parent->isSection())
+            return $this->parent->getTitle();
     }
 
     public function isArticle(): bool {
@@ -317,7 +331,7 @@ class Page {
      * @return null|Page
      */
     public function getParent():?Page {
-        return $this->parent;
+        return $this->parent instanceof Page ? clone $this->parent : $this->parent;
     }
 
     /**
@@ -325,5 +339,28 @@ class Page {
      */
     public function getParentId(): int {
         return $this->parent instanceof Page ? $this->parent->getGlobalId() : $this->parentId;
+    }
+
+    public function isSection(): bool {
+        return is_a($this->getType(), Type::SECTION_TYPE);
+    }
+
+    public function getContentPreview(int $length = 80, bool $stripTags = true): string {
+        $content = $this->getContent();
+        diedump(func_get_args());
+    }
+
+    /**
+     * @return int
+     */
+    public function getGlobalStatus(): int {
+        return $this->global_status;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLocalStatus(): int {
+        return $this->local_status;
     }
 }

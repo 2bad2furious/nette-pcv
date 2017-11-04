@@ -19,7 +19,9 @@
         "dialogs": true,
         "confirm": true,
         "dropzone": true,
-        "paginator": true
+        "paginator": true,
+        "keymap": true,
+        "storage": true
     },
     "libraries": {
         "js": [],
@@ -30,6 +32,10 @@
             "page": {
                 "whitelistLinks": true,
                 "whitelistRedirects": true
+            },
+            "forms": {
+                "whitelistForms": true,
+                "autoResetForms": false
             }
         },
         "extensions": null,

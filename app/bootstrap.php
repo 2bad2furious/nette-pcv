@@ -30,6 +30,7 @@ $configurator->addConfig(__DIR__ . "/../config/config.product.neon");
 
 $container = $configurator->createContainer();
 
+/** @var \Nette\Database\Context $connection */
 $connection = $container->getByType(\Nette\Database\Context::class);
 $connection->beginTransaction();
 try {

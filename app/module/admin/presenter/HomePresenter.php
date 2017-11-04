@@ -10,7 +10,15 @@ class HomePresenter extends AdminPresenter {
         return \UserManager::ROLES_ADMINISTRATION;
     }
 
+    public function actionDefault() {
+        $this->redirect(301, "Page:");
+    }
+
     protected function setPageTitle(): string {
-        return "admin.page.title.home";
+        return "";
+    }
+
+    protected function setPageSubtitle(): string {
+        return "";
     }
 }

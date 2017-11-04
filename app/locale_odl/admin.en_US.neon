@@ -1,0 +1,44 @@
+header:
+    siteHome: "Back to the site"
+    home: "Home"
+    page: "Pages"
+    presentation: "Presentations"
+    language: "Languages"
+    setting: "Settings"
+    logout: "Log Out"
+
+page:
+    create: "Create a new page"
+    translation:
+         label: "By translation"
+         all: "All"
+         missing: "No translation"
+         not_missing: "Has translation"
+
+    search: "Search"
+    not_found: "No pages found."
+    filter:
+        all: "All"
+        page: "Pages"
+        post: "Posts"
+        section: "Sections"
+
+        label: "By type"
+
+    status:
+        label: "By status"
+
+        all: "All"
+        public: "Public"
+        draft: "Drafts"
+        deleted: "Deleted"
+        change: "Changes"
+
+    global:
+        title: "Administration"
+    home:
+        title: "Home"
+    login:
+        title: "Login"
+    page:
+        title: "Pages"

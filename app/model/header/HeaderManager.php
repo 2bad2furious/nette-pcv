@@ -49,11 +49,24 @@ class HeaderManager {
         $this->context = $context;
     }
 
-    public function rebuildCache() {
-        $languages = $this->getDatabase()->table(self::TABLE)->select(self::COLUMN_LANG)->group(self::COLUMN_LANG);
+    /**
+     * TODO optimize this
+     * @param null|Page $page
+     */
+    public function rebuildCache(?Page $page = null) {
+        // return if the page changed isnt in header
+        if ($page instanceof Page) {
+            // is it even in the Header?
+            if (!boolval($this->getDatabase()->table(self::TABLE)->where([
+                self::COLUMN_PAGE_ID => $page->getGlobalId(),
+            ])->fetch())) return;
+        }
+
+        $languages = $this->getDatabase()->table(self::TABLE)->select(self::COLUMN_LANG)->group(self::COLUMN_LANG)->fetchAll();
         /** @var ActiveRow $langRow */
         foreach ($languages as $langRow) {
-            $root = new HeaderPage(0, 0, $language = $this->getLanguageManager()->getById($langRow[self::COLUMN_LANG]), false);
+            $language = $this->getLanguageManager()->getById($langRow[self::COLUMN_LANG]);
+            $root = new HeaderPage(0, 0, $language, false);
             $this->addChildren($root, $language);
 
             $this->cache->save($language->getId(), $root);
@@ -94,9 +107,8 @@ class HeaderManager {
     public function getRoot(Language $language, ?Page $currentPage): ?HeaderPage {
         /** @var HeaderPage|null $root */
         $root = $this->cache->load($language->getId());
-        if ($root instanceof HeaderPage) {
-            $this->setPagesOnChildren($root, $currentPage, $language);
-        }
+        if ($root instanceof HeaderPage) $this->setPagesOnChildren($root, $currentPage, $language);
+        else return new HeaderPage(-1, -1, $language);
         return $root;
     }
 

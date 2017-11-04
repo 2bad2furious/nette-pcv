@@ -10,4 +10,8 @@ class PostType extends Type {
     public function getOgType(): string {
         return "article";
     }
+
+    public function __toString(): string {
+        return "Post";
+    }
 }

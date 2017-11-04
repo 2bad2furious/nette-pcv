@@ -5,6 +5,7 @@ namespace adminModule;
 
 
 use Nette\Application\UI\Form;
+use Nette\Http\UrlScript;
 use Nette\Utils\ArrayHash;
 
 class LoginPresenter extends AdminPresenter {
@@ -16,9 +17,8 @@ class LoginPresenter extends AdminPresenter {
         $form->onValidate[] = function (Form $form, ArrayHash $values) {
             $username = $values[\FormFactory::LOGIN_IDENTIFICATION_NAME];
             $password = $values[\FormFactory::LOGIN_PASSWORD_NAME];
-
             if (!$this->getUserManager()->loginCheck($username, $password)) {
-                $form->addError(\FormFactory::LOGIN_INVALID_CREDENTIALS);
+                $form->addError("admin.login.failure.password");
             }
         };
         $form->onSuccess[] = function (Form $form) {
@@ -31,26 +31,31 @@ class LoginPresenter extends AdminPresenter {
                     $this->getUser()->logout(true);
                     $form->addError(self::USER_NO_RIGHTS_ERROR);
                 }
-                $this->redirect(302, "Default:default");
             } catch (\Exception $ex) {
                 $this->getUser()->logout(true);
                 $form->addError(self::SOMETHING_WENT_WRONG);
                 throw $ex;
+            }
+
+            if (!$form->getErrors()) {
+                // redirects to previous failed url or to Home
+                if ($this->getCustomSession()->offsetExists("url")) {
+                    /** @var UrlScript $url */
+                    $url = $this->getCustomSession()->offsetGet("url");
+                    $this->getCustomSession()->offsetUnset("url");
+                    $this->redirectUrl($url->getPath(), 302);
+                } else $this->redirect(302, "Default:default");
             }
         };
 
         return $form;
     }
 
-    public function setAdminLanguage() {
-        $this->locale = $this->translator->getLocale();
-    }
-
     protected function getAllowedRoles(): array {
         return [\UserManager::ROLE_GUEST];
     }
 
-    protected function setPageTitle(): string {
-        return "admin.page.login.title";
+    protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
+        $this->redirect("Default:Default");
     }
 }

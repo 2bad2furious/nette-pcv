@@ -29,10 +29,10 @@ class Change {
      * @param UserIdentity $authorId
      * @param DateTime $verified
      * @param UserIdentity $verificator
-     * @param Page $preChange
+     * @param Page|null $preChange
      * @param Page $postChange
      */
-    public function __construct(int $id,int $pageId, DateTime $created, UserIdentity $authorId, DateTime $verified, UserIdentity $verificator, Page $preChange, Page $postChange) {
+    public function __construct(int $id, int $pageId, DateTime $created, UserIdentity $authorId, DateTime $verified, UserIdentity $verificator, ?Page $preChange, Page $postChange) {
         $this->id = $id;
         $this->pageId = $pageId;
         $this->created = $created;
@@ -86,9 +86,9 @@ class Change {
     }
 
     /**
-     * @return Page
+     * @return Page|null
      */
-    public function getPreChange(): Page {
+    public function getPreChange(): ?Page {
         return $this->preChange;
     }
 

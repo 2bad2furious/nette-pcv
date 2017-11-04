@@ -1,0 +1,17 @@
+{block content}
+    {form pageEditForm}
+        <div id="form-global">
+            {formContainer global}
+                {input FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}
+            {/formContainer}
+        </div>
+        <div id="form-local">
+            {formContainer local}
+                {input FormFactory::PAGE_EDIT_CONTENT_NAME}
+            {/formContainer}
+        </div>
+        <div id="form-side">
+            {input submit}
+        </div>
+    {/form}
+{/block}
