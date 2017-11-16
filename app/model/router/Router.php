@@ -75,22 +75,39 @@ class Router {
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action create>/<" . PagePresenter::TYPE_KEY . ">", [
             PagePresenter::TYPE_KEY => [
-                Route::PATTERN => implode("|", [PagePresenter::TYPE_POST, PagePresenter::TYPE_PAGE, PagePresenter::TYPE_SECTION]),
+                Route::PATTERN => implode("|", [PagePresenter::TYPE_POST, PagePresenter::TYPE_PAGE]),
             ],
         ]);
 
-        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action edit>/<" . PagePresenter::EDIT_ID_KEY . ">/<" . PagePresenter::LANGUAGE_KEY . ">", [
-            PagePresenter::EDIT_ID_KEY  => [
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action edit>/<" . PagePresenter::ID_KEY . ">/<" . PagePresenter::LANGUAGE_KEY . ">", [
+            PagePresenter::ID_KEY       => [
                 Route::PATTERN => "\d+",
             ],
             PagePresenter::LANGUAGE_KEY => [
-                Route::PATTERN => $languages
+                Route::PATTERN => $languages,
             ],
         ]);
 
-        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action changes>", [
-
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter availability>/<" . \adminModule\AvailabilityPresenter::KEY . ">/<" . \adminModule\AvailabilityPresenter::LANGUAGE . "> ? <" . \adminModule\AvailabilityPresenter::VALUE . "><" . \adminModule\AvailabilityPresenter::ID . ">", [
+            \adminModule\AvailabilityPresenter::KEY      => [
+                Route::PATTERN => implode("|", \adminModule\AvailabilityPresenter::KEYS),
+            ],
+            \adminModule\AvailabilityPresenter::LANGUAGE => [
+                Route::PATTERN => $languages,
+            ],
+            \adminModule\AvailabilityPresenter::ID       => [
+                Route::OPTIONAL => 1,
+                Route::PATTERN  => "\d+",
+            ],
+            "action"                                     => [
+                Route::VALUE => "default",
+            ],
         ]);
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action delete>/<" . PagePresenter::ID_KEY . ">", [
+            PagePresenter::ID_KEY => [
+                Route::PATTERN => "\d+",
+            ]]);
 
         $adminRouteList[] = new Route("admin", "Default:");
 

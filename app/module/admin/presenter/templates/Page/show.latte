@@ -1,10 +1,10 @@
 {block content}
-    <div n:snippet="page-show" class="nittro-transition-slide nittro-transition-auto">
+    <div id="page-show">
         <div>
             {_"admin.page.show.filter.search.label"}:
             {form adminPageSearch}
                 {input search_query}
-                <a data-ajax="true" id="search_cancel"
+                <a id="search_cancel"
                    href="{plink this FormFactory::PAGE_SHOW_SEARCH_NAME=>null}"><i
                             class="fa fa-times"></i></a>
                 {input submit}
@@ -14,8 +14,7 @@
             {_"admin.page.show.filter.type.label"}:
             <ul>
                 <li n:foreach="adminModule\PagePresenter::TYPES as $type_val">
-                    <a data-ajax="true"
-                       class="{ifCurrent this adminModule\PagePresenter::TYPE_KEY=>$type_val}active{/ifCurrent}" n:href="this adminModule\PagePresenter::TYPE_KEY=>$type_val">
+                    <a class="{ifCurrent this adminModule\PagePresenter::TYPE_KEY=>$type_val}active{/ifCurrent}" n:href="this adminModule\PagePresenter::TYPE_KEY=>$type_val">
                         {_"admin.page.show.filter.type.$type_val"}
                     </a>
                 </li>
@@ -25,8 +24,7 @@
             {_"admin.page.show.filter.visibility.label"}:
             <ul>
                 <li n:foreach="adminModule\PagePresenter::VISIBILITIES as $visibility_val">
-                    <a data-ajax="true"
-                       class="{ifCurrent this adminModule\PagePresenter::VISIBILITY_KEY=>$visibility_val}active{/ifCurrent}"
+                    <a class="{ifCurrent this adminModule\PagePresenter::VISIBILITY_KEY=>$visibility_val}active{/ifCurrent}"
                        href="{plink this adminModule\PagePresenter::VISIBILITY_KEY=>$visibility_val}">{_"admin.page.show.filter.visibility.$visibility_val"}</a>
                 </li>
             </ul>
@@ -35,8 +33,7 @@
             {_"admin.page.show.filter.translation.label"}:
             <ul>
                 <li>
-                    <a data-ajax="true"
-                       class="{ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL}active{/ifCurrent}"
+                    <a class="{ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL}active{/ifCurrent}"
                        href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,adminModule\PagePresenter::PAGE_KEY=>1}">
                         {_"admin.page.show.filter.translation.all"}
                     </a>
@@ -46,8 +43,7 @@
                         &nbsp;
                         <div>
                             {foreach $languages as $lang}
-                                <a data-ajax="true"
-                                   class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::LANGUAGE_KEY=>$lang}active{/ifCurrent}"
+                                <a class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::LANGUAGE_KEY=>$lang}active{/ifCurrent}"
                                    href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::PAGE_KEY=>1}">
                                     {_$lang}
                                 </a>
@@ -60,9 +56,9 @@
                         &nbsp;
                         <div>
                             {foreach $languages as $lang}
-                                <a data-ajax="true"
-                                   class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::LANGUAGE_KEY=>$lang}active{/ifCurrent}"
-                                   href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::PAGE_KEY=>1}">
+                                <a
+                                        class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::LANGUAGE_KEY=>$lang}active{/ifCurrent}"
+                                        href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::PAGE_KEY=>1}">
                                     {_$lang}
                                 </a>
                             {/foreach}
@@ -101,7 +97,7 @@
                             <td>{$page->getGlobalId()}</td>
                             <td>{$page->getTitle()}</td>
                             <td>{_admin.page.show.table.body.type.{$page->getType()}}</td>
-                            <td><a href="{plink edit adminModule\PagePresenter::EDIT_ID_KEY=>$page->getGlobalId(),
+                            <td><a href="{plink edit adminModule\PagePresenter::    ID_KEY=>$page->getGlobalId(),
                             adminModule\PagePresenter::LANGUAGE_KEY=>$page->getLang()->getCode(),
                             adminModule\PagePresenter::TYPE_KEY=>null,
                             adminModule\PagePresenter::VISIBILITY_KEY=>null,

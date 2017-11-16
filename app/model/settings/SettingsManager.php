@@ -6,7 +6,8 @@ use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 use Nette\Security\User;
 
-class SettingsManager {
+//TODO onCreatePage create new page or use empty one
+class SettingsManager extends Manager {
 
     const
         TABLE = "settings",
@@ -17,54 +18,33 @@ class SettingsManager {
 
         ACTION_MANAGE_SETTINGS = "settings.manage";
 
-    /** @var  Context */
-    private $database;
-
-    /**
-     * @var User
-     */
-    private $user;
     /**
      * @var \Nette\Caching\Cache
      */
     private $cache;
 
-    /**
-     * SettingsManager constructor.
-     * @param IStorage $storage
-     * @param Context $database
-     * @param User $user
-     */
-    public function __construct(IStorage $storage, Context $database, User $user) {
-        $this->database = $database;
-        $this->user = $user;
-
-        $this->cache = new \Nette\Caching\Cache($storage, "settings");
+    protected function init() {
+        /** @var IStorage $storage */
+        $storage = $this->getContext()->getByType(IStorage::class);
+        $this->cache = new Cache($storage, "settings");
+        parent::init();
     }
+
 
     public function get(string $option, ?Language $language = null):?Setting {
 
         $langId = $language instanceof Language ? $language->getId() : 0;
 
-        $cacheKey = $option . "_" . $langId;
+        $cacheKey = $this->getCacheKey($option, $langId);
 
-        $cached = $this->cache->load($cacheKey);
+        /** @var Setting $setting */
+        $setting = $this->cache->load($cacheKey);
 
-        if (!$cached instanceof Setting && !is_bool($cached)) {
-
-            $row = $this->database->table(self::TABLE)
-                ->where([
-                    self::COLUMN_OPTION => $option,
-                    self::COLUMN_LANG   => $langId,
-                ])
-                ->fetch();
-
-            if (!$row instanceof ActiveRow) $setting = false;
-            else $setting = $this->createFromRow($row, $language);
-
-            $cached = $this->cache->save($cacheKey, $setting);
+        if ($setting instanceof Setting && $setting->getLanguageId() !== 0) {
+            $setting->setLanguage($this->getLanguageManager()->getById($langId));
         }
-        return $cached instanceof Setting ? $cached : null;
+
+        return $setting;
     }
 
     public function getOrGlobal(string $option, Language $language): Setting {
@@ -88,18 +68,18 @@ class SettingsManager {
 
             // if exists update
             if ($exists) {
-                $this->database->table(self::TABLE)->where([
+                $this->getDatabase()->table(self::TABLE)->where([
                     self::COLUMN_OPTION => $option,
                 ])->update($data);
                 // else insert
             } else {
-                $this->database->table(self::TABLE)->insert($data);
+                $this->getDatabase()->table(self::TABLE)->insert($data);
             }
         }
     }
 
     private function isAllowedOrThrow(): bool {
-        if (!$this->user->isAllowed(self::ACTION_MANAGE_SETTINGS))
+        if (!$this->getUser()->isAllowed(self::ACTION_MANAGE_SETTINGS))
             throw new Exception("Not enough rights to edit settings");
 
         return true;
@@ -115,16 +95,22 @@ class SettingsManager {
         );
     }
 
-    /**
-     * @param ActiveRow $row
-     * @return Setting
-     */
-    private function createFromRow(ActiveRow $row, ?Language $language): Setting {
-        return new Setting(
-            $row[self::COLUMN_ID],
-            $language,
-            $row[self::COLUMN_OPTION],
-            $row[self::COLUMN_VALUE]
-        );
+    public function rebuildCache() {
+        /** @var ActiveRow $setting */
+        $this->cache->clean();
+        foreach ($this->getDatabase()->table(self::TABLE)->fetchAll() as $settingRow) {
+            $setting = new Setting(
+                $settingRow[self::COLUMN_ID],
+                $settingRow[self::COLUMN_LANG],
+                $settingRow[self::COLUMN_OPTION],
+                $settingRow[self::COLUMN_VALUE]
+            );
+            $this->cache->save($this->getCacheKey($setting->getOption(), $settingRow[self::COLUMN_LANG]), $setting);
+        }
     }
+
+    private function getCacheKey(string $option, int $langId): string {
+        return $option . "_" . $langId;
+    }
+
 }

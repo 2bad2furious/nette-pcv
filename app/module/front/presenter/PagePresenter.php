@@ -43,10 +43,6 @@ class PagePresenter extends BasePresenter {
         return \UserManager::ROLES;
     }
 
-    protected function getPageManager(): PageManager {
-        return $this->context->getByType(PageManager::class);
-    }
-
     public function createComponentContent(string $name): ContentControl {
         return new ContentControl($this, $name);
     }

@@ -15,6 +15,8 @@ services:
     - SettingsManager
     - TagManager
     - HeaderManager
+    - MediaManager
+    - ServiceLoader
 
 #application:
  #   mapping:
@@ -27,3 +29,7 @@ extensions:
 translation:
     debugger: on
     default: en_US
+
+latte:
+    macros:
+        - Nittro\Bridges\NittroLatte\NittroMacros

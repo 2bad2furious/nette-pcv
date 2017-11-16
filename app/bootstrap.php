@@ -30,14 +30,18 @@ $configurator->addConfig(__DIR__ . "/../config/config.product.neon");
 
 $container = $configurator->createContainer();
 
+
+//Dont do this until you can rollback cache as well
 /** @var \Nette\Database\Context $connection */
-$connection = $container->getByType(\Nette\Database\Context::class);
-$connection->beginTransaction();
+//$connection = $container->getByType(\Nette\Database\Context::class);
+//$connection->beginTransaction();
+
 try {
+    /** @var \Nette\Application\Application $app */
     $app = $container->getByType(Nette\Application\Application::class);
     $app->run();
-    $connection->commit();
+    //$connection->commit();
 } catch (Exception $ex) {
-    $connection->rollBack();
+    //$connection->rollBack();
     throw $ex;
 }

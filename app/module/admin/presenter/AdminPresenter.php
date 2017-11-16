@@ -14,11 +14,10 @@ abstract class AdminPresenter extends BasePresenter {
     protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
         Debugger::log($allowedRoles);
         Debugger::log($currentRole);
-        dump($allowedRoles, $currentRole);
         return function () {
             /* sets failed url to redirect to after login */
             $this->getCustomSession()->offsetSet("url", $this->getHttpRequest()->getUrl());
-            $this->flashMessage("Invalid role for selected action.");
+            $this->addError("Invalid role for selected action.");
             $this->redirect(302, "Default:Default");
         };
     }
@@ -36,11 +35,14 @@ abstract class AdminPresenter extends BasePresenter {
         $this->template->locale = $language->getCode();
         $pageSettings = $this->getSettingsManager()->getPageSettings($language);
         $this->template->page_subtitle = $translator->translate($this->setPageSubtitle());
-        $this->template->page_title = $translator->translate($this->setPageTitle());
-        $this->template->admin = $translator->translate("admin.global.title");
-        $this->template->site_title = $pageSettings->getSiteName()->getValue();
+        $titleSeparator = $pageSettings->getTitleSeparator()->getValue();
+        $title = $translator->translate($this->setPageTitle());
+        $this->template->page_title = $title . " - " . $translator->translate("admin.global.title") . $titleSeparator . $pageSettings->getSiteName()->getValue();
+        $this->template->title = $title;
+        $this->payload->title = $this->template->page_title;
         $this->template->logo = $pageSettings->getLogo()->getValue();
         $this->template->logo_alt = $pageSettings->getLogoAlt()->getValue();
+
         parent::beforeRender();
     }
 
@@ -50,10 +52,6 @@ abstract class AdminPresenter extends BasePresenter {
 
     public function createComponentAdminFooter(string $name) {
         return new \AdminFooterControl($this, $name);
-    }
-
-    protected function getSettingsManager(): \SettingsManager {
-        return $this->context->getByType(SettingsManager::class);
     }
 
     protected function getPresenterShortname(): string {

@@ -1,17 +1,9 @@
-* {
-  transition: inherit;
-  box-sizing: inherit;
-  text-decoration: inherit;
-  color: inherit;
-  font-family: "Open Sans", "sans-serif";
-  &:not(p, span, a) {
-    display: block;
-  }
-}
+@import "default";
 
-div.ck-editor__editable{
+div.ck-editor__editable {
   background-color: white;
 }
+
 ul {
   list-style-type: none;
   padding: 0;
@@ -92,7 +84,7 @@ html {
       &.no-header {
         padding-left: 0;
       }
-      div#snippet--page-show {
+      div#page-show {
         ul {
           //margin:0;
           li {

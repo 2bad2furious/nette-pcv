@@ -6,15 +6,21 @@ namespace adminModule;
 
 class SettingsPresenter extends AdminPresenter {
 
-    protected function setPageTitle(): string {
-        // TODO: Implement setPageTitle() method.
+
+    public function actionDefault() {
+        $pm = $this->getPageManager();
+        $pm->rebuildCache();
+        $lm = $this->getLanguageManager();
+        $lm->rebuildCache();
+        $sm = $this->getSettingsManager();
+        $sm->rebuildCache();
+        $hm = $this->getHeaderManager();
+        $hm->rebuildCache();
+
+        $this->sendJson("success");
     }
 
     protected function getAllowedRoles(): array {
-        // TODO: Implement getAllowedRoles() method.
-    }
-
-    protected function setPageSubtitle(): string {
-        // TODO: Implement setPageSubtitle() method.
+        return \UserManager::ROLES_ADMIN_ADMINISTRATION;
     }
 }

@@ -4,7 +4,7 @@
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 
-class TagManager {
+class TagManager extends Manager {
 
     const MAIN_TABLE = "tag",
         MAIN_COLUMN_ID = "tag_id",
@@ -20,21 +20,7 @@ class TagManager {
         LOCAL_COLUMN_LANG = "lang_id",
         LOCAL_COLUMN_NAME = "name", LOCAL_COLUMN_NAME_LENGTH = 30;
 
-    /** @var  Context */
-    private $database;
-    /**
-     * @var \Nette\DI\Container
-     */
-    private $context;
-
-    /**
-     * TagManager constructor.
-     * @param \Nette\DI\Container $container
-     */
-    public function __construct(\Nette\DI\Container $container) {
-        $this->context = $container;
-    }
-
+        const TRIGGER_PAGE_DELETED = "page_deleted";
 
     /**
      * @param int $pageId
@@ -52,7 +38,7 @@ class TagManager {
             $ids[] = $IRow[self::MAIN_PAGE_COLUMN_TAG_ID];
         }
 
-        $locals = $this->database->table(self::LOCAL_TABLE)
+        $locals = $this->getDatabase()->table(self::LOCAL_TABLE)
             ->where([
                 self::LOCAL_MAIN_COLUMN_ID => $ids,
             ])->fetchAll();
@@ -75,10 +61,4 @@ class TagManager {
         );
     }
 
-    private function getDatabase(): Context {
-        if (!$this->database instanceof Context) {
-            $this->database = $this->context->getByType(Context::class);
-        }
-        return $this->database;
-    }
 }

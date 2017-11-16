@@ -1,20 +1,14 @@
 <?php
 
-use Kdyby\Translation\Translator;
-use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
-use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
-use Nette\DI\Container;
-use Nette\Security\User;
 
 //TODO rewrite for performace gain
-class PageManager {
+class PageManager extends Manager {
     const MAIN_TABLE = "page",
         MAIN_COLUMN_ID = "page_id",
-        MAIN_COLUMN_TYPE = "type", /** int 1 if page 0 if post, -1 if section more at @var Type */
-        TYPE_SECTION = -1, TYPE_PAGE = 1, TYPE_POST = 0, TYPE_ALL = null,
-        TYPES = [self::TYPE_SECTION, self::TYPE_PAGE, self::TYPE_POST],
+        MAIN_COLUMN_TYPE = "type", /** int 1 if page 0 if post more at @var Type */
+        TYPE_PAGE = 1, TYPE_POST = 0, TYPE_ALL = null,
+        TYPES = [self::TYPE_PAGE, self::TYPE_POST],
         MAIN_COLUMN_STATUS = "status", STATUS_ALL = null, STATUS_PUBLIC = 1, STATUS_DELETED = -1, STATUS_DRAFT = 0,
         MAIN_COLUMN_PARENT_ID = "parent_id",
 
@@ -24,8 +18,7 @@ class PageManager {
         LOCAL_COLUMN_TITLE = "title", LOCAL_COLUMN_TITLE_LENGTH = 60,
         LOCAL_COLUMN_URL = "url", LOCAL_COLUMN_URL_LENGTH = 60, LOCAL_URL_CHARSET = "[a-zA-Z0-9_+-/]+", LOCAL_URL_CHARSET_FOR_ADMIN = "[a-zA-Z0-9_+-]+",
         LOCAL_COLUMN_DESCRIPTION = "description", LOCAL_COLUMN_DESCRIPTION_LENGTH = 255,
-        LOCAL_COLUMN_IMAGE = "image", LOCAL_COLUMN_IMAGE_LENGTH = 255,
-        LOCAL_COLUMN_IMAGE_ALT = "image_alt", LOCAL_COLUMN_IMAGE_ALT_LENGTH = 255,
+        LOCAL_COLUMN_IMAGE = "image",
         LOCAL_COLUMN_VIDEO = "video", LOCAL_COLUMN_VIDEO_LENGTH = 255,
         LOCAL_COLUMN_LANG = "lang_id",
         LOCAL_COLUMN_STATUS = "status",
@@ -36,17 +29,13 @@ class PageManager {
 
         LOCAL_SEARCH = "content,title,url,description",
 
-        CHANGES_TABLE = "page_change",
+        CHANGES_TABLE = "page_content_change",
         CHANGE_COLUMN_ID = "change_id",
-        CHANGES_COLUMN_PAGE_LOCAL_ID = "page_local_id",
-        CHANGES_COLUMN_CREATED = "created",
-        CHANGES_COLUMN_AUTHOR = "author_id",
-        CHANGES_COLUMN_VERIFIED = "verified",
-        CHANGES_COLUMN_VERIFICATOR = "verified_by",
-        CHANGES_COLUMN_DELETED = "deleted",
-        CHANGES_COLUMN_DELETED_BY = "deleted_by",
-        CHANGES_COLUMN_PRE_CHANGE = "page_pre_change",
-        CHANGES_COLUMN_POST_CHANGE = "page_post_change",
+        CHANGE_LOCAL_COLUMN_ID = "page_local_id",
+        CHANGE_AUTHOR_ID = "author",
+        CHANGE_COLUMN_DATE = "date",
+        CHANGE_COLUMN_PRE_CONTENT = "pre_content",
+        CHANGE_COLUMN_AFTER_CONTENT = "after_content",
 
         ACTION_SEE_NON_PUBLIC_PAGES = "page.see_non_public_pages",
         ACTION_DRAFT = "page.draft",
@@ -60,36 +49,20 @@ class PageManager {
         SETTINGS_TITLE_SEPARATOR = "site.title_separator",
         SETTINGS_LOGO = "site.logo",
         SETTINGS_LOGO_ALT = "site.logo.alt",
+        SETTINGS_HOMEPAGE = "site.homepage_id",
 
         MESSAGE_GLOBAL_PAGE_NOT_FOUND = "admin.page.rebuild.not_in_database",
         MESSAGE_NO_GLOBAL_PAGES_TO_REBUILD = "admin.page.rebuild.no_pages",
         MESSAGE_NO_LOCAL_PAGES_FOR_GLOBAL_PAGE = "admin.page.rebuild.db_error";
     const RANDOM_URL_PREFIX = "$#/\/prefix$#/\/";
+    const PAGE_URL_PATTERN = "[a-zA-Z0-9-_]";
 
-    /**
-     * @var Context
-     */
-    protected $database;
-    /**
-     * @var User
-     */
-    private $user;
-    /**
-     * @var LanguageManager
-     */
-    private $languageManager;
-    /**
-     * @var SettingsManager
-     */
-    private $settingsManager;
-    /**
-     * @var UserManager
-     */
-    private $userManager;
-    /**
-     * @var TagManager
-     */
-    private $tagManager;
+    const TRIGGER_LANGUAGE_DELETED = "language_deleted",
+        TRIGGER_SETTINGS_UPDATED = "settings_updated",
+        TRIGGER_USER_DELETED = "user_deleted";
+
+    const CACHE_GLOBAL_KEY = "global",
+        CACHE_LANGUAGE_KEY = "language";
     /**
      * @var Cache
      */
@@ -98,66 +71,101 @@ class PageManager {
      * @var Cache
      */
     private $globalCache;
-    /**
-     * @var Container
-     */
-    private $context;
-    /**
-     * @var HeaderManager
-     */
-    private $headerManager;
-    /**
-     * @var Cache
-     */
-    private $sectionCache;
 
-    /**
-     * PageManager constructor.
-     * @param IStorage $storage
-     * @param Container $context
-     */
-    public function __construct(IStorage $storage, Container $context) {
-        $cache = new Cache($storage, "page");
+    public function exists(int $globalId): bool {
+        $language = $this->getLanguageManager()->getDefaultLanguage();
+        return $this->getFromGlobalCache($globalId, $language) instanceof Page;
+    }
+
+    private function getLanguageTag(int $langId): string {
+        return self::CACHE_LANGUAGE_KEY . "/" . $langId;
+    }
+
+    private function getGlobalTag(int $globalId): string {
+        return self::CACHE_GLOBAL_KEY . "/" . $globalId;
+    }
+
+    public function delete(int $globalId) {
+        $this->urlCache->clean([
+            Cache::TAGS => [
+                $this->getGlobalTag($globalId),
+            ],
+        ]);
+        $this->globalCache->clean([
+            Cache::TAGS => [
+                $this->getGlobalTag($globalId),
+            ]]);
+
+        $this->getDatabase()->table(self::MAIN_TABLE)->where([self::MAIN_COLUMN_ID=>$globalId])->delete();
+        $this->getDatabase()->table(self::LOCAL_TABLE)->where([self::LOCAL_MAIN_COLUMN_ID=>$globalId])->delete();
+
+
+        $this->getHeaderManager()->trigger(HeaderManager::TRIGGER_PAGE_DELETED, $globalId);
+    }
+
+    protected function init() {
+        $cache = new Cache($this->getDefaultStorage(), "page");
         $this->urlCache = $cache->derive("url");
         $this->globalCache = $cache->derive("global");
-        $this->sectionCache = $cache->derive("section");
-        $this->context = $context;
+
+        $this->on(self::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
+            $this->throwIfNoRights(self::ACTION_MANAGE);
+            //TODO solve ux of deleting
+            $this->urlCache->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
+            $this->globalCache->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
+
+            $this->getDatabase()->table(self::LOCAL_TABLE)->where([
+                self::LOCAL_COLUMN_LANG => $language->getId(),
+            ])->delete();
+        });
+        parent::init();
     }
 
 
-    /**
-     * Rebuilds whole cache or just part if page is specified
-     * @param null|Page $page
-     * @return array
-     */
-    public function rebuildCache(?Page $page = null): array {
-        $globalUrlMessages = $this->rebuildGlobalUrlCache($page);
-        $this->getHeaderManager()->rebuildCache($page);
-        $this->rebuildSectionCache($page);
-        return array_merge($globalUrlMessages);
+    public function rebuildCache() {
+        //TODO check rights
+        $this->throwIfNoRights(self::ACTION_MANAGE);
+        $this->urlCache->clean();
+        $this->globalCache->clean();
+
+        $this->rebuildGlobalUrlCache();
     }
 
-    private function rebuildSectionCache(?Page $page = null) {
-
+    public static function isDefaultUrl(string $url): bool {
+        return substr($url, 0, strlen(self::RANDOM_URL_PREFIX)) === self::RANDOM_URL_PREFIX;
     }
 
-    private function rebuildGlobalUrlCache(?Page $page = null): array {
+    private function rebuildGlobalUrlCache() {
+        $pages = $this->getDatabase()
+            ->table(self::LOCAL_TABLE)
+            ->where([self::MAIN_TABLE . "." . self::MAIN_COLUMN_PARENT_ID => 0])
+            ->select(self::LOCAL_COLUMN_ID);
 
+        while ($pageRow = $pages->fetch()) {
+            $localId = $pageRow[self::LOCAL_COLUMN_ID];
+            $page = $this->getByLocalId($localId);
+            $this->cache($page);
+        }
     }
 
     /**
      * @param int $globalId
      * @param Language $language
      * @return array
+     * @throws Exception if invalid type
      */
     public function getViableParents(int $globalId, Language $language): array {
-        if ($globalId === 1) return [1 => $this->getDatabase()->table(self::LOCAL_TABLE)->wherePrimary(1)->fetchField(self::LOCAL_COLUMN_TITLE)];
+        $page = $this->getFromGlobalCache($globalId, $language);
+        if ($page->isPage()) {
+            $allowedTypes = [self::TYPE_PAGE];
+        } else throw new Exception("Invalid Type");
 
         $invalidGlobalIds = $this->getInvalidParents($globalId);
 
         $pages = $this->getDatabase()->table(self::LOCAL_TABLE)->where(
-            [self::LOCAL_MAIN_COLUMN_ID . " NOT ?" => $invalidGlobalIds,
-             self::LOCAL_COLUMN_LANG               => $language->getId()]
+            [self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID . " NOT ?" => $invalidGlobalIds,
+             self::LOCAL_COLUMN_LANG                                         => $language->getId(),
+             self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE                 => $allowedTypes]
         )->fetchAll();
         $parents = [];
         /** @var ActiveRow $parent */
@@ -169,7 +177,7 @@ class PageManager {
 
     /**
      * @param int $globalId
-     * @return int[] globalIds of the parents
+     * @return array globalIds of the parents
      */
     private function getInvalidParents(int $globalId): array {
         $invalidParents = [$globalId];
@@ -177,23 +185,28 @@ class PageManager {
         $children = $this->getDatabase()->table(self::MAIN_TABLE)->where([self::MAIN_COLUMN_PARENT_ID => $globalId])->select(self::MAIN_COLUMN_ID)->fetchAll();
         /** @var ActiveRow $parent */
         foreach ($children as $parent) {
-            $invalidParents = array_merge($this->getInvalidParents($parent[self::MAIN_COLUMN_ID]));
+            $invalidParents = array_merge($invalidParents, $this->getInvalidParents($parent[self::MAIN_COLUMN_ID]));
         }
         return $invalidParents;
     }
 
 
     /**
-     * @param int $type (page|post|section)
+     * @param int $type (page|post)
      * @return int ID of the page added
+     * @throws Exception
      */
     public function addEmpty(int $type): int {
+        $this->throwIfNoRights(self::ACTION_MANAGE);
+
+        //TODO find unused empty page first
+
         if (!in_array($type, self::TYPES)) throw new InvalidArgumentException("Invalid type " . implode("|", self::TYPES) . " needed, $type got.");
 
         $globalId = $this->getDatabase()->table(self::MAIN_TABLE)->insert([
             self::MAIN_COLUMN_TYPE      => $type,
             self::MAIN_COLUMN_STATUS    => self::STATUS_DRAFT,
-            self::MAIN_COLUMN_PARENT_ID => 1,
+            self::MAIN_COLUMN_PARENT_ID => 0,
         ])->getPrimary();
 
         /** @var Language[] $languages */
@@ -209,23 +222,33 @@ class PageManager {
                 self::LOCAL_MAIN_COLUMN_ID => $globalId,
                 self::LOCAL_COLUMN_LANG    => $language->getId(),
                 self::LOCAL_COLUMN_URL     => $url,
+                self::LOCAL_COLUMN_AUTHOR  => $this->getUser()->getIdentity()->getId(),
             ])->getPrimary();
         }
 
-        $this->onAdd($localIds);
+        foreach ($localIds as $localId) {
+            $this->cache($this->getByLocalId($localId));
+        }
+
         return $globalId;
     }
 
-    private function getByLocalId(int $localId):?Page {
+    private function getByLocalId(int $localId): Page {
         $localRow = $this->getDatabase()->table(self::LOCAL_TABLE)->get($localId);
-        if (!$localRow instanceof ActiveRow) return null;
+        if (!$localRow instanceof ActiveRow) throw new InvalidStateOfDB("row not found");
 
         $language = $this->getLanguageManager()->getById($localRow[self::LOCAL_COLUMN_LANG]);
-        if (!$language instanceof Language) return null; //TODO report db error
+        if (!$language instanceof Language) {
+            throw new InvalidStateOfDB("Page with unknown language. localId:" . $localRow[self::LOCAL_COLUMN_ID] . " langId:" . $localRow[self::LOCAL_COLUMN_LANG]);
+        }
 
         $globalRow = $this->getDatabase()->table(self::MAIN_TABLE)->get($globalId = $localRow[self::LOCAL_MAIN_COLUMN_ID]);
         $type = Type::getById($globalRow[self::MAIN_COLUMN_TYPE]);
-        if (!$type instanceof Type) return null; //TODO report db error
+        if (!$type instanceof Type) throw new InvalidStateOfDB("Type not found");
+
+        $image = $this->getMediaManager()->getById($imageId = $localRow[self::LOCAL_COLUMN_IMAGE]);
+        if ($image instanceof Media && !$image->isImage()) throw new InvalidStateOfDB("Media not image");
+        if ($imageId !== 0 && !$image instanceof Media) throw new InvalidStateOfDB("Media not found");
 
         return new Page(
             $globalId,
@@ -234,17 +257,15 @@ class PageManager {
             $localRow[self::LOCAL_COLUMN_DESCRIPTION],
             $localRow[self::LOCAL_COLUMN_URL],
             $this->createPermanentUrl($language, $globalId),
-            $localRow[self::LOCAL_COLUMN_IMAGE],
-            $localRow[self::LOCAL_COLUMN_IMAGE_ALT],
+            $imageId,
             $type,
             $localRow[self::LOCAL_COLUMN_CONTENT],
-            $this->getTagManager()->getTagsForPageId($globalId, $language),
-            $this->getUserManager()->getUserIdentityById($localRow[self::LOCAL_COLUMN_AUTHOR]),
+            $localRow[self::LOCAL_COLUMN_AUTHOR],
             $localRow[self::LOCAL_COLUMN_CREATED],
             $localRow[self::LOCAL_COLUMN_LAST_EDITED],
             $globalRow[self::MAIN_COLUMN_STATUS],
             $localRow[self::LOCAL_COLUMN_STATUS],
-            $language,
+            $language->getId(),
             $globalRow[self::MAIN_COLUMN_PARENT_ID]
         );
     }
@@ -254,7 +275,8 @@ class PageManager {
      * @param int $id PageId
      * @return null|Page
      */
-    public function getByGlobalId(Language $language, int $id): ?Page {
+    public
+    function getByGlobalId(Language $language, int $id): ?Page {
         $cached = $this->getFromGlobalCache($id, $language);
         return $cached instanceof Page ? $this->getIfRightsAndSetNotCached($cached) : null;
     }
@@ -264,7 +286,8 @@ class PageManager {
      * @param string $url
      * @return null|Page
      */
-    public function getByUrl(Language $language, string $url):?Page {
+    public
+    function getByUrl(Language $language, string $url):?Page {
         $cached = $this->getFromUrlCache($url, $language);
         return $cached instanceof Page ? $this->getIfRightsAndSetNotCached($cached) : null;
     }
@@ -272,30 +295,34 @@ class PageManager {
     /**
      * @param Page $page
      * @return null|Page
-     * @throws InvalidStateOfDB
      */
-    private function getIfRightsAndSetNotCached(Page $page):?Page {
+    private
+    function getIfRightsAndSetNotCached(Page $page):?Page {
         if ($page->getStatus() == 1 || $this->hasRightsToSeeNonPublicPages()) {
+
+            $page->setLanguage($this->getLanguageManager()->getById($page->getLanguageId()));
+
+            if (($parentId = $page->getParentId()) !== 0)
+                $page->setParent($this->getFromGlobalCache($parentId, $page->getLang()));
+
             $page->setPageSettings($this->getSettingsManager()->getPageSettings($page->getLang()));
-            $parent = ($page->getGlobalId() !== 1) ? $this->getByGlobalId($page->getLang(), $page->getParentId()) : null;
-            if ($page->getGlobalId() !== 1 && is_null($parent)) throw new InvalidStateOfDB("Page that's not homepage without valid parent");
-            if ($parent instanceof Page) $page->setParent($parent);
+
+            if (($imageId = $page->getImageId()) !== 0)
+                $page->setImage($this->getMediaManager()->getById($imageId));
+
+            if (($userId = $page->getAuthorId()) !== 0)
+                $page->setAuthor($this->getUserManager()->getUserIdentityById($userId));
+
             return $page;
         }
         return null;
     }
 
-    private function hasRightsToSeeNonPublicPages(): bool {
+    private
+    function hasRightsToSeeNonPublicPages(): bool {
         return $this->getUser()->isAllowed(self::ACTION_SEE_NON_PUBLIC_PAGES);
     }
 
-    public function hasRightsToEditGlobalPage(): bool {
-        return $this->getUser()->isAllowed(self::ACTION_MANAGE);
-    }
-
-    public function hasRightsToDraft(): bool {
-        return $this->getUser()->isAllowed(self::ACTION_DRAFT);
-    }
 
     /**
      * @param int|null $type null when ALL
@@ -307,8 +334,10 @@ class PageManager {
      * @param $numOfPages
      * @param null|string $search
      * @return Page[]
+     * @throws InvalidStateOfDB
      */
-    public function getFiltered(int $type = null, int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search) {
+    public
+    function getFiltered(int $type = null, int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search) {
         $selection = $this->getDatabase()->table(self::LOCAL_TABLE)->select(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->select(self::LOCAL_COLUMN_LANG);
 
         if (is_int($type)) $selection = $selection->where(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE, $type);
@@ -335,13 +364,11 @@ class PageManager {
         }
 
         $leastVisibility = "LEAST(" . self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS . "," . self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS . ")";
-
         /* only some visibility vs all */
         $selection = is_int($visibility) ?
             $selection->where([$leastVisibility => $visibility]) :
             $selection->where($leastVisibility . " >= ?", self::STATUS_DELETED);
 
-        //TODO add language filter - all translated, with no translation, by language - (select), SEARCH
         $result = $selection->page($page, $perPage, $numOfPages)->fetchAll();
 
         $pages = [];
@@ -349,7 +376,7 @@ class PageManager {
         foreach ($result as $item) {
             $language = $this->getLanguageManager()->getById($item[self::LOCAL_COLUMN_LANG]);
             if (!$language instanceof Language) throw new InvalidStateOfDB("page with nonexistent lang_id");
-            $pages[] = $this->getByGlobalId($language, $item[self::LOCAL_MAIN_COLUMN_ID]);
+            $pages[] = $page = $this->getByGlobalId($language, $item[self::LOCAL_MAIN_COLUMN_ID]);
         }
         return $pages;
     }
@@ -360,15 +387,16 @@ class PageManager {
      * @param int $globalId
      * @return string like '/en_US/permanent/1/'
      */
-    private function createPermanentUrl(Language $lang, int $globalId): string {
+    private
+    function createPermanentUrl(Language $lang, int $globalId): string {
         $permanent = self::PAGE_URL_PERMANENT;
         return "{$lang->getCode()}/{$permanent}/{$globalId}";
     }
 
-    public function getDefault404(): Page {
-        $translator = $this->context->getByType(Translator::class);
+    public
+    function getDefault404(): Page {
+        $translator = $this->getTranslator();
 
-        $pageType = Type::PAGE_TYPE;
         $lang = $this->getLanguageManager()->getByCode($translator->getLocale());
         if (!$lang instanceof Language) throw new Exception("invalid Language in translator");
         $page = new Page(
@@ -378,11 +406,9 @@ class PageManager {
             $translator->translate("page.default.404.description"),
             "",
             "",
-            "",
-            "",
-            new $pageType,
+            null,
+            Type::getByID(self::TYPE_PAGE),
             $translator->translate("page.default.404.content"),
-            [],
             null,
             null,
             null,
@@ -390,112 +416,130 @@ class PageManager {
             $lang,
             0
         );
-        $page->setPageSettings($this->getSettingsManager()->getPageSettings($lang));
-        return $page;
-
+        return $this->getIfRightsAndSetNotCached($page);
     }
 
-    private function getUrlCacheKey(string $url, Language $language) {
-        return $language->getCode() . "_" . $url;
+    private
+    function getUrlCacheKey(string $url, int $language) {
+        return $language . "_" . $url;
     }
 
-    private function getGlobalCacheKey(int $id, Language $language) {
-        return $language->getCode() . "_" . $id;
-    }
-
-    private function getSettingsManager(): SettingsManager {
-        if (!$this->settingsManager instanceof SettingsManager) {
-            $this->settingsManager = $this->context->getByType(SettingsManager::class);
-        }
-        return $this->settingsManager;
-    }
-
-    private function getLanguageManager(): LanguageManager {
-        if (!$this->languageManager instanceof LanguageManager) {
-            $this->languageManager = $this->context->getByType(LanguageManager::class);
-        }
-        return $this->languageManager;
-    }
-
-    private function getDatabase(): Context {
-        if (!$this->database instanceof Context) {
-            $this->database = $this->context->getByType(Context::class);
-        }
-        return $this->database;
-    }
-
-    private function getUser(): User {
-        if (!$this->user instanceof User) {
-            $this->user = $this->context->getByType(User::class);
-        }
-        return $this->user;
-    }
-
-    private function getUserManager(): UserManager {
-        if (!$this->userManager instanceof UserManager) {
-            $this->userManager = $this->context->getByType(UserManager::class);
-        }
-        return $this->userManager;
-    }
-
-    private function getHeaderManager(): HeaderManager {
-        if (!$this->headerManager instanceof HeaderManager) {
-            $this->headerManager = $this->context->getByType(HeaderManager::class);
-        }
-        return $this->headerManager;
-    }
-
-    private function getTagManager(): TagManager {
-        if (!$this->tagManager instanceof TagManager) {
-            $this->tagManager = $this->context->getByType(TagManager::class);
-        }
-        return $this->tagManager;
+    private
+    function getGlobalCacheKey(int $id, int $language) {
+        return $language . "_" . $id;
     }
 
     /**
-     * @param int $localId
-     * @return Page[]
+     * @param string $url
+     * @param int|null $localId
+     * @return bool
      */
-    public function getSectionPosts(int $localId): array {
-        return $this->sectionCache->load($localId);
+    public
+    function isUrlAvailable(string $url, Language $language, ?int $localId): bool {
+        $selection = $this->getDatabase()->table(self::LOCAL_TABLE)->where([
+            self::LOCAL_COLUMN_URL  => $url,
+            self::LOCAL_COLUMN_LANG => $language->getId(),
+        ]);
+        if (is_int($localId)) $selection->where([
+            self::LOCAL_COLUMN_ID . " !=" => $localId,
+        ]);
+        return !$selection->count();
     }
 
-    private function isSection(int $globalId) {
-        return boolval($this->getDatabase()->table(self::MAIN_TABLE)->where([
-            self::MAIN_COLUMN_TYPE => self::TYPE_SECTION,
-            self::MAIN_COLUMN_ID   => $globalId,
-        ])->fetch());
-    }
+    public function update(Page $page, int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId) {
 
-    private function getFromUrlCache(string $url, Language $language):?Page {
-        return $this->urlCache->load($this->getUrlCacheKey($url, $language));
-    }
+        $this->throwIfNoRights(self::ACTION_MANAGE);
 
-    private function getFromGlobalCache(int $id, Language $language):?Page {
-        return $this->globalCache->load($this->getGlobalCacheKey($id, $language));
-    }
+        $parent = $parentId === 0 ? null : $this->getFromGlobalCache($parentId, $page->getLang());
+        if ($parentId !== 0 && !$parent instanceof Page) throw new InvalidStateOfDB("Parent not found");
 
-    /**
-     * Caches every translation available
-     * @param array $localIds
-     */
-    private function onAdd(array $localIds) {
-        foreach ($localIds as $localId) {
-            $this->cache($this->getByLocalId($localId));
+        $image = $imageId === 0 ? null : $this->getMediaManager()->getById($imageId);
+        if ($imageId !== 0 && !$image instanceof Media) throw new InvalidStateOfDB("Image not found");
+        if ($image instanceof Media && !$image->isImage()) throw new Exception("Not an image");
+
+        if ($parentId !== $page->getParentId() || $globalVisibility !== $page->getGlobalStatus()) {
+            $this->getDatabase()
+                ->table(self::MAIN_TABLE)
+                ->where([
+                    self::MAIN_COLUMN_ID => $page->getGlobalId(),
+                ])
+                ->update([
+                    self::MAIN_COLUMN_PARENT_ID => $parentId,
+                    self::MAIN_COLUMN_STATUS    => $globalVisibility,
+                ]);
         }
+
+        $this->getDatabase()
+            ->table(self::LOCAL_TABLE)
+            ->where([
+                self::LOCAL_COLUMN_ID => $page->getLocalId(),
+            ])
+            ->update([
+                self::LOCAL_COLUMN_URL         => $url,
+                self::LOCAL_COLUMN_TITLE       => $title,
+                self::LOCAL_COLUMN_DESCRIPTION => $description,
+                self::LOCAL_COLUMN_CONTENT     => $content,
+                self::LOCAL_COLUMN_IMAGE       => $image,
+                self::LOCAL_COLUMN_STATUS      => $localVisibility,
+                self::LOCAL_COLUMN_LAST_EDITED => new \Nette\Utils\DateTime(),
+            ]);
+
+        $newPage = $this->getByLocalId($page->getLocalId());
+        if (!$newPage instanceof Page) throw new InvalidStateOfDB("Page not found");
+
+        $this->cache($newPage);
+
+        $identity = $this->getUser()->getIdentity();
+        if (!$identity instanceof UserIdentity) throw new Exception("User not logged in");
+
+        $this->getDatabase()->table(self::CHANGES_TABLE)->insert([
+            self::CHANGE_LOCAL_COLUMN_ID      => $page->getLocalId(),
+            self::CHANGE_AUTHOR_ID            => $this->getUser()->getId(),
+            self::CHANGE_COLUMN_PRE_CONTENT   => $page->getContent(),
+            self::CHANGE_COLUMN_AFTER_CONTENT => $newPage->getContent(),
+        ]);
+
+        //force header and other shit to update
+        $this->getHeaderManager()->trigger(HeaderManager::TRIGGER_PAGE_EDITED, $newPage);
     }
 
-    private function cache(Page $page) {
-        $urlKey = $this->getUrlCacheKey($page->getUrl(), $page->getLang());
-        $globalKey = $this->getGlobalCacheKey($page->getGlobalId(), $page->getLang());
-        $this->urlCache->save($urlKey, $page);
-        $this->globalCache->save($globalKey, $page);
+    private
+    function getFromUrlCache(string $url, Language $language):?Page {
+        return $this->urlCache->load($this->getUrlCacheKey($url, $language->getId()));
     }
 
-    private function getFreeUrl(Language $language): string {
+    private
+    function getFromGlobalCache(int $id, Language $language):?Page {
+        return $this->globalCache->load($this->getGlobalCacheKey($id, $language->getId()));
+    }
+
+    private
+    function cache(Page $page) {
+        $urlKey = $this->getUrlCacheKey($page->getUrl(), $page->getLanguageId());
+        $globalKey = $this->getGlobalCacheKey($page->getGlobalId(), $page->getLanguageId());
+        $this->urlCache->save($urlKey, $page, [
+            Cache::TAGS => [
+                $this->getGlobalTag($page->getGlobalId()),
+                $this->getLanguageTag($page->getLanguageId()),
+            ],
+        ]);
+        $this->globalCache->save($globalKey, $page, [
+            Cache::TAGS => [
+                $this->getGlobalTag($page->getGlobalId()),
+                $this->getLanguageTag($page->getLanguageId()),
+            ],
+        ]);
+    }
+
+    private
+    function getFreeUrl(Language $language): string {
         $unique = uniqid(self::RANDOM_URL_PREFIX, true);
-        /* if exists */
+        /* if !exists */
         if (!$this->getDatabase()->table(self::LOCAL_TABLE)->where([self::LOCAL_COLUMN_URL => $unique, self::LOCAL_COLUMN_LANG => $language->getId()])->fetch()) return $unique;
         return $this->getFreeUrl($language);
+    }
+
+    private function throwIfNoRights(string $action) {
+        if (!$this->getUser()->isAllowed($action)) throw new Exception("Not allowed.");
     }
 }

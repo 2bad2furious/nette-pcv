@@ -12,10 +12,10 @@
     <meta property="og:type" content="{$page->getType()->getOgType()}"/>
     {if !$page->is404()}
         <meta property="og:url" content="{$baseUrl}/{$page->getPermanentUrl()}"/>
-        {if $page->getImage()}
-            <meta property="og:image" content="{$page->getImage()}"/>
-            {if $page->getImageAlt()}
-                <meta property="og:image:alt" content="{$page->getImageAlt()}">
+        {if $image=$page->getImage()}
+            <meta property="og:image" content="{$image->getSrc()}"/>
+            {if $alt=$image->getAlt()}
+                <meta property="og:image:alt" content="{$alt}">
             {/if}
         {/if}
     {else}
@@ -63,9 +63,7 @@
 <main>
     {if $page->isArticle()}
         {control articlePage $page}
-    {elseif $page->isSection()}
-        {control sectionPage $page}
-    {else}
+    {elseif $page->isPage()}
         {control content $page}
     {/if}
 </main>

@@ -38,6 +38,7 @@ class LoginPresenter extends AdminPresenter {
             }
 
             if (!$form->getErrors()) {
+                $this->disallowAjax();
                 // redirects to previous failed url or to Home
                 if ($this->getCustomSession()->offsetExists("url")) {
                     /** @var UrlScript $url */
@@ -57,5 +58,9 @@ class LoginPresenter extends AdminPresenter {
 
     protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
         $this->redirect("Default:Default");
+    }
+
+    protected function renderDefault() {
+        $this->allowAjax();
     }
 }

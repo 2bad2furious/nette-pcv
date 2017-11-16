@@ -5,9 +5,14 @@ namespace adminModule;
 
 
 use Kdyby\Translation\Translator;
+use Nette\Application\UI\Form;
+use Nette\Forms\Controls\BaseControl;
+use Nette\Forms\Controls\TextInput;
 use Nette\Http\IResponse;
+use Nette\Neon\Exception;
 use PageManager;
 use PaginatorControl;
+use Tracy\Debugger;
 
 class PagePresenter extends AdminPresenter {
     const VISIBILITY_KEY = "visibility",
@@ -30,16 +35,14 @@ class PagePresenter extends AdminPresenter {
         TYPE_ALL = "all",
         TYPE_PAGE = "page",
         TYPE_POST = "post",
-        TYPE_SECTION = "section",
-        TYPES = [self::TYPE_ALL, self::TYPE_PAGE, self::TYPE_POST, self::TYPE_SECTION],
+        TYPES = [self::TYPE_ALL, self::TYPE_PAGE, self::TYPE_POST],
 
         DEFAULT_TYPE = self::TYPE_ALL,
 
         TYPE_TABLE = [
-        self::TYPE_ALL     => PageManager::TYPE_ALL,
-        self::TYPE_PAGE    => PageManager::TYPE_PAGE,
-        self::TYPE_POST    => PageManager::TYPE_POST,
-        self::TYPE_SECTION => PageManager::TYPE_SECTION,
+        self::TYPE_ALL  => PageManager::TYPE_ALL,
+        self::TYPE_PAGE => PageManager::TYPE_PAGE,
+        self::TYPE_POST => PageManager::TYPE_POST,
     ],
         PAGE_KEY = "page",
 
@@ -50,7 +53,7 @@ class PagePresenter extends AdminPresenter {
 
         HAS_TRANSLATION_KEY = "has_translation",
 
-        EDIT_ID_KEY = "page_id";
+        ID_KEY = "page_id";
 
     /** @persistent */
     public $page_id;
@@ -79,16 +82,33 @@ class PagePresenter extends AdminPresenter {
             case "show":
                 return \UserManager::ROLES_PAGE_DRAFTING;
             case "create":
-                return \UserManager::ROLES_PAGE_DRAFTING;
+                return \UserManager::ROLES_PAGE_MANAGING;
             case "edit":
-                return \UserManager::ROLES_PAGE_DRAFTING;
+                return \UserManager::ROLES_PAGE_MANAGING;
+            case "delete":
+                return \UserManager::ROLES_PAGE_MANAGING;
         }
     }
 
     public function actionCreate() {
         if (!$this->isRefererOk("show")) $this->error("Bad referer", IResponse::S403_FORBIDDEN);
         $globalId = $this->getPageManager()->addEmpty(self::TYPE_TABLE[$this->getParameter(self::TYPE_KEY)]);
-        $this->redirect(302, "edit", [self::EDIT_ID_KEY => $globalId, self::TYPE_KEY => null]);
+        $args = [self::ID_KEY => $globalId, self::TYPE_KEY => null];
+        if ($this->getLanguage() === null) $args[self::LANGUAGE_KEY] = $this->getLocaleLanguage()->getCode();
+        $this->redirect(302, "edit", $args);
+    }
+
+    public function actionEdit() {
+        $globalId = $this->getParameter(self::ID_KEY);
+        $langCode = $this->getParameter(self::LANGUAGE_KEY);
+        $language = $this->getLanguageManager()->getByCode($langCode);
+
+        $page = $this->getPageManager()->getByGlobalId($language, $globalId);
+        if (!$page instanceof \Page) {
+            $this->addError("admin.page.edit.page_not_found");
+            $this->redirect(302, "show", [self::LANGUAGE_KEY => self::LANGUAGE_ALL, self::ID_KEY => null]);
+        }
+        $this->template->page = $page;
     }
 
     public function actionShow() {
@@ -108,11 +128,26 @@ class PagePresenter extends AdminPresenter {
             15,//TODO should be an option?
             $this->numberOfPages,
             is_string($post_query = $this->getSearchQuery()) ? $post_query : null);
-
+        dump($this->template->pages);
         $this->template->paginator_page_key = self::PAGE_KEY;
         if ($this->isAjax()) {
             $this->redrawControl();
         }
+    }
+
+    public function actionDelete() {
+        $pm = $this->getPageManager();
+        if ($pm->exists($deleteId = $this->getParameter(self::ID_KEY))) {
+            try {
+                $pm->delete($deleteId);
+                $this->flashMessage("admin.page.delete.success");
+            } catch (Exception $ex) {
+                $this->somethingWentWrong();
+            }
+        } else {
+            $this->flashMessage("admin.page.delete.not_found");
+        }
+        $this->redirect(302, "show", [self::ID_KEY => null]);
     }
 
     private function getType(): string {
@@ -123,7 +158,7 @@ class PagePresenter extends AdminPresenter {
         return $this->getParameter(self::VISIBILITY_KEY);
     }
 
-    private function getLanguage(): string {
+    private function getLanguage(): ?string {
         return $this->getParameter(self::LANGUAGE_KEY);
     }
 
@@ -143,25 +178,35 @@ class PagePresenter extends AdminPresenter {
         $this->redirect(302, "show");
     }
 
-    private function getPageManager(): PageManager {
-        return $this->context->getByType(PageManager::class);
-    }
-
     public function createComponentPageEditForm() {
-        $globalId = $this->getParameter(self::EDIT_ID_KEY);
-        $langCode = $this->getParameter(self::LANGUAGE_KEY);
-        $language = $this->getLanguageManager()->getByCode($langCode);
+        $page = $this->getEditPage();
+        $form = $this->getFormFactory()->createPageEditForm($page,
+            function (BaseControl $url) use ($page) {
+                return $this->getPageManager()->isUrlAvailable($url->getValue(), $page->getLang(), $page->getLocalId());
+            });
+        $form->onSuccess[] = function (Form $form) use ($page) {
+            $values = $form->getValues(true);
+            try {
+                $this->getPageManager()->update(
+                    $page,
+                    $values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_PARENT_NAME],
+                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_TITLE_NAME],
+                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_DESCRIPTION_NAME],
+                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_URL_NAME],
+                    $values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME],
+                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME],
+                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_CONTENT_NAME],
+                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_IMAGE_NAME]
+                );
 
-        $page = $this->getPageManager()->getByGlobalId($language, $globalId);
-        if(!$page instanceof \Page) {
-            $this->flashMessage("admin.page.edit.page_not_found");
-            $this->redirect(302, "show");
-        }
-        $form = $this->getFormFactory()->createPageEditForm($page);
-        $form->onSubmit[] = function () {
-            diedump(func_get_args());
+                $this->flashMessage("admin.page.edit.success");
+                $this->redirect(302, "Page:show", [self::ID_KEY => null, self::LANGUAGE_KEY => null]);
+            } catch (Exception $ex) {
+                Debugger::log($ex);
+                $this->somethingWentWrong();
+            }
         };
-        return $form->setAction($this->link("edit", [self::EDIT_ID_KEY => $globalId]));
+        return $form->setAction($this->link("edit", [self::ID_KEY => $page->getGlobalId()]));
     }
 
     public function createComponentAdminPageSearch() {
@@ -169,7 +214,12 @@ class PagePresenter extends AdminPresenter {
         return $form;
     }
 
+
     public function createComponentPaginator(string $name) {
         return new PaginatorControl($this, $name, self::PAGE_KEY, $this->getPage(), $this->numberOfPages);
+    }
+
+    private function getEditPage(): \Page {
+        return $this->template->page;
     }
 }

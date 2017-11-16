@@ -32,9 +32,10 @@ function dump() {
 function diedump($var) {
     foreach (func_get_args() as $arg) {
         Tracy\Debugger::dump($arg);
+        dump($arg);
     }
     printcaller();
-    exit();
+    throw new Exception("diedumped");
 }
 
 function dumpException() {

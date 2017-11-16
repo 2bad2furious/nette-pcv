@@ -9,8 +9,32 @@ use Nittro\Bridges\NittroUI\Presenter;
 abstract class BasePresenter extends Presenter {
     const SOMETHING_WENT_WRONG = "messages.message.something_went_wrong";
 
+    /** @var  LanguageManager */
+    private $languageManager;
+
+    /** @var  PageManager */
+    private $pageManager;
+
+    /** @var  SettingsManager */
+    private $settingsManager;
+
+    /** @var  HeaderManager */
+    private $headerManager;
+
+    /** @var  UserManager */
+    private $userManager;
+
+    /** @var  TagManager */
+    private $tagManager;
+
+    /** @var MediaManager */
+    private $mediaManager;
+
     /** @var Language|null */
     private $localeLang;
+
+    /** @var FormFactory */
+    private $formFactory;
 
     /** @persistent */
     public $locale;
@@ -24,6 +48,11 @@ abstract class BasePresenter extends Presenter {
         parent::checkRequirements($element);
     }
 
+    public function startup() {
+        $this->setDefaultSnippets(["content", "flashes"]);
+        parent::startup();
+    }
+
     protected function checkCurrentIdentity() {
         $id = $this->getUser()->getId();
         if (is_int($id)) {
@@ -35,7 +64,7 @@ abstract class BasePresenter extends Presenter {
             if ($newIdentity instanceof UserIdentity) {
                 $this->getUser()->login($newIdentity);
             } else {
-                $this->flashMessage(self::SOMETHING_WENT_WRONG);
+                $this->somethingWentWrong();
                 $this->getUser()->logout(true);
             }
         }
@@ -65,18 +94,6 @@ abstract class BasePresenter extends Presenter {
         return new \FooterPageControl($this, $name);
     }
 
-    protected function getFormFactory(): FormFactory {
-        return $this->context->getByType(FormFactory::class);
-    }
-
-    protected function getUserManager(): UserManager {
-        return $this->context->getByType(UserManager::class);
-    }
-
-    protected function getLanguageManager(): LanguageManager {
-        return $this->context->getByType(LanguageManager::class);
-    }
-
     protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
         return function () {
             throw new Exception("Bad rights xd");
@@ -104,4 +121,75 @@ abstract class BasePresenter extends Presenter {
         $this->absoluteUrls = false;
         return ($referer->getHost() === $url->getHost());
     }
+
+    protected function somethingWentWrong() {
+        $this->addError(self::SOMETHING_WENT_WRONG);
+    }
+
+    protected function addError(string $message) {
+        $this->flashMessage($message, 'error');
+    }
+
+    protected function addWarning(string $message) {
+        $this->flashMessage($message, 'warning');
+    }
+
+    protected final function getUserManager(): UserManager {
+        if (!$this->userManager instanceof UserManager) {
+            $this->userManager = $this->context->getByType(UserManager::class);
+        }
+        return $this->userManager;
+    }
+
+
+    protected final function getLanguageManager(): LanguageManager {
+        if (!$this->languageManager instanceof LanguageManager) {
+            $this->languageManager = $this->context->getByType(LanguageManager::class);
+        }
+        return $this->languageManager;
+    }
+
+    protected final function getHeaderManager(): HeaderManager {
+        if (!$this->headerManager instanceof HeaderManager) {
+            $this->headerManager = $this->context->getByType(HeaderManager::class);
+        }
+        return $this->headerManager;
+    }
+
+    protected final function getTagManager(): TagManager {
+        if (!$this->tagManager instanceof TagManager) {
+            $this->tagManager = $this->context->getByType(TagManager::class);
+        }
+        return $this->tagManager;
+    }
+
+    protected final function getPageManager(): PageManager {
+        if (!$this->pageManager instanceof PageManager) {
+            $this->pageManager = $this->context->getByType(PageManager::class);
+        }
+        return $this->pageManager;
+    }
+
+    protected final function getSettingsManager(): SettingsManager {
+        if (!$this->settingsManager instanceof SettingsManager) {
+            $this->settingsManager = $this->context->getByType(SettingsManager::class);
+        }
+        return $this->settingsManager;
+    }
+
+
+    protected final function getMediaManager(): MediaManager {
+        if (!$this->mediaManager instanceof MediaManager) {
+            $this->mediaManager = $this->context->getByType(MediaManager::class);
+        }
+        return $this->mediaManager;
+    }
+
+    protected final function getFormFactory(): FormFactory {
+        if (!$this->formFactory instanceof FormFactory) {
+            $this->formFactory = $this->context->getByType(FormFactory::class);
+        }
+        return $this->formFactory;
+    }
+
 }

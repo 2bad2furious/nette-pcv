@@ -28,9 +28,6 @@ class Page {
 
     /** @var string */
     private $content;
-
-    /** @var  string */
-    private $hash;
     /**
      * @var UserIdentity
      */
@@ -44,13 +41,9 @@ class Page {
      */
     private $edited;
     /**
-     * @var string
+     * @var null|Media
      */
     private $image;
-    /**
-     * @var string
-     */
-    private $imageAlt;
     /**
      * @var Tag[]
      */
@@ -73,10 +66,6 @@ class Page {
     private $status;
 
     /**
-     * @var string
-     */
-    private $tagValues;
-    /**
      * @var int
      */
     private $parentId;
@@ -88,6 +77,18 @@ class Page {
      * @var int
      */
     private $local_status;
+    /**
+     * @var int
+     */
+    private $imageId;
+    /**
+     * @var int
+     */
+    private $languageId;
+    /**
+     * @var int
+     */
+    private $authorId;
 
     /**
      * Page constructor.
@@ -97,21 +98,19 @@ class Page {
      * @param string $description
      * @param string $url
      * @param string $permanentUrl
-     * @param string $image
-     * @param string $imageAlt
+     * @param int $imageId
      * @param Type $type
      * @param string $content
-     * @param Tag[] $tags
-     * @param UserIdentity|null $author
+     * @param int $authorId
      * @param DateTime|null $created
      * @param DateTime|null $edited
      * @param int $global_status
      * @param int $local_status
-     * @param Language $language
+     * @param int $languageId
      * @param int $parentId
-     * @internal param int $status
+     * @throws Exception
      */
-    public function __construct(int $global_id, int $local_id, string $title, string $description, string $url, string $permanentUrl, string $image, string $imageAlt, Type $type, string $content, array $tags, ?UserIdentity $author, ?DateTime $created, ?DateTime $edited, int $global_status, int $local_status, Language $language, int $parentId) {
+    public function __construct(int $global_id, int $local_id, string $title, string $description, string $url, string $permanentUrl, int $imageId, Type $type, string $content, int $authorId, DateTime $created, DateTime $edited, int $global_status, int $local_status, int $languageId, ?int $parentId) {
         $this->global_id = $global_id;
         $this->local_id = $local_id;
         $this->title = $title;
@@ -120,32 +119,43 @@ class Page {
         $this->permanentUrl = $permanentUrl;
         $this->type = $type;
         $this->content = $content;
-        $this->author = $author;
+        $this->authorId = $authorId;
         $this->created = $created;
         $this->edited = $edited;
-        $this->image = $image;
-        $this->imageAlt = $imageAlt;
-        $this->tags = $tags;
-        $this->language = $language;
         $this->status = min($global_status, $local_status);
         $this->parentId = $parentId;
         $this->global_status = $global_status;
         $this->local_status = $local_status;
-        $this->tagValues = implode(" ", array_map(function (Tag $item) {
-            return $item->getName();
-        }, $this->getTags()));
+        if ($parentId === null && $this->isPage()) throw new Exception("Page without parent");
+        $this->imageId = $imageId;
+        $this->languageId = $languageId;
     }
 
-    private function recalculateHash(): void {
-        $this->hash = sha1(serialize($this));
+    public function setAuthor(UserIdentity $identity) {
+        if ($this->authorId !== $identity->getId()) throw new Exception("Ids are not the same");
+        if ($this->author instanceof $identity) throw new Exception("Author already set");
+
+        $this->author = $identity;
     }
 
     public function setPageSettings(PageSettings $pageGlobals): void {
         if ($this->settings instanceof PageSettings) throw new Exception("PageGlobals already set");
 
         $this->settings = $pageGlobals;
+    }
 
-        $this->recalculateHash();
+    public function setLanguage(Language $language) {
+        if ($language->getId() !== $this->languageId) throw new Exception("Language is not the same");
+        if ($this->language instanceof Language) throw new Exception("Language already set");
+
+        $this->language = $language;
+    }
+
+    public function setImage(Media $media) {
+        if ($media->getId() !== $this->imageId) throw new Exception("Ids are not the same");
+        if (!$media->isImage()) throw new Exception("Not an image");
+        if ($this->image instanceof Media) throw new Exception("Image already set");
+        $this->image = $media;
     }
 
     public function setParent(Page $parent) {
@@ -153,8 +163,6 @@ class Page {
         if ($this->parentId !== $parent->getGlobalId()) throw new Exception("Ids are not the same. {$this->parentId}  !== {$parent->getGlobalId()}");
         if ($this->language->getId() !== $parent->getLang()->getId()) throw new Exception("Languages are not the same");
         $this->parent = $parent;
-
-        $this->recalculateHash();
     }
 
     public function getGA(): string {
@@ -177,15 +185,6 @@ class Page {
             );
     }
 
-    public function getTagValues(): string {
-        return $this->tagValues;
-    }
-
-    public function getSection(): string {
-        // its ok not to check it, why would you call this method if it wasnt an article in section
-        if ($this->parent->isSection())
-            return $this->parent->getTitle();
-    }
 
     public function isArticle(): bool {
         return is_a($this->getType(), Type::POST_TYPE);
@@ -197,6 +196,16 @@ class Page {
 
     public function __clone() {
         if ($this->parent instanceof Page) $this->parent = clone $this->parent;
+    }
+
+    public function addTags(array $tags) {
+        foreach ($tags as $tag) {
+            $this->addTag($tag);
+        }
+    }
+
+    public function addTag(Tag $tag) {
+        $this->tags[] = $tag;
     }
 
     public function is404(): bool {
@@ -243,10 +252,24 @@ class Page {
     }
 
     /**
+     * @param bool $check
      * @return string
      */
-    public function getUrl(): string {
+    public function getUrl(bool $check = false): string {
+        if ($check && $this->isUrlGenerated()) return "";
         return $this->url;
+    }
+
+    /**
+     * checks whether the current url is generated
+     * @return string
+     */
+    public function getCheckedUrl(): string {
+        return $this->getUrl(true);
+    }
+
+    public function isUrlGenerated(): bool {
+        return PageManager::isDefaultUrl($this->getUrl());
     }
 
     /**
@@ -272,13 +295,6 @@ class Page {
     }
 
     /**
-     * @return string|null
-     */
-    public function getHash(): ?string {
-        return $this->hash;
-    }
-
-    /**
      * @return UserIdentity|null
      */
     public function getAuthor(): ?UserIdentity {
@@ -300,17 +316,10 @@ class Page {
     }
 
     /**
-     * @return string
+     * @return Media
      */
-    public function getImage(): string {
+    public function getImage(): ?Media {
         return $this->image;
-    }
-
-    /**
-     * @return string
-     */
-    public function getImageAlt(): string {
-        return $this->imageAlt;
     }
 
     /**
@@ -335,19 +344,15 @@ class Page {
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getParentId(): int {
-        return $this->parent instanceof Page ? $this->parent->getGlobalId() : $this->parentId;
-    }
-
-    public function isSection(): bool {
-        return is_a($this->getType(), Type::SECTION_TYPE);
+    public function getParentId(): ?int {
+        return $this->parentId;
     }
 
     public function getContentPreview(int $length = 80, bool $stripTags = true): string {
         $content = $this->getContent();
-        diedump(func_get_args());
+        throw new \Nette\NotImplementedException();
     }
 
     /**
@@ -362,5 +367,27 @@ class Page {
      */
     public function getLocalStatus(): int {
         return $this->local_status;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getImageId(): int {
+        return $this->imageId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLanguageId(): int {
+        return $this->languageId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAuthorId(): int {
+        return $this->authorId;
     }
 }

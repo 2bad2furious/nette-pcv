@@ -7,12 +7,10 @@ abstract class Type {
 
     const PAGE_TYPE = PageType::class;
     const POST_TYPE = PostType::class;
-    const SECTION_TYPE = SectionType::class;
 
     const BY_ID = [
-        PageManager::TYPE_PAGE    => PageType::class,
-        PageManager::TYPE_POST    => PostType::class,
-        PageManager::TYPE_SECTION => SectionType::class,
+        PageManager::TYPE_PAGE => PageType::class,
+        PageManager::TYPE_POST => PostType::class,
     ];
 
     const SCHEMA_URL = "http://schema.org/";
@@ -22,12 +20,11 @@ abstract class Type {
     public abstract function getOgType(): string;
 
     /**
-     * @param int $number
-     * @return Type|null
+     * @param int $id
+     * @return Type
      */
-    public static function getById(int $number): ?self {
-        if (!isset(self::BY_ID[$number])) return null;
-        $className = self::BY_ID[$number];
+    public static function getById(int $id): self {
+        $className = self::BY_ID[$id];
         return new $className;
     }
 

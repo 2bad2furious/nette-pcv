@@ -1,9 +1,8 @@
 <?php
 
 use Nette\Application\UI\Form;
-use Nette\DI\Container;
 
-class FormFactory {
+class FormFactory extends Manager {
 
     const LOGIN_IDENTIFICATION_NAME = "login_identification",
         LOGIN_PASSWORD_NAME = "login_password",
@@ -15,77 +14,64 @@ class FormFactory {
         PAGE_EDIT_URL_NAME = "url",
         PAGE_EDIT_PARENT_NAME = "parent",
         PAGE_SHOW_SEARCH_NAME = "search_query",
-        PAGE_EDIT_GLOBAL_CONTAINER = "global_co",
+        PAGE_EDIT_GLOBAL_CONTAINER = "global",
+        PAGE_EDIT_LOCAL_CONTAINER = "local",
         PAGE_EDIT_CONTENT_NAME = "content",
-
+        PAGE_EDIT_DESCRIPTION_NAME = "description",
+        PAGE_EDIT_IMAGE_NAME = "image",
 
         TEXTAREA_ID_FOR_EDITOR = "ckeditor";
 
-    /** @var \Kdyby\Translation\Translator */
-    private $translator;
-
-    /** @var  Container */
-    private $context;
-
-    /** @var  PageManager */
-    private $pageManager;
-
-    /** @var  LanguageManager */
-    private $languageManager;
-
-    /**
-     * FormFactory constructor.
-     * @param Container $context
-     */
-    public function __construct(Container $context) {
-        $this->context = $context;
-    }
-
-
-    public function createPageEditForm(Page $page) {
+    public function createPageEditForm(Page $page, callable $urlValidator) {
 
         $form = $this->createNewAdminForm();
         /*$form->getRenderer()->wrappers["group"]["container"] = "div";
         $form->getRenderer()->wrappers["group"]["label"] = "label";*/
 
         //TODO drafting limitations
-        $container = $form->addContainer("global");
+        $container = $form->addContainer(self::PAGE_EDIT_GLOBAL_CONTAINER);
         $container->addSelect(self::PAGE_EDIT_GLOBAL_VISIBILITY_NAME, "admin.page.edit.global.visibility.label",
-            [0 => "admin.page.edit.global.visibility.draft", 1 => "admin.page.edit.global.visibility.public"]
+            [PageManager::STATUS_DRAFT => "admin.page.edit.global.visibility.draft", PageManager::STATUS_PUBLIC => "admin.page.edit.global.visibility.public"]
         )->setDefaultValue($page->getGlobalStatus());
 
-        $parent = $page->getParent();
-        if (!$parent instanceof Page && $page->getGlobalId() !== 1) throw new Exception("Page without a parent that's not homepage");
-        $parentId = $parent instanceof Page ? $parent->getGlobalId() : 1;
+        if ($page->isPage()) {
+            $parents = array_merge([0 => "admin.page.edit.global.parent.no"], $this->getPageManager()->getViableParents($page->getGlobalId(), $page->getLang()));
+            foreach ($parents as $k => $v) {
+                if ($v === "") $parents[$k] = "admin.global.page.no_title";
+            }
+            $container->addSelect(self::PAGE_EDIT_PARENT_NAME, "admin.page.edit.global.parent.label", $parents)
+                ->setDefaultValue($page->getParentId());
+        }
 
-        $container->addSelect(self::PAGE_EDIT_PARENT_NAME, "admin.page.edit.global.parent.label", $this->getPageManager()->getViableParents($page->getGlobalId(), $page->getLang()))
-            ->setDefaultValue($parentId)
-            ->setDisabled($page->getGlobalId() === 1);
-
-        $container = $form->addContainer("local");
+        $container = $form->addContainer(self::PAGE_EDIT_LOCAL_CONTAINER);
         $container->addSelect(self::PAGE_EDIT_LOCAL_VISIBILITY_NAME, "admin.page.edit.local.visibility.label",
-            [0 => "admin.page.edit.local.visibility.draft", 1 => "admin.page.edit.local.visibility.public"]
+            [PageManager::STATUS_DRAFT => "admin.page.edit.local.visibility.draft", PageManager::STATUS_PUBLIC => "admin.page.edit.local.visibility.public"]
         )->setDefaultValue($page->getLocalStatus());
 
-        $container->addText(self::PAGE_EDIT_TITLE_NAME, "admin.page.edit.local.title")
+        $container->addText(self::PAGE_EDIT_TITLE_NAME, "admin.page.edit.local.title.label")
             ->setDefaultValue($page->getTitle())
-            ->setRequired();
+            ->addRule(Form::MAX_LENGTH, "admin.page.edit.local.title.length", PageManager::LOCAL_COLUMN_TITLE_LENGTH)
+            ->addRule(Form::REQUIRED, "admin.page.edit.local.title.required");
 
-        $container->addText(self::PAGE_EDIT_URL_NAME, "admin.page.edit.local.url")
-            ->setEmptyValue($page->getUrl())
-            ->setRequired($page->getGlobalId() !== 1)
-            ->setDisabled($page->getGlobalId() === 1);
+        $container->addText(self::PAGE_EDIT_URL_NAME, "admin.page.edit.local.url.label")
+            ->setDefaultValue($page->getCheckedUrl())
+            ->addRule($urlValidator, "admin.page.edit.local.url.check.error_availability", "admin.page.edit.local.url.check.error_availability")
+            ->addRule(Form::PATTERN, "admin.page.edit.local.url.check.pattern", "[0-9a-zA-Z-_+]+")
+            ->addRule(Form::REQUIRED, "admin.page.edit.local.url.required")
+            ->addRule(Form::MAX_LENGTH, "admin.page.edit.local.url.length", PageManager::LOCAL_COLUMN_URL_LENGTH);
 
-        //don't show random url => starts with PageManager::RANDOM_URL_PREFIX?
+        $container->addTextArea(self::PAGE_EDIT_DESCRIPTION_NAME, "admin.page.edit.local.description.label")
+            ->addRule(Form::MAX_LENGTH, "admin.page.edit.local.description.length_error", PageManager::LOCAL_COLUMN_DESCRIPTION_LENGTH)
+            ->setRequired(false)
+            ->setDefaultValue($page->getDescription());
 
         $container->addTextArea(self::PAGE_EDIT_CONTENT_NAME, "admin.page.edit.local.content")
             ->setDefaultValue($page->getContent())
             ->getControlPrototype()->data(self::TEXTAREA_ID_FOR_EDITOR, true);
 
+        $container->addSelect(self::PAGE_EDIT_IMAGE_NAME, "admin.page.edit.local.image.label", array_merge([0 => "admin.page.edit.local.image.no"], $this->getMediaManager()->getAvailableImages($page->getLang())));
+
         $form->addSubmit("submit", "admin.page.edit.action.edit");
-        $form->onSubmit[] = function () {
-            diedump(func_get_args());
-        };
         return $form;
     }
 
@@ -98,6 +84,7 @@ class FormFactory {
     private function createNewAdminForm(): Form {
         $form = $this->createNewForm();
         $form->getElementPrototype()->class("admin-form");
+        $form->getElementPrototype()->data("validation-mode", "live");
         return $form;
     }
 
@@ -109,33 +96,12 @@ class FormFactory {
         return $form;
     }
 
-    private function getTranslator(): \Kdyby\Translation\Translator {
-        if (!$this->translator instanceof Kdyby\Translation\Translator) {
-            $this->translator = $this->context->getByType(\Kdyby\Translation\Translator::class);
-        }
-        return $this->translator;
-    }
-
     public function createAdminPageSearch(?string $query) {
         $form = $this->createNewAdminForm();
         $form->setMethod("get");
         $form->addText(self::PAGE_SHOW_SEARCH_NAME)->setRequired(true)->setDefaultValue($query);
         $form->addSubmit("submit");
         return $form;
-    }
-
-    private function getPageManager(): PageManager {
-        if (!$this->pageManager instanceof PageManager) {
-            $this->pageManager = $this->context->getByType(PageManager::class);
-        }
-        return $this->pageManager;
-    }
-
-    private function getLanguageManager(): LanguageManager {
-        if (!$this->languageManager instanceof LanguageManager) {
-            $this->languageManager = $this->context->getByType(LanguageManager::class);
-        }
-        return $this->languageManager;
     }
 
 }

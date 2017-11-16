@@ -3,6 +3,7 @@ header:
     home: "Home"
     page: "Pages"
     header: "Header"
+    media: "Media"
     presentation: "Presentations"
     language: "Languages"
     setting: "Settings"
@@ -10,6 +11,8 @@ header:
 
 global:
     title: "Administration"
+    page:
+        no_title: "No title yet"
 
 login:
     title: "Admin Login"
@@ -39,7 +42,6 @@ page:
                 all: "All"
                 page: "Pages"
                 post: "Posts"
-                section: "Sections"
 
             visibility:
                 label: "By visibility"
@@ -70,7 +72,6 @@ page:
             label: "Create a new ..."
             page: "page"
             post: "post"
-            section: "section"
 
         not_found: "Pages not found"
     create:
@@ -81,16 +82,45 @@ page:
         global:
             parent:
                 label: "Select a parent"
+                no: "No parent"
             visibility:
-                label: "Visibility"
+                label: "Visibility of all translations"
                 public: "Public"
                 draft: "Draft"
             caption: "Global Settings (these settings apply for all translated pages as well)"
         local:
             caption: "Local Settings (these settings apply only for the translation)"
+            title:
+                 label: "Title"
+                 required: "Title is required"
+                 length: "Title needs to be at most %s characters long or shorter"
+            url:
+                check:
+                    pattern: "Url must contain only characters A-Z, a-z, 0-9, '-' and '_'"
+                    loading: "Checking availability..."
+                    error_availability: "There is already a page with this url"
+                    failure: "The url check is not available"
+                    isnt_checked: " Waiting for you to fill it in :)"
+                length: "Url must be at most %s characters long or shorter"
+                prelabel: "The whole url looks like"
+                label: "Url address"
+                required: "Url is required"
+            description:
+                label: "Description - short summary"
+                length_error: "Description must be at most %s characters long, ideally it should be about 150-160 characters long"
+            visibility:
+                label: "Visibility of this translation"
+                public: "Public"
+                draft: "Draft"
+            content:
+                "Page Body (Content)"
+            image:
+                no: "No image"
+                label: "Select an appropriate image"
         action:
-            delete: "Delete"
-            create: "Create"
+            delete:
+                label: "Delete"
+                confirm: "This will delete all translations of this page/post"
             edit: "Save"
 
 logout:

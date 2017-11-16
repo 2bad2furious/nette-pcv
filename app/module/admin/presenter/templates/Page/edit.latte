@@ -1,17 +1,89 @@
 {block content}
     {form pageEditForm}
+        <ul class="admin-form-errors" n:formErrors></ul>
         <div id="form-global">
-            {formContainer global}
-                {input FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}
+            {formContainer \FormFactory::PAGE_EDIT_GLOBAL_CONTAINER}
+                {label FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}{input FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}
+                {label FormFactory::PAGE_EDIT_PARENT_NAME}{input FormFactory::PAGE_EDIT_PARENT_NAME}
             {/formContainer}
         </div>
         <div id="form-local">
-            {formContainer local}
-                {input FormFactory::PAGE_EDIT_CONTENT_NAME}
+            {formContainer \FormFactory::PAGE_EDIT_LOCAL_CONTAINER}
+                {label FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}{input FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}
+                {label FormFactory::PAGE_EDIT_TITLE_NAME}{input \FormFactory::PAGE_EDIT_TITLE_NAME}
+                {label \FormFactory::PAGE_EDIT_URL_NAME}{input FormFactory::PAGE_EDIT_URL_NAME}
+                <span>{_"admin.page.edit.local.url.prelabel"}: '/{$page->getLang()->getCode()}/<span
+                            id="url-content" n:class="$page->isUrlGenerated() ? failure">{if $page->isUrlGenerated()}{_"admin.page.edit.local.url.check.isnt_checked"}{else}{$page->getCheckedUrl()}{/if}</span>'</span>
+                {label FormFactory::PAGE_EDIT_DESCRIPTION_NAME}{input FormFactory::PAGE_EDIT_DESCRIPTION_NAME}
+                {label FormFactory::PAGE_EDIT_CONTENT_NAME}{input FormFactory::PAGE_EDIT_CONTENT_NAME}
             {/formContainer}
         </div>
         <div id="form-side">
             {input submit}
+            <a id="page-delete"
+               href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">{_"admin.page.edit.action.delete.label"}</a>
+            {formContainer local}
+                {label \FormFactory::PAGE_EDIT_IMAGE_NAME}{input \FormFactory::PAGE_EDIT_IMAGE_NAME}
+            {/formContainer}
         </div>
     {/form}
+    <script>
+        _stack.push(function (di) {
+            jQuery(document).ready(function ($) {
+                ClassicEditor
+                    .create(document.querySelector("textarea[data-{\FormFactory::TEXTAREA_ID_FOR_EDITOR|noescape}=true]"))
+                    .then(function (editor) {
+                        console.log("inited", editor)
+                    })
+                    .catch(function (error) {
+                        alert(error);
+                        console.error(error);
+                    });
+
+                $("#page-delete").click(function () {
+                    confirm({_"admin.page.edit.action.delete.confirm"})
+                });
+
+                var frm = di.getService('formLocator').getForm('frm-pageEditForm');
+                console.info(frm);
+
+                window.Nette.validators.{\FormFactory::PAGE_EDIT_URL_NAME|noescape}_rule1 = function (elem, args, val) {
+                    var urlContent = $("#url-content");
+                    urlContent.html({_"admin.page.edit.local.url.check.loading"})
+                    urlContent.addClass('loading');
+                    urlContent.removeClass('failure');
+                    urlContent.removeClass('success');
+                    $.ajax({
+                        url: {plink Availability: \adminModule\AvailabilityPresenter::KEY=>\adminModule\AvailabilityPresenter::URL_KEY,\adminModule\AvailabilityPresenter::LANGUAGE=>$page->getLang()->getCode()},
+                        data: {l}{\adminModule\AvailabilityPresenter::VALUE}:
+                    val,{\adminModule\AvailabilityPresenter::ID}:{$page->getLocalId()},{\adminModule\AvailabilityPresenter::LANGUAGE}:{$page->getLang()->getCode()}{r},
+                    success: function (r) {
+                        urlContent.removeClass('loading');
+                        if (r === false) {
+                            frm.trigger('error', {
+                                element: elem,
+                                message: args
+                            });
+                            urlContent.addClass('failure');
+                            urlContent.html({_"admin.page.edit.local.url.check.failure"})
+                        } else {
+                            urlContent.addClass('success');
+                            urlContent.html(val);
+                        }
+                    }
+                ,
+                    failure:function () {
+                        urlContent.html({_"admin.page.edit.local.url.check.failure"})
+                        urlContent.addClass('failure')
+                    }
+                })
+
+                    return true;
+                };
+            })
+        })
+    </script>
+    <div id="changes">
+        TODO list changes
+    </div>
 {/block}

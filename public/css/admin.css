@@ -69,23 +69,23 @@ html {
           color: white; }
       html body main.no-header {
         padding-left: 0; }
-      html body main div#snippet--page-show ul li {
+      html body main div#page-show ul li {
         display: inline-block; }
-        html body main div#snippet--page-show ul li > * {
+        html body main div#page-show ul li > * {
           border-radius: 1em;
           background-color: #fff;
           padding: 6px;
           text-decoration: none; }
-          html body main div#snippet--page-show ul li > *.active, html body main div#snippet--page-show ul li > *:hover {
+          html body main div#page-show ul li > *.active, html body main div#page-show ul li > *:hover {
             background-color: #eee; }
-        html body main div#snippet--page-show ul li div {
+        html body main div#page-show ul li div {
           display: inline-block; }
-          html body main div#snippet--page-show ul li div a {
+          html body main div#page-show ul li div a {
             display: inline-block;
             padding: 3px;
             background-color: #fff;
             border-radius: 1em; }
-            html body main div#snippet--page-show ul li div a:hover, html body main div#snippet--page-show ul li div a.active {
+            html body main div#page-show ul li div a:hover, html body main div#page-show ul li div a.active {
               background-color: #ddd; }
 
 /*# sourceMappingURL=admin.css.map */

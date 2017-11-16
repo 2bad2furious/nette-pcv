@@ -13,12 +13,8 @@ class TestPresenter extends AdminPresenter {
     }
 
     public function actionDefault() {
-        /** @var Context $db */
-        $db = $this->context->getByType(Context::class);
-        $db->query("DELETE FROM ".\PageManager::MAIN_TABLE.";
-DELETE FROM ".\PageManager::LOCAL_TABLE.";
-
-ALTER TABLE ".\PageManager::MAIN_TABLE." AUTO_INCREMENT = 0;
-ALTER TABLE ".\PageManager::LOCAL_TABLE." AUTO_INCREMENT = 0;");
+        /** @var \PageManager $pageManager */
+        $pageManager = $this->context->getByType(\PageManager::class);
+        $pageManager->rebuildCache();
     }
 }

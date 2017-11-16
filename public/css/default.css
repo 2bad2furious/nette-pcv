@@ -1,0 +1,10 @@
+* {
+  transition: inherit;
+  box-sizing: inherit;
+  text-decoration: inherit;
+  color: inherit;
+  font-family: "Open Sans", "sans-serif"; }
+  *:not(p, span, a) {
+    display: block; }
+
+/*# sourceMappingURL=default.css.map */

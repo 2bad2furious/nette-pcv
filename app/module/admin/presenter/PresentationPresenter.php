@@ -6,15 +6,16 @@ namespace adminModule;
 
 class PresentationPresenter extends AdminPresenter {
 
-    protected function setPageTitle(): string {
-        // TODO: Implement setPageTitle() method.
-    }
-
     protected function getAllowedRoles(): array {
-        // TODO: Implement getAllowedRoles() method.
-    }
-
-    protected function setPageSubtitle(): string {
-        // TODO: Implement setPageSubtitle() method.
+        switch ($this->getAction()) {
+            case "default":
+                return \UserManager::ROLES_PAGE_MANAGING;
+            case "delete":
+                return \UserManager::ROLES_PAGE_MANAGING;
+            case "edit":
+                return \UserManager::ROLES_PAGE_MANAGING;
+            case "add":
+                return \UserManager::ROLES_PAGE_MANAGING;
+        }
     }
 }
