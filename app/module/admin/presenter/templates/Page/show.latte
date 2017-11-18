@@ -76,39 +76,53 @@
                 adminModule\PagePresenter::LANGUAGE_KEY=>null,
                 adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,
                 FormFactory::PAGE_SHOW_SEARCH_NAME=>null}"
-                   class="create_new">{_"admin.page.show.create.$type_val"}</a>
+                   class="create_new">{_"admin.page.show.create.{$type_val}"}</a>
             {/foreach}
         </div>
         <div id="pages">
+            <a href="{plink this}">{_"admin.page.show.refresh"}</a>
             {if $pages}
                 <table>
                     <thead>
                     <tr>
                         <td>{_"admin.page.show.table.header.globalId"}</td>
-                        <td>{_"admin.page.show.table.header.title"}</td>
+                        <td>{_"admin.page.show.table.header.titles"}</td>
                         <td>{_"admin.page.show.table.header.type"}</td>
                         <td>{_"admin.page.show.table.header.edit"}</td>
                         <td>{_"admin.page.show.table.header.delete"}</td>
                     </tr>
                     </thead>
                     <tbody>
-                    {foreach $pages as $page}
+                    {foreach $pages as $id => $page}
+                        {dump $page}
                         <tr>
-                            <td>{$page->getGlobalId()}</td>
-                            <td>{$page->getTitle()}</td>
-                            <td>{_admin.page.show.table.body.type.{$page->getType()}}</td>
-                            <td><a href="{plink edit adminModule\PagePresenter::    ID_KEY=>$page->getGlobalId(),
-                            adminModule\PagePresenter::LANGUAGE_KEY=>$page->getLang()->getCode(),
+                            <td>{$id}</td>
+                            <td>{StringUtils::getExcerpt($page['titles'],20,"...")}</td>
+                            <td>{_"admin.page.show.table.body.type.{$page['type']}"}</td>
+                            <td>{foreach $page['languages'] as $lang}<a class="action page-edit"
+                                                                        href="{plink edit adminModule\PagePresenter::ID_KEY=>$id,
+                            adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),
                             adminModule\PagePresenter::TYPE_KEY=>null,
                             adminModule\PagePresenter::VISIBILITY_KEY=>null,
                             adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,
-                            FormFactory::PAGE_SHOW_SEARCH_NAME=>null}">Edit</a></td>
-                            <td>delete</td>
+                            FormFactory::PAGE_SHOW_SEARCH_NAME=>null}">{$lang->getCode()}</a>{/foreach}</td>
+                            <td><a class="action page-delete"
+                                   href="{plink delete adminModule\PagePresenter::ID_KEY=>$id}">{_"admin.page.show.delete.label"}</a>
+                            </td>
                         </tr>
                     {/foreach}
                     </tbody>
                 </table>
-                {control paginator}
+            {control paginator}
+                <script>
+                    _stack.push(function () {
+                        jQuery(document).ready(function ($) {
+                            $("a.page-delete.action").click(function () {
+                                window.confirm({_"admin.page.show.delete.confirm"});
+                            })
+                        })
+                    })
+                </script>
             {else}
                 {_"admin.page.show.not_found"}
             {/if}

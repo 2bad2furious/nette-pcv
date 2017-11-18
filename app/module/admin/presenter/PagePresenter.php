@@ -20,7 +20,7 @@ class PagePresenter extends AdminPresenter {
         VISIBILITY_PUBLIC = "public",
         VISIBILITY_DRAFT = "draft",
         VISIBILITY_DELETED = "deleted",
-        VISIBILITIES = [self::VISIBILITY_ALL, self::VISIBILITY_PUBLIC, self::VISIBILITY_DRAFT, self::VISIBILITY_DELETED],
+        VISIBILITIES = [self::VISIBILITY_ALL, self::VISIBILITY_PUBLIC, self::VISIBILITY_DRAFT, /*self::VISIBILITY_DELETED until figured out*/],
 
         DEFAULT_VISIBILITY = self::VISIBILITY_PUBLIC,
 
@@ -128,11 +128,7 @@ class PagePresenter extends AdminPresenter {
             15,//TODO should be an option?
             $this->numberOfPages,
             is_string($post_query = $this->getSearchQuery()) ? $post_query : null);
-        dump($this->template->pages);
         $this->template->paginator_page_key = self::PAGE_KEY;
-        if ($this->isAjax()) {
-            $this->redrawControl();
-        }
     }
 
     public function actionDelete() {

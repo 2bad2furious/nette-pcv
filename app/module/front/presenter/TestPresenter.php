@@ -11,9 +11,7 @@ class TestPresenter extends Presenter {
 
 
     public function actionDefault() {
-        /** @var \LanguageManager $languageManager */
-        $languageManager = $this->context->getByType(\LanguageManager::class);
-        $languageManager->rebuildCache();
+        $this->sendJson("nothing");
     }
 
     protected function getAllowedRoles(): array {

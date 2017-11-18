@@ -1,4 +1,5 @@
 {block content}
+    //TODO show other translations
     {form pageEditForm}
         <ul class="admin-form-errors" n:formErrors></ul>
         <div id="form-global">
@@ -19,15 +20,16 @@
             {/formContainer}
         </div>
         <div id="form-side">
-            {input submit}
-            <a id="page-delete"
-               href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">{_"admin.page.edit.action.delete.label"}</a>
             {formContainer local}
                 {label \FormFactory::PAGE_EDIT_IMAGE_NAME}{input \FormFactory::PAGE_EDIT_IMAGE_NAME}
             {/formContainer}
+            {input submit}
+            <a id="page-delete"
+               href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">{_"admin.page.edit.action.delete.label"}</a>
+            <a id="page-visit" href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLang()->getCode()}">{_"admin.page.edit.action.visit"}</a>
         </div>
     {/form}
-    <script>
+    <script type="text/javascript">
         _stack.push(function (di) {
             jQuery(document).ready(function ($) {
                 ClassicEditor

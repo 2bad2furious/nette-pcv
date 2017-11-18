@@ -59,7 +59,7 @@ page:
         table:
             header:
                 globalId: "ID"
-                title: "Title"
+                titles: "Titles"
                 type: "Type"
                 edit: "Edit"
                 delete: "Delete"
@@ -72,6 +72,10 @@ page:
             label: "Create a new ..."
             page: "page"
             post: "post"
+        regresh: "Refresh"
+        delete:
+            label: "Delete"
+            confirm: "This will delete all translations of this page/post"
 
         not_found: "Pages not found"
     create:

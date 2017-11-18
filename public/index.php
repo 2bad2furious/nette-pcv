@@ -2,21 +2,18 @@
 require __DIR__ . "/../vendor/autoload.php";
 
 function printcaller() {
-    try {
-        throw new Exception();
-    } catch (Exception $exception) {
-        if (isset($exception->getTrace()[2]["class"]) && isset($exception->getTrace()[1]["line"]) && isset($exception->getTrace()[2]["function"])) {
-            $trace = ["Called at:" =>
-                          [
-                              "class"  => $exception->getTrace()[2]["class"],
-                              "line"   => $exception->getTrace()[1]["line"],
-                              "method" => $exception->getTrace()[2]["function"],
-                          ],
-            ];
-            dump($trace);
-        } else {
-            dump($exception->getTrace()[2]);
-        }
+    $trace = debug_backtrace();
+    if (isset($trace[2]["class"]) && isset($trace[1]["line"]) && isset($trace[2]["function"])) {
+        $trace = ["Called at:" =>
+                      [
+                          "class"  => $trace[2]["class"],
+                          "line"   => $trace[1]["line"],
+                          "method" => $trace[2]["function"],
+                      ],
+        ];
+        dump($trace);
+    } else {
+        dump($trace[2]);
     }
 }
 

@@ -50,7 +50,8 @@
     {/if}
     <link rel="stylesheet" type="text/css" href="/css/css.css">
     <link rel="stylesheet" type="text/css" href="/libs/nittro/nittro.min.css">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <script
             src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -61,11 +62,13 @@
 <body>
 {control header $page}
 <main>
-    {if $page->isArticle()}
-        {control articlePage $page}
-    {elseif $page->isPage()}
-        {control content $page}
-    {/if}
+    {snippet content}
+        {if $page->isArticle()}
+            {control articlePage $page}
+        {elseif $page->isPage()}
+            {control content $page}
+        {/if}
+    {/snippet}
 </main>
 {*{control footerPage}*}
 <div>

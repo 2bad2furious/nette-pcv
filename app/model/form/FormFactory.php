@@ -56,7 +56,7 @@ class FormFactory extends Manager {
         $container->addText(self::PAGE_EDIT_URL_NAME, "admin.page.edit.local.url.label")
             ->setDefaultValue($page->getCheckedUrl())
             ->addRule($urlValidator, "admin.page.edit.local.url.check.error_availability", "admin.page.edit.local.url.check.error_availability")
-            ->addRule(Form::PATTERN, "admin.page.edit.local.url.check.pattern", "[0-9a-zA-Z-_+]+")
+            ->addRule(Form::PATTERN, "admin.page.edit.local.url.check.pattern", PageManager::LOCAL_URL_CHARSET_FOR_ADMIN)
             ->addRule(Form::REQUIRED, "admin.page.edit.local.url.required")
             ->addRule(Form::MAX_LENGTH, "admin.page.edit.local.url.length", PageManager::LOCAL_COLUMN_URL_LENGTH);
 

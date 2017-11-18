@@ -1,6 +1,8 @@
 <?php
 
 
+use Nette\Application\IRouter;
+use Nette\Application\Request;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
 use Nette\Http\Url;
@@ -49,7 +51,8 @@ abstract class BasePresenter extends Presenter {
     }
 
     public function startup() {
-        $this->setDefaultSnippets(["content", "flashes"]);
+        $this->checkRefererAndDisallowAjax();
+        $this->setDefaultSnippets(["content"]);
         parent::startup();
     }
 
@@ -190,6 +193,18 @@ abstract class BasePresenter extends Presenter {
             $this->formFactory = $this->context->getByType(FormFactory::class);
         }
         return $this->formFactory;
+    }
+
+
+    private function checkRefererAndDisallowAjax() {
+        if ($referer = $this->getReferer()) {
+            $match = $this->getRouter()->match($request = new \Nette\Http\Request($script = new \Nette\Http\UrlScript($referer)));
+            dump($match, $request, $script, $referer);
+        }
+    }
+
+    private function getRouter(): IRouter {
+        return $this->context->getByType(IRouter::class);
     }
 
 }

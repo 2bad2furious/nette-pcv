@@ -34,7 +34,6 @@ class AvailabilityPresenter extends AdminPresenter {
         $url = $this->getParameter(self::KEY);
         $id = $this->getParameter(self::ID);
         $result = $this->getPageManager()->isUrlAvailable($url, $language, $id);
-        dump($result);
         $this->sendJson($result);
     }
 }

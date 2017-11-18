@@ -61,6 +61,6 @@ class LoginPresenter extends AdminPresenter {
     }
 
     protected function renderDefault() {
-        $this->allowAjax();
+        //$this->allowAjax();
     }
 }

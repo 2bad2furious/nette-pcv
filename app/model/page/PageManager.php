@@ -7,7 +7,7 @@ class PageManager extends Manager {
     const MAIN_TABLE = "page",
         MAIN_COLUMN_ID = "page_id",
         MAIN_COLUMN_TYPE = "type", /** int 1 if page 0 if post more at @var Type */
-        TYPE_PAGE = 1, TYPE_POST = 0, TYPE_ALL = null,
+        TYPE_PAGE = 1, TYPE_POST = 0, TYPE_ALL = null,//all is just for Filtered
         TYPES = [self::TYPE_PAGE, self::TYPE_POST],
         MAIN_COLUMN_STATUS = "status", STATUS_ALL = null, STATUS_PUBLIC = 1, STATUS_DELETED = -1, STATUS_DRAFT = 0,
         MAIN_COLUMN_PARENT_ID = "parent_id",
@@ -54,8 +54,7 @@ class PageManager extends Manager {
         MESSAGE_GLOBAL_PAGE_NOT_FOUND = "admin.page.rebuild.not_in_database",
         MESSAGE_NO_GLOBAL_PAGES_TO_REBUILD = "admin.page.rebuild.no_pages",
         MESSAGE_NO_LOCAL_PAGES_FOR_GLOBAL_PAGE = "admin.page.rebuild.db_error";
-    const RANDOM_URL_PREFIX = "$#/\/prefix$#/\/";
-    const PAGE_URL_PATTERN = "[a-zA-Z0-9-_]";
+    const RANDOM_URL_PREFIX = "generated-url-";
 
     const TRIGGER_LANGUAGE_DELETED = "language_deleted",
         TRIGGER_SETTINGS_UPDATED = "settings_updated",
@@ -96,8 +95,8 @@ class PageManager extends Manager {
                 $this->getGlobalTag($globalId),
             ]]);
 
-        $this->getDatabase()->table(self::MAIN_TABLE)->where([self::MAIN_COLUMN_ID=>$globalId])->delete();
-        $this->getDatabase()->table(self::LOCAL_TABLE)->where([self::LOCAL_MAIN_COLUMN_ID=>$globalId])->delete();
+        $this->getDatabase()->table(self::LOCAL_TABLE)->where([self::LOCAL_MAIN_COLUMN_ID => $globalId])->delete();
+        $this->getDatabase()->table(self::MAIN_TABLE)->where([self::MAIN_COLUMN_ID => $globalId])->delete();
 
 
         $this->getHeaderManager()->trigger(HeaderManager::TRIGGER_PAGE_DELETED, $globalId);
@@ -275,8 +274,7 @@ class PageManager extends Manager {
      * @param int $id PageId
      * @return null|Page
      */
-    public
-    function getByGlobalId(Language $language, int $id): ?Page {
+    public function getByGlobalId(Language $language, int $id): ?Page {
         $cached = $this->getFromGlobalCache($id, $language);
         return $cached instanceof Page ? $this->getIfRightsAndSetNotCached($cached) : null;
     }
@@ -286,8 +284,7 @@ class PageManager extends Manager {
      * @param string $url
      * @return null|Page
      */
-    public
-    function getByUrl(Language $language, string $url):?Page {
+    public function getByUrl(Language $language, string $url):?Page {
         $cached = $this->getFromUrlCache($url, $language);
         return $cached instanceof Page ? $this->getIfRightsAndSetNotCached($cached) : null;
     }
@@ -296,8 +293,7 @@ class PageManager extends Manager {
      * @param Page $page
      * @return null|Page
      */
-    private
-    function getIfRightsAndSetNotCached(Page $page):?Page {
+    private function getIfRightsAndSetNotCached(Page $page):?Page {
         if ($page->getStatus() == 1 || $this->hasRightsToSeeNonPublicPages()) {
 
             $page->setLanguage($this->getLanguageManager()->getById($page->getLanguageId()));
@@ -318,8 +314,7 @@ class PageManager extends Manager {
         return null;
     }
 
-    private
-    function hasRightsToSeeNonPublicPages(): bool {
+    private function hasRightsToSeeNonPublicPages(): bool {
         return $this->getUser()->isAllowed(self::ACTION_SEE_NON_PUBLIC_PAGES);
     }
 
@@ -333,12 +328,11 @@ class PageManager extends Manager {
      * @param int $perPage
      * @param $numOfPages
      * @param null|string $search
-     * @return Page[]
+     * @return array => [id=>[titles => "" ,type=>"",languages=>[LangObj,...]]]
      * @throws InvalidStateOfDB
      */
-    public
-    function getFiltered(int $type = null, int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search) {
-        $selection = $this->getDatabase()->table(self::LOCAL_TABLE)->select(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->select(self::LOCAL_COLUMN_LANG);
+    public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search) {
+        $selection = $this->getDatabase()->table(self::LOCAL_TABLE)->select(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->group(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->select("GROUP_CONCAT(" . self::LOCAL_COLUMN_LANG . " SEPARATOR '|') langs")->select("GROUP_CONCAT(" . self::LOCAL_COLUMN_TITLE . " SEPARATOR ', ') titles")->select(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE)->order(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID);
 
         if (is_int($type)) $selection = $selection->where(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE, $type);
 
@@ -347,11 +341,12 @@ class PageManager extends Manager {
             $values = [];
             $explosion = explode(" ", $search);
             foreach ($explosion as $item) {
+                if (($possibleId = intval($item)) !== 0) {
+                    $searchWheres[] = self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID . " = ?";
+                    $values[] = $possibleId;
+                }
                 $searchWheres[] = "MATCH(" . self::LOCAL_SEARCH . ") AGAINST (?)";
                 $values[] = $item;
-            }
-            if (count($explosion) === 1) {
-                $values = $search;
             }
             $selection = $selection->where("(" . implode(") OR (", $searchWheres) . ")", $values);
         }
@@ -367,18 +362,22 @@ class PageManager extends Manager {
         /* only some visibility vs all */
         $selection = is_int($visibility) ?
             $selection->where([$leastVisibility => $visibility]) :
-            $selection->where($leastVisibility . " >= ?", self::STATUS_DELETED);
+            $selection->where($leastVisibility . " >= ?", self::STATUS_DELETED); //TODO fix deletion
 
         $result = $selection->page($page, $perPage, $numOfPages)->fetchAll();
 
         $pages = [];
         /** @var ActiveRow $item */
-        foreach ($result as $item) {
-            $language = $this->getLanguageManager()->getById($item[self::LOCAL_COLUMN_LANG]);
-            if (!$language instanceof Language) throw new InvalidStateOfDB("page with nonexistent lang_id");
-            $pages[] = $page = $this->getByGlobalId($language, $item[self::LOCAL_MAIN_COLUMN_ID]);
+        foreach ($result as $item) { //TODO display title in current language or in default
+            $languages = array_map(function (int $langId): Language {
+                return $this->getLanguageManager()->getById($langId);
+            }, explode("|", $item['langs']));
+            $pages[$item[self::LOCAL_MAIN_COLUMN_ID]] = ['titles' => implode(", ", array_map(function (string $title) {
+                return ($title) ? $title : $this->getTranslator()->translate("admin.global.page.no_title");
+            }, explode(", ", $item['titles']))), 'type'           => Type::getById($item[self::MAIN_COLUMN_TYPE])->__toString(), 'languages' => $languages];
         }
         return $pages;
+
     }
 
 
@@ -387,14 +386,12 @@ class PageManager extends Manager {
      * @param int $globalId
      * @return string like '/en_US/permanent/1/'
      */
-    private
-    function createPermanentUrl(Language $lang, int $globalId): string {
+    private function createPermanentUrl(Language $lang, int $globalId): string {
         $permanent = self::PAGE_URL_PERMANENT;
         return "{$lang->getCode()}/{$permanent}/{$globalId}";
     }
 
-    public
-    function getDefault404(): Page {
+    public function getDefault404(): Page {
         $translator = $this->getTranslator();
 
         $lang = $this->getLanguageManager()->getByCode($translator->getLocale());
@@ -406,26 +403,24 @@ class PageManager extends Manager {
             $translator->translate("page.default.404.description"),
             "",
             "",
-            null,
+            0,
             Type::getByID(self::TYPE_PAGE),
             $translator->translate("page.default.404.content"),
-            null,
-            null,
-            null,
+            0,
+            new \Nette\Utils\DateTime(),
+            new \Nette\Utils\DateTime(),
             1, 1,
-            $lang,
+            $lang->getId(),
             0
         );
         return $this->getIfRightsAndSetNotCached($page);
     }
 
-    private
-    function getUrlCacheKey(string $url, int $language) {
+    private function getUrlCacheKey(string $url, int $language) {
         return $language . "_" . $url;
     }
 
-    private
-    function getGlobalCacheKey(int $id, int $language) {
+    private function getGlobalCacheKey(int $id, int $language) {
         return $language . "_" . $id;
     }
 
@@ -434,8 +429,7 @@ class PageManager extends Manager {
      * @param int|null $localId
      * @return bool
      */
-    public
-    function isUrlAvailable(string $url, Language $language, ?int $localId): bool {
+    public function isUrlAvailable(string $url, Language $language, ?int $localId): bool {
         $selection = $this->getDatabase()->table(self::LOCAL_TABLE)->where([
             self::LOCAL_COLUMN_URL  => $url,
             self::LOCAL_COLUMN_LANG => $language->getId(),
@@ -531,11 +525,11 @@ class PageManager extends Manager {
         ]);
     }
 
-    private
-    function getFreeUrl(Language $language): string {
-        $unique = uniqid(self::RANDOM_URL_PREFIX, true);
-        /* if !exists */
-        if (!$this->getDatabase()->table(self::LOCAL_TABLE)->where([self::LOCAL_COLUMN_URL => $unique, self::LOCAL_COLUMN_LANG => $language->getId()])->fetch()) return $unique;
+    private function getFreeUrl(Language $language): string {
+        $unique = self::RANDOM_URL_PREFIX . sha1(uniqid());
+
+        if (!$this->getDatabase()->table(self::LOCAL_TABLE)->where([self::LOCAL_COLUMN_URL => $unique, self::LOCAL_COLUMN_LANG => $language->getId()])->fetch()) return $unique; /* if !exists */
+
         return $this->getFreeUrl($language);
     }
 
