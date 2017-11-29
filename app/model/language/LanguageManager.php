@@ -1,18 +1,17 @@
 <?php
 
-
-use Nette\Caching\IStorage;
-use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
-use Nette\Security\User;
 
 class LanguageManager extends Manager {
 
     const TABLE = "language",
         COLUMN_ID = "language_id",
-        COLUMN_CODE = "code", COLUMN_CODE_LENGTH = 5,
+        COLUMN_CODE = "code", COLUMN_CODE_LENGTH = 5, COLUMN_CODE_PATTERN = "[a-z]{2}_[A-Z]{2}|[a-z]{2}",
 
         SETTINGS_DEFAULT_LANGUAGE = "language.default";
+    const GENERATED_CODE_PREFIX = "glc";
+    const ACTION_CACHE = "language.cache",
+        ACTION_MANAGE = "language.manage";
 
     /**
      * @var \Nette\Caching\Cache
@@ -33,14 +32,22 @@ class LanguageManager extends Manager {
 
     /**
      * @param bool $asObjects
-     * @return string[]|Language[]
+     * @param bool $check
+     * @return array
      */
-    public function getAvailableLanguages($asObjects = false): array {
-        $data = $this->getDatabase()->table(self::TABLE)->fetchAll();
+    public function getAvailableLanguages($asObjects = false, $check = true): array {
+        $data = $this->getDatabase()
+            ->table(self::TABLE)
+            ->order(self::COLUMN_ID);
+
+        if ($check)
+            $data = $data->where([self::COLUMN_CODE . " NOT LIKE(?)" => self::GENERATED_CODE_PREFIX . "%"]);
+
+        $data = $data->fetchAll();
         $langs = [];
         /** @var ActiveRow $lang */
         foreach ($data as $lang) {
-            $langs[] = ($asObjects) ? $this->createFromRow($lang) : $lang[self::COLUMN_CODE];
+            $langs[$lang[self::COLUMN_ID]] = ($asObjects) ? $this->createFromRow($lang) : $lang[self::COLUMN_CODE];
         }
         return $langs;
     }
@@ -84,14 +91,71 @@ class LanguageManager extends Manager {
     }
 
     public function rebuildCache() {
-        //TODO check rights
+        $this->throwIfNoRights(self::ACTION_CACHE);
         $this->idCache->clean();
         $this->codeCache->clean();
         foreach ($this->getAvailableLanguages(true) as $language) {
-            $this->idCache->save($language->getId(), $language);
-            $this->codeCache->save($language->getCode(), $language);
+            $this->cache($language);
         }
     }
 
-    //TODO onAdd add setting homepage for this language
+    public function createNew(): Language {
+        $this->throwIfNoRights(self::ACTION_MANAGE);
+        $code = $this->getUniqueCode();
+        $id = $this->getDatabase()->table(self::TABLE)->insert([
+            self::COLUMN_CODE => $code,
+        ])->getPrimary();
+
+        $language = $this->getFromDbById($id);
+
+        $this->cache($language);
+
+        return $language;
+    }
+
+    private function getUniqueCode(): string {
+        $unique = \Nette\Utils\Strings::truncate(uniqid(self::GENERATED_CODE_PREFIX), self::COLUMN_CODE_LENGTH, "");
+        if ($this->getDatabase()->table(self::TABLE)->where([self::COLUMN_CODE => $unique])->fetchField(self::COLUMN_ID)) return $this->getUniqueCode();
+        return $unique;
+    }
+
+    public function edit(Language $language, string $code) {
+        if ($language->getCode() !== $code) {
+            if (!self::isCodeGenerated($language->getCode())) throw new Exception("Cannot edit non-generated language codes");
+
+            if(!preg_match(self::COLUMN_CODE_PATTERN,$code)) throw new InvalidArgumentException("Code pattern not correct");
+
+            $this->getDatabase()->table(self::TABLE)
+                ->where([
+                    self::COLUMN_ID => $language->getId(),
+                ])
+                ->update([
+                    self::COLUMN_CODE => $code,
+                ]);
+
+            $this->getPageManager()->trigger(PageManager::TRIGGER_LANGUAGE_ADDED,$language);
+        }
+
+        //TODO ADD settings editing
+
+    }
+
+
+    protected function throwIfNoRights(string $action) {
+        if (!$this->getUser()->isAllowed($action)) throw new Exception("Not allowed");
+    }
+
+    private function cache(Language $language) {
+        $this->idCache->save($language->getId(), $language);
+        $this->codeCache->save($language->getCode(), $language);
+    }
+
+    private function getFromDbById($id):?Language {
+        $language = $this->getDatabase()->table(self::TABLE)->where(self::COLUMN_ID, $id)->fetch();
+        return $language instanceof ActiveRow ? $this->createFromRow($language) : null;
+    }
+
+    public static function isCodeGenerated(string $code): bool {
+        return substr($code, 0, strlen(LanguageManager::GENERATED_CODE_PREFIX)) === LanguageManager::GENERATED_CODE_PREFIX;
+    }
 }

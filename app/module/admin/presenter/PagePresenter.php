@@ -91,7 +91,6 @@ class PagePresenter extends AdminPresenter {
     }
 
     public function actionCreate() {
-        if (!$this->isRefererOk("show")) $this->error("Bad referer", IResponse::S403_FORBIDDEN);
         $globalId = $this->getPageManager()->addEmpty(self::TYPE_TABLE[$this->getParameter(self::TYPE_KEY)]);
         $args = [self::ID_KEY => $globalId, self::TYPE_KEY => null];
         if ($this->getLanguage() === null) $args[self::LANGUAGE_KEY] = $this->getLocaleLanguage()->getCode();
@@ -129,6 +128,10 @@ class PagePresenter extends AdminPresenter {
             $this->numberOfPages,
             is_string($post_query = $this->getSearchQuery()) ? $post_query : null);
         $this->template->paginator_page_key = self::PAGE_KEY;
+
+        if($this->isAjax()){ //needs to be here for some reason xd
+            $this->redrawControl();
+        }
     }
 
     public function actionDelete() {

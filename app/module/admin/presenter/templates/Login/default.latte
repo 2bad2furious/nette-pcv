@@ -1,5 +1,5 @@
 {var $isLoggin = true}
 {block content}
-    <img src="{$logo}" alt="{$logo_alt}">
+    <img src="{$logo->getSrc()}" alt="{$logo->getAlt()}">
     {control loginForm}
 {/block}

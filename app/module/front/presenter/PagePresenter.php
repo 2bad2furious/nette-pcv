@@ -38,20 +38,21 @@ class PagePresenter extends BasePresenter {
     }
 
     protected function prepareTemplate(?Page $page) {
-        if ($page instanceof Page) {
-            $this->template->page = $page;
-        } else {
-            $this->template->page = $this->getPageManager()->getDefault404($this->translator);
-        }
+        if (!$page instanceof Page)
+            $page = $this->getPageManager()->getDefault404();
+
+        $this->template->page = $page;
         $this->payload->title = $page->getTitle();
         $this->template->setFile(__DIR__ . "/templates/Page/default.latte");
     }
 
-    protected function getAllowedRoles(): array {
+    protected
+    function getAllowedRoles(): array {
         return \UserManager::ROLES;
     }
 
-    public function createComponentContent(string $name): ContentControl {
+    public
+    function createComponentContent(string $name): ContentControl {
         return new ContentControl($this, $name);
     }
 
@@ -59,15 +60,18 @@ class PagePresenter extends BasePresenter {
      * @param string $name
      * @return ArticlePageControl
      */
-    public function createComponentArticlePage(string $name): ArticlePageControl {
+    public
+    function createComponentArticlePage(string $name): ArticlePageControl {
         return new ArticlePageControl($this, $name);
     }
 
-    public function createComponentHeader(string $name): HeaderPageControl {
+    public
+    function createComponentHeader(string $name): HeaderPageControl {
         return new HeaderPageControl($this, $name);
     }
 
-    public function createComponentSectionPage(string $name): SectionPageControl {
+    public
+    function createComponentSectionPage(string $name): SectionPageControl {
         return new SectionPageControl($this, $name);
     }
 }

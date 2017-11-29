@@ -7,6 +7,7 @@ class Language {
 
     /** @var string */
     private $code;
+
     /**
      * Language constructor.
      * @param int $id

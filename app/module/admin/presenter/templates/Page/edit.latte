@@ -5,7 +5,7 @@
         <div id="form-global">
             {formContainer \FormFactory::PAGE_EDIT_GLOBAL_CONTAINER}
                 {label FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}{input FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}
-                {label FormFactory::PAGE_EDIT_PARENT_NAME}{input FormFactory::PAGE_EDIT_PARENT_NAME}
+                {if $page->isPage()}{label FormFactory::PAGE_EDIT_PARENT_NAME}{input FormFactory::PAGE_EDIT_PARENT_NAME}{/if}
             {/formContainer}
         </div>
         <div id="form-local">
@@ -26,7 +26,8 @@
             {input submit}
             <a id="page-delete"
                href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">{_"admin.page.edit.action.delete.label"}</a>
-            <a id="page-visit" href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLang()->getCode()}">{_"admin.page.edit.action.visit"}</a>
+            <a id="page-visit" data-ajax="false"
+               href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLang()->getCode()}">{_"admin.page.edit.action.visit"}</a>
         </div>
     {/form}
     <script type="text/javascript">
@@ -42,12 +43,10 @@
                         console.error(error);
                     });
 
-                $("#page-delete").click(function () {
-                    confirm({_"admin.page.edit.action.delete.confirm"})
+                $("#page-delete").click(function (e) {
+                    if (!confirm({_"admin.page.edit.action.delete.confirm"}))
+                        e.preventDefault();
                 });
-
-                var frm = di.getService('formLocator').getForm('frm-pageEditForm');
-                console.info(frm);
 
                 window.Nette.validators.{\FormFactory::PAGE_EDIT_URL_NAME|noescape}_rule1 = function (elem, args, val) {
                     var urlContent = $("#url-content");
@@ -62,7 +61,7 @@
                     success: function (r) {
                         urlContent.removeClass('loading');
                         if (r === false) {
-                            frm.trigger('error', {
+                            di.getService('formLocator').getForm('frm-pageEditForm').trigger('error', {
                                 element: elem,
                                 message: args
                             });

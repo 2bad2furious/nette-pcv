@@ -129,6 +129,10 @@ abstract class BasePresenter extends Presenter {
         $this->addError(self::SOMETHING_WENT_WRONG);
     }
 
+    protected function addSuccess(string $message){
+        $this->flashMessage($message,'success');
+    }
+
     protected function addError(string $message) {
         $this->flashMessage($message, 'error');
     }

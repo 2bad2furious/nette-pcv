@@ -1,3 +1,5 @@
-jQ = jQuery.noConflict();
-jQ(document).ready(function () {
-});
+_stack.push(function () {
+    jQuery(document).ready(function ($) {
+
+    })
+})

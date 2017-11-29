@@ -31,7 +31,7 @@ class MediaManager extends Manager {
      * @param bool $asObjects
      * @return array|Media[]
      */
-    public function getAvailableImages(?Language $language, $asObjects = false) {
+    public function getAvailableImages(?Language $language = null, $asObjects = false) {
         $languages = $language instanceof Language ? [0, $language->getId()] : 0;
         $available = $this->getDatabase()->table(self::TABLE)->where([
             self::COLUMN_LANG => $languages,
@@ -59,7 +59,7 @@ class MediaManager extends Manager {
     public function getById(int $id):?Media {
         $media = $this->cache->load($id);
         if ($media instanceof Media) {
-            if($langId = $media->getLanguageId() !== 0)
+            if ($langId = $media->getLanguageId() !== 0)
                 $media->setLanguage($this->getLanguageManager()->getById($langId));
         }
         return $media;

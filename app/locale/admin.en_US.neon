@@ -73,6 +73,7 @@ page:
             page: "page"
             post: "post"
         regresh: "Refresh"
+        visit: "View"
         delete:
             label: "Delete"
             confirm: "This will delete all translations of this page/post"
@@ -126,6 +127,7 @@ page:
                 label: "Delete"
                 confirm: "This will delete all translations of this page/post"
             edit: "Save"
+            visit: "View the page"
 
 logout:
     success: "You have been logged out."

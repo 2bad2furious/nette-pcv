@@ -3,7 +3,8 @@
         <div>
             {_"admin.page.show.filter.search.label"}:
             {form adminPageSearch}
-                {input search_query}
+                <ul class="admin-form-errors" n:formErrors></ul>
+            {input search_query}
                 <a id="search_cancel"
                    href="{plink this FormFactory::PAGE_SHOW_SEARCH_NAME=>null}"><i
                             class="fa fa-times"></i></a>
@@ -94,10 +95,9 @@
                     </thead>
                     <tbody>
                     {foreach $pages as $id => $page}
-                        {dump $page}
                         <tr>
                             <td>{$id}</td>
-                            <td>{StringUtils::getExcerpt($page['titles'],20,"...")}</td>
+                            <td>{$page['titles']|truncate:25}</td>
                             <td>{_"admin.page.show.table.body.type.{$page['type']}"}</td>
                             <td>{foreach $page['languages'] as $lang}<a class="action page-edit"
                                                                         href="{plink edit adminModule\PagePresenter::ID_KEY=>$id,
@@ -105,7 +105,7 @@
                             adminModule\PagePresenter::TYPE_KEY=>null,
                             adminModule\PagePresenter::VISIBILITY_KEY=>null,
                             adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,
-                            FormFactory::PAGE_SHOW_SEARCH_NAME=>null}">{$lang->getCode()}</a>{/foreach}</td>
+                            FormFactory::PAGE_SHOW_SEARCH_NAME=>null}">{_$lang->getCode()}</a>{/foreach}</td>
                             <td><a class="action page-delete"
                                    href="{plink delete adminModule\PagePresenter::ID_KEY=>$id}">{_"admin.page.show.delete.label"}</a>
                             </td>
@@ -117,8 +117,9 @@
                 <script>
                     _stack.push(function () {
                         jQuery(document).ready(function ($) {
-                            $("a.page-delete.action").click(function () {
-                                window.confirm({_"admin.page.show.delete.confirm"});
+                            $("a.page-delete.action").click(function (e) {
+                                if (!window.confirm({_"admin.page.show.delete.confirm"}))
+                                    e.preventDefault();
                             })
                         })
                     })

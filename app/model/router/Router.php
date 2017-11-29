@@ -5,6 +5,7 @@ use adminModule\PagePresenter;
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 
+//TODO beautify
 class Router {
     /** @var bool */
     private $consoleMode;
@@ -30,7 +31,8 @@ class Router {
             $router[] = new Route("Console:");
             return $router;
         }*/
-        $languages = implode("|", $this->languageManager->getAvailableLanguages());
+        $availableLanguages = $this->languageManager->getAvailableLanguages();
+        $languages = implode("|", $availableLanguages);
 
         $router[] = $adminRouteList = new RouteList("admin");
         $router[] = $frontRouteList = new RouteList("front");
@@ -112,6 +114,16 @@ class Router {
         $adminRouteList[] = new Route("admin", "Default:");
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter=Default>[/<action=default default>]");
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action edit|delete>/<" . \adminModule\LanguagePresenter::ID_KEY . ">", [
+            \adminModule\LanguagePresenter::ID_KEY => [
+                Route::PATTERN => "\d+",
+            ],
+        ]);
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter settings>/<action rebuild>");
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action create>");
 
         return $router;
     }

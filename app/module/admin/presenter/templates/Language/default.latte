@@ -1,0 +1,16 @@
+{block content}
+    <a href="{plink create}">{_"admin.language.default.create.label"}</a>
+    <table>
+        {foreach $languages as $lang}
+            <tr>
+                <td>{$lang->getId()}</td>
+                <td>{if LanguageManager::isCodeGenerated($lang->getCode())}{_"admin.language.default.no_code"}{else}{$lang->getCode()}{/if}</td>
+                <td>
+                    <a
+                        href="{plink edit \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">{_"admin.language.default.edit.label"}</a>
+                </td>
+                <td>{_"admin.language.default.delete.label"}</td>
+            </tr>
+        {/foreach}
+    </table>
+{/block}

@@ -2,75 +2,53 @@
 
 
 class PageSettings {
-    /**
-     * @var Setting
-     */
     private $siteName;
-    /**
-     * @var Setting
-     */
-    private $googleAnalytics;
-    /**
-     * @var Setting
-     */
     private $titleSeparator;
-    /**
-     * @var Setting
-     */
+    private $googleAnalytics;
     private $logo;
-    /**
-     * @var Setting
-     */
-    private $logo_alt;
+
 
     /**
      * PageSettings constructor.
-     * @param Setting $siteName
-     * @param Setting $googleAnalytics
-     * @param Setting $titleSeparator
-     * @param Setting $logo
-     * @param Setting $logo_alt
+     * @param string $siteName
+     * @param string $googleAnalytics
+     * @param string $titleSeparator
+     * @param Media|null $logo
+     * @throws Exception
      */
-    public function __construct(Setting $siteName, Setting $googleAnalytics, Setting $titleSeparator, Setting $logo, Setting $logo_alt) {
+    public function __construct(string $siteName, string $googleAnalytics, string $titleSeparator, ?Media $logo) {
         $this->siteName = $siteName;
         $this->googleAnalytics = $googleAnalytics;
         $this->titleSeparator = $titleSeparator;
         $this->logo = $logo;
-        $this->logo_alt = $logo_alt;
+        if($logo instanceof Media && !$logo->isImage()) throw new Exception("Logo not image");
     }
 
     /**
-     * @return Setting
+     * @return string
      */
-    public function getSiteName(): Setting {
+    public function getSiteName(): string {
         return $this->siteName;
     }
 
     /**
-     * @return Setting
+     * @return string
      */
-    public function getGoogleAnalytics(): Setting {
-        return $this->googleAnalytics;
-    }
-
-    /**
-     * @return Setting
-     */
-    public function getTitleSeparator(): Setting {
+    public function getTitleSeparator(): string {
         return $this->titleSeparator;
     }
 
     /**
-     * @return Setting
+     * @return string
      */
-    public function getLogo(): Setting {
-        return $this->logo;
+    public function getGoogleAnalytics(): string {
+        return $this->googleAnalytics;
     }
 
     /**
-     * @return Setting
+     * @return Media|null
      */
-    public function getLogoAlt(): Setting {
-        return $this->logo_alt;
+    public function getLogo() {
+        return $this->logo;
     }
 }

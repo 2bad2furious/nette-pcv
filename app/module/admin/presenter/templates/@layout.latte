@@ -31,9 +31,8 @@
     <div n:snippet="content" class="nittro-transition-fade nittro-transition-auto">
         <h1 class="admin-title">{$title}</h1>
         {ifset $noSubtitle}{else}{if $page_subtitle}<h2 class="admin-subtitle">{$page_subtitle}</h2>{/if}{/ifset}
-        {include content}
-
         <ul n:flashes></ul>
+        {include content}
     </div>
 </main>
 {ifset $isLoggin}{else}

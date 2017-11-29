@@ -20,6 +20,14 @@ class FormFactory extends Manager {
         PAGE_EDIT_DESCRIPTION_NAME = "description",
         PAGE_EDIT_IMAGE_NAME = "image",
 
+        SETTINGS_EDIT_DEFAULT_LANGUAGE_NAME = "default_language",
+        SETTINGS_EDIT_DEFAULT_SITE_TITLE = "site_title",
+        SETTINGS_EDIT_DEFAULT_GOOGLE_ANALYTICS = "ga",
+        SETTINGS_EDIT_TITLE_SEPARATOR = "title_separator",
+        SETTINGS_EDIT_LOGO = "logo",
+
+        LANGUAGE_EDIT_CODE_NAME = "language_code",
+
         TEXTAREA_ID_FOR_EDITOR = "ckeditor";
 
     public function createPageEditForm(Page $page, callable $urlValidator) {
@@ -49,7 +57,7 @@ class FormFactory extends Manager {
         )->setDefaultValue($page->getLocalStatus());
 
         $container->addText(self::PAGE_EDIT_TITLE_NAME, "admin.page.edit.local.title.label")
-            ->setDefaultValue($page->getTitle())
+            ->setDefaultValue($page->isTitleDefault() ? "" : $page->getTitle())
             ->addRule(Form::MAX_LENGTH, "admin.page.edit.local.title.length", PageManager::LOCAL_COLUMN_TITLE_LENGTH)
             ->addRule(Form::REQUIRED, "admin.page.edit.local.title.required");
 
@@ -69,7 +77,9 @@ class FormFactory extends Manager {
             ->setDefaultValue($page->getContent())
             ->getControlPrototype()->data(self::TEXTAREA_ID_FOR_EDITOR, true);
 
-        $container->addSelect(self::PAGE_EDIT_IMAGE_NAME, "admin.page.edit.local.image.label", array_merge([0 => "admin.page.edit.local.image.no"], $this->getMediaManager()->getAvailableImages($page->getLang())));
+        $container->addSelect(self::PAGE_EDIT_IMAGE_NAME, "admin.page.edit.local.image.label", array_merge([0 => "admin.page.edit.local.image.no"], $this->getMediaManager()->getAvailableImages($page->getLang())))->setDefaultValue($page->getImageId());
+
+        //todo add tag editing - not "in form"
 
         $form->addSubmit("submit", "admin.page.edit.action.edit");
         return $form;
@@ -96,12 +106,48 @@ class FormFactory extends Manager {
         return $form;
     }
 
-    public function createAdminPageSearch(?string $query) {
+    public function createAdminPageSearch(?string $query): Form {
         $form = $this->createNewAdminForm();
         $form->setMethod("get");
-        $form->addText(self::PAGE_SHOW_SEARCH_NAME)->setRequired(true)->setDefaultValue($query);
+        $form->addText(self::PAGE_SHOW_SEARCH_NAME)->setRequired(false)->setDefaultValue($query);
         $form->addSubmit("submit");
         return $form;
     }
 
+    public function createLanguageEditForm(Language $language): Form {
+        $form = $this->createNewAdminForm();
+        if (LanguageManager::isCodeGenerated($language->getCode()))
+            $form->addText(self::LANGUAGE_EDIT_CODE_NAME)->addRule(Form::REQUIRED, "admin.language.edit.code.required")->addRule(Form::MAX_LENGTH, "admin.language.edit.code.length", 5);
+
+        //TODO add settings
+        $form->addSubmit("submit", "admin.language.edit.submit");
+        return $form;
+    }
+
+    public function createSettingsEditForm(): Form {
+        $sm = $this->getSettingsManager();
+        $lm = $this->getLanguageManager();
+        $form = $this->createNewAdminForm();
+
+        $form->addText(self::SETTINGS_EDIT_DEFAULT_SITE_TITLE, "admin.settings.edit.title.label")
+            ->setDefaultValue($sm->get(PageManager::SETTINGS_SITE_NAME)->getValue());
+
+        $form->addTextArea(self::SETTINGS_EDIT_TITLE_SEPARATOR, "admin.settings.edit.separator.label")
+            ->setDefaultValue($sm->get(PageManager::SETTINGS_TITLE_SEPARATOR)->getValue());
+
+        $form->addSelect(self::SETTINGS_EDIT_DEFAULT_LANGUAGE_NAME, "admin.settings.edit.language.label", $lm->getAvailableLanguages())
+            ->setDefaultValue($lm->getDefaultLanguage()->getId());
+
+        $images = $this->getMediaManager()->getAvailableImages();
+        $images[0] = "admin.settings.edit.image.no";
+        $logo = $form->addSelect(self::SETTINGS_EDIT_LOGO, "admin.settings.edit.logo.label", $images);
+        if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO)->getValue()))
+            $logo->setDefaultValue($logoId);
+
+        $form->addText(self::SETTINGS_EDIT_DEFAULT_GOOGLE_ANALYTICS, "admin.settings.edit.ga.label")
+            ->setDefaultValue($sm->get(PageManager::SETTINGS_GOOGLE_ANALYTICS)->getValue());
+
+        $form->addSubmit("submit", "admin.settings.edit.save");
+        return $form;
+    }
 }

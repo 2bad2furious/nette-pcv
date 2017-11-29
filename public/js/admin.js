@@ -1,4 +1,4 @@
-_stack.push(function (di) {
+_stack.push(function () {
         jQuery(document).ready(function ($) {
 
                 var HeaderOpener = $("#header-opener");

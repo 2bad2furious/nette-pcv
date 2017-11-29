@@ -20,9 +20,6 @@ class Page {
     /** @var string */
     private $url;
 
-    /** @var string */
-    private $permanentUrl;
-
     /** @var Type */
     private $type;
 
@@ -97,7 +94,6 @@ class Page {
      * @param string $title
      * @param string $description
      * @param string $url
-     * @param string $permanentUrl
      * @param int $imageId
      * @param Type $type
      * @param string $content
@@ -110,13 +106,12 @@ class Page {
      * @param int $parentId
      * @throws Exception
      */
-    public function __construct(int $global_id, int $local_id, string $title, string $description, string $url, string $permanentUrl, int $imageId, Type $type, string $content, int $authorId, DateTime $created, DateTime $edited, int $global_status, int $local_status, int $languageId, ?int $parentId) {
+    public function __construct(int $global_id, int $local_id, string $title, string $description, string $url, int $imageId, Type $type, string $content, int $authorId, DateTime $created, DateTime $edited, int $global_status, int $local_status, int $languageId, ?int $parentId) {
         $this->global_id = $global_id;
         $this->local_id = $local_id;
         $this->title = $title;
         $this->description = $description;
         $this->url = $url;
-        $this->permanentUrl = $permanentUrl;
         $this->type = $type;
         $this->content = $content;
         $this->authorId = $authorId;
@@ -166,23 +161,27 @@ class Page {
     }
 
     public function getGA(): string {
-        return $this->settings->getGoogleAnalytics()->getValue();
+        return $this->settings->getGoogleAnalytics();
     }
 
     public function getSiteName(): string {
-        return $this->settings->getSiteName()->getValue();
+        return $this->settings->getSiteName();
     }
 
     public function getWholeTitle(): string {
-        $separator = $this->settings->getTitleSeparator()->getValue();
+        $separator = $this->settings->getTitleSeparator();
 
-        return $this->getTitle() . (
+        return $this->getTitle() . " " . (
             $this->getSiteName() && $separator
                 /* <title><separator><siteName> */
-                ? $separator . $this->getSiteName()
+                ? $separator . " " . $this->getSiteName()
                 /* <title> */
-                : ""
+                : "" . $this->getSiteName()
             );
+    }
+
+    public function isTitleDefault(): bool {
+        return $this->getTitle() === PageManager::DEFAULT_TITLE;
     }
 
 
@@ -276,7 +275,8 @@ class Page {
      * @return string
      */
     public function getPermanentUrl(): string {
-        return $this->permanentUrl;
+        $permanent = PageManager::PAGE_URL_PERMANENT;
+        return "{$this->getLang()->getCode()}/{$permanent}/{$this->getGlobalId()}";
     }
 
     /**

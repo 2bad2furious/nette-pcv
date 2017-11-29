@@ -57,24 +57,35 @@ class SettingsManager extends Manager {
         return $this->get($option);
     }
 
-    public function set(string $option, string $value, ?Language $language = null) {
+    public function set(string $option, string $value, ?Language $language = null, bool $createIfNotFound = false) {
+        if (strlen($option) > self::COLUMN_OPTION_LENGTH) throw new Exception(sprintf("Option must be at most %s characters long", self::COLUMN_OPTION_LENGTH));
         if ($this->isAllowedOrThrow()) {
-            $exists = is_string($this->get($option, $language));
+            $exists = $this->get($option, $language);
+
+            $langId = $language instanceof Language ? $language->getId() : 0;
 
             $data = [
                 self::COLUMN_OPTION => $option,
                 self::COLUMN_VALUE  => $value,
+                self::COLUMN_LANG   => $langId,
             ];
 
             // if exists update
-            if ($exists) {
-                $this->getDatabase()->table(self::TABLE)->where([
-                    self::COLUMN_OPTION => $option,
-                ])->update($data);
-                // else insert
-            } else {
-                $this->getDatabase()->table(self::TABLE)->insert($data);
-            }
+            if ($exists instanceof Setting) {
+                $settingId = $exists->getId();
+                $this->getDatabase()
+                    ->table(self::TABLE)
+                    ->where([
+                        self::COLUMN_OPTION => $option,
+                        self::COLUMN_LANG   => $langId,
+                    ])->update($data);
+            } // else insert
+            else if ($createIfNotFound) $settingId = $this->getDatabase()->table(self::TABLE)->insert($data)->getPrimary();
+            else throw new Exception("Setting not found");
+
+            $this->cache->save($this->getCacheKey($option, $langId), new Setting(
+                $settingId, $langId, $option, $value
+            ));
         }
     }
 
@@ -86,12 +97,14 @@ class SettingsManager extends Manager {
     }
 
     public function getPageSettings(Language $language): PageSettings {
+        $logoId = (int)$this->getOrGlobal(PageManager::SETTINGS_LOGO, $language)->getValue();
+        $logo = $this->getMediaManager()->getById($logoId);
+        if ($logo instanceof Media && !$logo->isImage()) throw new Exception("Image not an image");
         return new PageSettings(
-            $this->getOrGlobal(PageManager::SETTINGS_SITE_NAME, $language),
-            $this->getOrGlobal(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language),
-            $this->getOrGlobal(PageManager::SETTINGS_TITLE_SEPARATOR, $language),
-            $this->getOrGlobal(PageManager::SETTINGS_LOGO, $language),
-            $this->getOrGlobal(PageManager::SETTINGS_LOGO_ALT, $language)
+            $this->getOrGlobal(PageManager::SETTINGS_SITE_NAME, $language)->getValue(),
+            $this->getOrGlobal(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language)->getValue(),
+            $this->getOrGlobal(PageManager::SETTINGS_TITLE_SEPARATOR, $language)->getValue(),
+            $logo
         );
     }
 
