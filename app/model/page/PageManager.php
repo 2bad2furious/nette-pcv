@@ -10,6 +10,7 @@ class PageManager extends Manager {
         TYPE_PAGE = 1, TYPE_POST = 0, TYPE_ALL = null,//all is just for Filtered
         TYPES = [self::TYPE_PAGE, self::TYPE_POST],
         MAIN_COLUMN_STATUS = "status", STATUS_ALL = null, STATUS_PUBLIC = 1, STATUS_DELETED = -1, STATUS_DRAFT = 0,
+        STATUSES = [self::STATUS_PUBLIC, self::STATUS_DRAFT],
         MAIN_COLUMN_PARENT_ID = "parent_id",
 
         LOCAL_TABLE = "page_local",
@@ -40,6 +41,7 @@ class PageManager extends Manager {
         ACTION_SEE_NON_PUBLIC_PAGES = "page.see_non_public_pages",
         ACTION_DRAFT = "page.draft",
         ACTION_MANAGE = "page.manage",
+        ACTION_CACHE = "page.cache",
 
         PAGE_URL_PERMANENT = "permanent",
         PAGE_URL_BLACKLIST = [self::PAGE_URL_PERMANENT],
@@ -48,7 +50,6 @@ class PageManager extends Manager {
         SETTINGS_GOOGLE_ANALYTICS = "site.ga",
         SETTINGS_TITLE_SEPARATOR = "site.title_separator",
         SETTINGS_LOGO = "site.logo",
-        SETTINGS_LOGO_ALT = "site.logo.alt",
         SETTINGS_HOMEPAGE = "site.homepage_id",
 
         MESSAGE_GLOBAL_PAGE_NOT_FOUND = "admin.page.rebuild.not_in_database",
@@ -62,7 +63,11 @@ class PageManager extends Manager {
 
     const CACHE_GLOBAL_KEY = "global",
         CACHE_LANGUAGE_KEY = "language";
+
+    const DEFAULT_TITLE = "admin.global.page.no_title";
+    const TRIGGER_LANGUAGE_ADDED = "language_added";
     /**
+     *
      * @var Cache
      */
     private $urlCache;
@@ -122,8 +127,7 @@ class PageManager extends Manager {
 
 
     public function rebuildCache() {
-        //TODO check rights
-        $this->throwIfNoRights(self::ACTION_MANAGE);
+        $this->throwIfNoRights(self::ACTION_CACHE);
         $this->urlCache->clean();
         $this->globalCache->clean();
 
@@ -189,7 +193,6 @@ class PageManager extends Manager {
         return $invalidParents;
     }
 
-
     /**
      * @param int $type (page|post)
      * @return int ID of the page added
@@ -197,8 +200,6 @@ class PageManager extends Manager {
      */
     public function addEmpty(int $type): int {
         $this->throwIfNoRights(self::ACTION_MANAGE);
-
-        //TODO find unused empty page first
 
         if (!in_array($type, self::TYPES)) throw new InvalidArgumentException("Invalid type " . implode("|", self::TYPES) . " needed, $type got.");
 
@@ -220,6 +221,7 @@ class PageManager extends Manager {
                 self::LOCAL_COLUMN_STATUS  => self::STATUS_DRAFT,
                 self::LOCAL_MAIN_COLUMN_ID => $globalId,
                 self::LOCAL_COLUMN_LANG    => $language->getId(),
+                self::LOCAL_COLUMN_TITLE   => self::DEFAULT_TITLE,
                 self::LOCAL_COLUMN_URL     => $url,
                 self::LOCAL_COLUMN_AUTHOR  => $this->getUser()->getIdentity()->getId(),
             ])->getPrimary();
@@ -255,7 +257,6 @@ class PageManager extends Manager {
             $localRow[self::LOCAL_COLUMN_TITLE],
             $localRow[self::LOCAL_COLUMN_DESCRIPTION],
             $localRow[self::LOCAL_COLUMN_URL],
-            $this->createPermanentUrl($language, $globalId),
             $imageId,
             $type,
             $localRow[self::LOCAL_COLUMN_CONTENT],
@@ -303,8 +304,11 @@ class PageManager extends Manager {
 
             $page->setPageSettings($this->getSettingsManager()->getPageSettings($page->getLang()));
 
-            if (($imageId = $page->getImageId()) !== 0)
-                $page->setImage($this->getMediaManager()->getById($imageId));
+            if (($imageId = $page->getImageId()) !== 0) {
+                $image = $this->getMediaManager()->getById($imageId);
+                if (!$image->isImage())
+                    $page->setImage($image);
+            }
 
             if (($userId = $page->getAuthorId()) !== 0)
                 $page->setAuthor($this->getUserManager()->getUserIdentityById($userId));
@@ -348,6 +352,9 @@ class PageManager extends Manager {
                 $searchWheres[] = "MATCH(" . self::LOCAL_SEARCH . ") AGAINST (?)";
                 $values[] = $item;
             }
+            if (count($searchWheres) === 1) {
+                $values = $search;
+            }
             $selection = $selection->where("(" . implode(") OR (", $searchWheres) . ")", $values);
         }
 
@@ -373,7 +380,8 @@ class PageManager extends Manager {
                 return $this->getLanguageManager()->getById($langId);
             }, explode("|", $item['langs']));
             $pages[$item[self::LOCAL_MAIN_COLUMN_ID]] = ['titles' => implode(", ", array_map(function (string $title) {
-                return ($title) ? $title : $this->getTranslator()->translate("admin.global.page.no_title");
+                return ($title !== self::DEFAULT_TITLE) ? $title : $this->getTranslator()->translate($title);
+
             }, explode(", ", $item['titles']))), 'type'           => Type::getById($item[self::MAIN_COLUMN_TYPE])->__toString(), 'languages' => $languages];
         }
         return $pages;
@@ -381,17 +389,8 @@ class PageManager extends Manager {
     }
 
 
-    /**
-     * @param Language $lang
-     * @param int $globalId
-     * @return string like '/en_US/permanent/1/'
-     */
-    private function createPermanentUrl(Language $lang, int $globalId): string {
-        $permanent = self::PAGE_URL_PERMANENT;
-        return "{$lang->getCode()}/{$permanent}/{$globalId}";
-    }
-
     public function getDefault404(): Page {
+        //TODO dont translate here?
         $translator = $this->getTranslator();
 
         $lang = $this->getLanguageManager()->getByCode($translator->getLocale());
@@ -401,7 +400,6 @@ class PageManager extends Manager {
             Page::ID_404,
             $translator->translate("page.default.404.title"),
             $translator->translate("page.default.404.description"),
-            "",
             "",
             0,
             Type::getByID(self::TYPE_PAGE),
@@ -444,8 +442,16 @@ class PageManager extends Manager {
 
         $this->throwIfNoRights(self::ACTION_MANAGE);
 
+        if (!in_array($localVisibility, self::STATUSES)) throw new Exception("Local visiblity $localVisibility is not in " . implode("|", self::STATUSES));
+
+        if (!in_array($globalVisibility, self::STATUSES)) throw new Exception("Global visiblity $globalVisibility is not in " . implode("|", self::STATUSES));
+
+        if (in_array($parentId, $this->getInvalidParents($page->getGlobalId()))) throw new Exception("Parent is invalid");
+
         $parent = $parentId === 0 ? null : $this->getFromGlobalCache($parentId, $page->getLang());
         if ($parentId !== 0 && !$parent instanceof Page) throw new InvalidStateOfDB("Parent not found");
+
+        if(!preg_match(self::LOCAL_URL_CHARSET,$url)) throw new Exception("URL not the right pattern: ".self::LOCAL_URL_CHARSET);
 
         $image = $imageId === 0 ? null : $this->getMediaManager()->getById($imageId);
         if ($imageId !== 0 && !$image instanceof Media) throw new InvalidStateOfDB("Image not found");
@@ -497,18 +503,15 @@ class PageManager extends Manager {
         $this->getHeaderManager()->trigger(HeaderManager::TRIGGER_PAGE_EDITED, $newPage);
     }
 
-    private
-    function getFromUrlCache(string $url, Language $language):?Page {
+    private function getFromUrlCache(string $url, Language $language):?Page {
         return $this->urlCache->load($this->getUrlCacheKey($url, $language->getId()));
     }
 
-    private
-    function getFromGlobalCache(int $id, Language $language):?Page {
+    private function getFromGlobalCache(int $id, Language $language):?Page {
         return $this->globalCache->load($this->getGlobalCacheKey($id, $language->getId()));
     }
 
-    private
-    function cache(Page $page) {
+    private function cache(Page $page) {
         $urlKey = $this->getUrlCacheKey($page->getUrl(), $page->getLanguageId());
         $globalKey = $this->getGlobalCacheKey($page->getGlobalId(), $page->getLanguageId());
         $this->urlCache->save($urlKey, $page, [
