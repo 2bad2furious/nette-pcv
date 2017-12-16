@@ -1,4 +1,5 @@
-* {
+/*if just * was used, you could see the title and scripts xd lmao*/
+body * {
   transition: inherit;
   box-sizing: inherit;
   text-decoration: inherit;
@@ -7,4 +8,10 @@
   &:not(p, span, a) {
     display: block;
   }
+  &:not(textarea) {
+    transition: none;
+  }
+}
+textarea.oneline{
+  resize: none;
 }

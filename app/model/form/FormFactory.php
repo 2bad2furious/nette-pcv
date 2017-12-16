@@ -1,6 +1,7 @@
 <?php
 
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\TextInput;
 
 class FormFactory extends Manager {
 
@@ -29,6 +30,11 @@ class FormFactory extends Manager {
         LANGUAGE_EDIT_CODE_NAME = "language_code",
 
         TEXTAREA_ID_FOR_EDITOR = "ckeditor";
+    const LANGUAGE_EDIT_SITE_TITLE_NAME = "site_title";
+    const LANGUAGE_EDIT_TITLE_SEPARATOR_NAME = "separator";
+    const LANGUAGE_EDIT_LOGO_NAME = "logo";
+    const LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME = "ga";
+    const ONE_LINE_TEXTAREA_CLASS = "oneline";
 
     public function createPageEditForm(Page $page, callable $urlValidator) {
 
@@ -36,7 +42,6 @@ class FormFactory extends Manager {
         /*$form->getRenderer()->wrappers["group"]["container"] = "div";
         $form->getRenderer()->wrappers["group"]["label"] = "label";*/
 
-        //TODO drafting limitations
         $container = $form->addContainer(self::PAGE_EDIT_GLOBAL_CONTAINER);
         $container->addSelect(self::PAGE_EDIT_GLOBAL_VISIBILITY_NAME, "admin.page.edit.global.visibility.label",
             [PageManager::STATUS_DRAFT => "admin.page.edit.global.visibility.draft", PageManager::STATUS_PUBLIC => "admin.page.edit.global.visibility.public"]
@@ -117,9 +122,28 @@ class FormFactory extends Manager {
     public function createLanguageEditForm(Language $language): Form {
         $form = $this->createNewAdminForm();
         if (LanguageManager::isCodeGenerated($language->getCode()))
-            $form->addText(self::LANGUAGE_EDIT_CODE_NAME)->addRule(Form::REQUIRED, "admin.language.edit.code.required")->addRule(Form::MAX_LENGTH, "admin.language.edit.code.length", 5);
+            $form->addText(self::LANGUAGE_EDIT_CODE_NAME, "admin.language.code.label")
+                ->addRule(Form::REQUIRED, "admin.language.edit.code.required")
+                ->addRule(Form::MAX_LENGTH, "admin.language.edit.code.length", 5)
+                ->addRule(Form::PATTERN,"admin.language.edit.code.pattern",LanguageManager::COLUMN_CODE_PATTERN)
+                ->addRule(function (TextInput $item) {
+                    return !$this->getLanguageManager()->getByCode($item->getValue()) instanceof Language;
+                }, $message = "admin.language.edit.code.not_available", $message);
 
-        //TODO add settings
+        $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label");
+
+        $form->addTextArea(self::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME, "admin.language.edit.separator.label")->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
+
+        $sm = $this->getSettingsManager();
+
+        $images = $this->getMediaManager()->getAvailableImages();
+        $images[0] = "admin.language.edit.logo.no";
+        $logo = $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME, "admin.language.edit.logo.label", $images);
+        if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO)->getValue()))
+            $logo->setDefaultValue($logoId);
+
+        $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label");
+
         $form->addSubmit("submit", "admin.language.edit.submit");
         return $form;
     }
@@ -133,7 +157,8 @@ class FormFactory extends Manager {
             ->setDefaultValue($sm->get(PageManager::SETTINGS_SITE_NAME)->getValue());
 
         $form->addTextArea(self::SETTINGS_EDIT_TITLE_SEPARATOR, "admin.settings.edit.separator.label")
-            ->setDefaultValue($sm->get(PageManager::SETTINGS_TITLE_SEPARATOR)->getValue());
+            ->setDefaultValue($sm->get(PageManager::SETTINGS_TITLE_SEPARATOR)->getValue())
+            ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
         $form->addSelect(self::SETTINGS_EDIT_DEFAULT_LANGUAGE_NAME, "admin.settings.edit.language.label", $lm->getAvailableLanguages())
             ->setDefaultValue($lm->getDefaultLanguage()->getId());

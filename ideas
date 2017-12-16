@@ -1,0 +1,1 @@
+should a manager trigger other managers directly or should it trigger all listeners - plugin support vs. instancing every single manager every single time

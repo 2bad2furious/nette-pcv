@@ -7,42 +7,12 @@ use Nette\DI\Container;
 use Nette\Security\User;
 
 class ServiceLoader {
-
-    /** @var  LanguageManager */
-    private $languageManager;
-
-    /** @var  PageManager */
-    private $pageManager;
-
-    /** @var  SettingsManager */
-    private $settingsManager;
-
-    /** @var  HeaderManager */
-    private $headerManager;
-
-    /** @var  Nette\Database\Context */
-    private $database;
+//TODO dont always call DIC
+    private const CLASS_NAMES = [TagManager::class, PageManager::class, LanguageManager::class, UserManager::class, SettingsManager::class, HeaderManager::class, MediaManager::class];
 
     /** @var  Container */
     private $context;
 
-    /** @var  User */
-    private $user;
-
-    /** @var  UserManager */
-    private $userManager;
-
-    /** @var  TagManager */
-    private $tagManager;
-
-    /** @var  IStorage */
-    private $storage;
-
-    /** @var  \Kdyby\Translation\Translator */
-    private $translator;
-
-    /** @var MediaManager */
-    private $mediaManager;
 
     /**
      * ServiceLoader constructor.
@@ -50,86 +20,54 @@ class ServiceLoader {
      */
     public function __construct(Container $context) {
         $this->context = $context;
-    }
 
-
-    public final function getIStorage():IStorage{
-        if (!$this->storage instanceof IStorage) {
-            $this->storage = $this->context->getByType(IStorage::class);
+        //INITING for listener-registration, TODO better - maybe do static listener registration
+        foreach (self::CLASS_NAMES as $k => $v) {
+            if (Manager::getInitingClass() !== $v)
+                $this->context->getByType($v);
         }
-        return $this->storage;
     }
 
     public final function getDatabase(): Context {
-        if (!$this->database instanceof Context) {
-            $this->database = $this->context->getByType(Context::class);
-        }
-        return $this->database;
+        return $this->context->getByType(Context::class);
     }
 
     public final function getUser(): User {
-        if (!$this->user instanceof User) {
-            $this->user = $this->context->getByType(User::class);
-        }
-        return $this->user;
+        return $this->context->getByType(User::class);
     }
 
 
     public final function getUserManager(): UserManager {
-        if (!$this->userManager instanceof UserManager) {
-            $this->userManager = $this->context->getByType(UserManager::class);
-        }
-        return $this->userManager;
+        return $this->context->getByType(UserManager::class);
     }
 
 
     public final function getLanguageManager(): LanguageManager {
-        if (!$this->languageManager instanceof LanguageManager) {
-            $this->languageManager = $this->context->getByType(LanguageManager::class);
-        }
-        return $this->languageManager;
+        return $this->context->getByType(LanguageManager::class);
     }
 
     public final function getHeaderManager(): HeaderManager {
-        if (!$this->headerManager instanceof HeaderManager) {
-            $this->headerManager = $this->context->getByType(HeaderManager::class);
-        }
-        return $this->headerManager;
+        return $this->context->getByType(HeaderManager::class);
     }
 
     public final function getTagManager(): TagManager {
-        if (!$this->tagManager instanceof TagManager) {
-            $this->tagManager = $this->context->getByType(TagManager::class);
-        }
-        return $this->tagManager;
+        return $this->context->getByType(TagManager::class);
     }
 
     public final function getPageManager(): PageManager {
-        if (!$this->pageManager instanceof PageManager) {
-            $this->pageManager = $this->context->getByType(PageManager::class);
-        }
-        return $this->pageManager;
+        return $this->context->getByType(PageManager::class);
     }
 
     public final function getSettingsManager(): SettingsManager {
-        if (!$this->settingsManager instanceof SettingsManager) {
-            $this->settingsManager = $this->context->getByType(SettingsManager::class);
-        }
-        return $this->settingsManager;
+        return $this->context->getByType(SettingsManager::class);
     }
 
     public final function getTranslator(): \Kdyby\Translation\Translator {
-        if (!$this->translator instanceof \Kdyby\Translation\Translator) {
-            $this->translator = $this->context->getByType(\Kdyby\Translation\Translator::class);
-        }
-        return $this->translator;
+        return $this->context->getByType(\Kdyby\Translation\Translator::class);
     }
 
     public final function getMediaManager(): MediaManager {
-        if (!$this->mediaManager instanceof MediaManager) {
-            $this->mediaManager = $this->context->getByType(MediaManager::class);
-        }
-        return $this->mediaManager;
+        return $this->context->getByType(MediaManager::class);
     }
 
     public final function getContext(): Container {

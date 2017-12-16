@@ -1,10 +1,16 @@
-* {
+/*if just * was used, you could see the title and scripts xd lmao*/
+body * {
   transition: inherit;
   box-sizing: inherit;
   text-decoration: inherit;
   color: inherit;
   font-family: "Open Sans", "sans-serif"; }
-  *:not(p, span, a) {
+  body *:not(p, span, a) {
     display: block; }
+  body *:not(textarea) {
+    transition: none; }
+
+textarea.oneline {
+  resize: none; }
 
 /*# sourceMappingURL=default.css.map */

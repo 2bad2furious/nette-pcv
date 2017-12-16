@@ -9,20 +9,26 @@ use Nette\Security\User;
 
 abstract class Manager {
 
-    /** @var ServiceLoader */
-    private $serviceLoader;
-
+    private static $initingClasses = null;
 
     /** @var  Container */
     private $context;
 
     /** @var callable[] */
-    private $on = [];
+    private static $on = [];
 
     public final function __construct(Container $container) {
         $this->context = $container;
-        $this->serviceLoader = $container->getByType(ServiceLoader::class);
+        $className = get_class($this);
+        if (!self::$initingClasses) {
+            self::$initingClasses = $className;
+            $this->getServiceLoader();
+        }
         $this->init();
+    }
+
+    public static function getInitingClass():?string{
+        return self::$initingClasses;
     }
 
     protected function init() {
@@ -32,59 +38,67 @@ abstract class Manager {
         return $this->context;
     }
 
-    protected function on(string $trigger, callable $callback) {
-        if (!isset($this->on[$trigger])) $this->on[$trigger] = [$callback];
-        else $this->on[$trigger][] = $callback;
+    public static function on(string $trigger, callable $callback) {
+        if (!isset(self::$on[$trigger])) self::$on[$trigger] = [$callback];
+        else self::$on[$trigger][] = $callback;
     }
 
-    public function trigger(string $trigger, $arg) {
-        if (isset($this->on[$trigger]))
-            foreach ($this->on[$trigger] as $listener) {
+    protected function trigger(string $trigger, $arg) {
+        if (isset(self::$on[$trigger]))
+            foreach (self::$on[$trigger] as $listener) {
                 call_user_func($listener, $arg);
             }
     }
 
+    protected function throwIfNoRights(string $action) {
+        if (!$this->getUser()->isAllowed($action)) throw new Exception("Not allowed.");
+    }
+
     protected final function getDefaultStorage(): IStorage {
-        return $this->serviceLoader->getIStorage();
+        return $this->context->getByType(IStorage::class);
     }
 
     protected final function getPageManager(): PageManager {
-        return $this->serviceLoader->getPageManager();
+        return $this->getServiceLoader()->getPageManager();
     }
 
     protected final function getLanguageManager(): LanguageManager {
-        return $this->serviceLoader->getLanguageManager();
+        return $this->getServiceLoader()->getLanguageManager();
     }
 
     protected final function getSettingsManager(): SettingsManager {
-        return $this->serviceLoader->getSettingsManager();
+        return $this->getServiceLoader()->getSettingsManager();
     }
 
     protected final function getUser(): User {
-        return $this->serviceLoader->getUser();
+        return $this->getServiceLoader()->getUser();
     }
 
     protected final function getTranslator(): Translator {
-        return $this->serviceLoader->getTranslator();
+        return $this->getServiceLoader()->getTranslator();
     }
 
     protected final function getTagManager(): TagManager {
-        return $this->serviceLoader->getTagManager();
+        return $this->getServiceLoader()->getTagManager();
     }
 
     protected final function getMediaManager(): MediaManager {
-        return $this->serviceLoader->getMediaManager();
+        return $this->getServiceLoader()->getMediaManager();
     }
 
     protected final function getDatabase(): Context {
-        return $this->serviceLoader->getDatabase();
+        return $this->getServiceLoader()->getDatabase();
     }
 
     protected final function getUserManager(): UserManager {
-        return $this->serviceLoader->getUserManager();
+        return $this->getServiceLoader()->getUserManager();
     }
 
     protected final function getHeaderManager(): HeaderManager {
-        return $this->serviceLoader->getHeaderManager();
+        return $this->getServiceLoader()->getHeaderManager();
+    }
+
+    private function getServiceLoader(): ServiceLoader {
+        return $this->context->getByType(ServiceLoader::class);
     }
 }

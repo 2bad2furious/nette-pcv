@@ -46,6 +46,15 @@ class PagePresenter extends BasePresenter {
         $this->template->setFile(__DIR__ . "/templates/Page/default.latte");
     }
 
+    public function renderHome(){
+        $language = $this->getLocaleLanguage();
+        $pageId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_HOMEPAGE,$language)->getValue();
+
+        $page = $this->getPageManager()->getByGlobalId($language,$pageId);
+
+        $this->prepareTemplate($page);
+    }
+
     protected
     function getAllowedRoles(): array {
         return \UserManager::ROLES;

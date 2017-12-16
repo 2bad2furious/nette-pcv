@@ -9,6 +9,7 @@ services:
     router: @routerFactory::createRouter
     authenticator: UserManager
     authorizator: UserAuthorizator
+    - ServiceLoader
     - PageManager
     - FormFactory
     - LanguageManager
@@ -16,7 +17,6 @@ services:
     - TagManager
     - HeaderManager
     - MediaManager
-    - ServiceLoader
 
 #application:
  #   mapping:

@@ -57,24 +57,14 @@ class PageManager extends Manager {
         MESSAGE_NO_LOCAL_PAGES_FOR_GLOBAL_PAGE = "admin.page.rebuild.db_error";
     const RANDOM_URL_PREFIX = "generated-url-";
 
-    const TRIGGER_LANGUAGE_DELETED = "language_deleted",
-        TRIGGER_SETTINGS_UPDATED = "settings_updated",
-        TRIGGER_USER_DELETED = "user_deleted";
-
     const CACHE_GLOBAL_KEY = "global",
         CACHE_LANGUAGE_KEY = "language";
 
     const DEFAULT_TITLE = "admin.global.page.no_title";
-    const TRIGGER_LANGUAGE_ADDED = "language_added";
-    /**
-     *
-     * @var Cache
-     */
-    private $urlCache;
-    /**
-     * @var Cache
-     */
-    private $globalCache;
+
+    const TRIGGER_PAGE_ADDED = "trigger.page.added",
+        TRIGGER_PAGE_EDITED = "trigger.page.edited",
+        TRIGGER_PAGE_DELETED = "trigger.page.deleted";
 
     public function exists(int $globalId): bool {
         $language = $this->getLanguageManager()->getDefaultLanguage();
@@ -90,12 +80,14 @@ class PageManager extends Manager {
     }
 
     public function delete(int $globalId) {
-        $this->urlCache->clean([
+        $this->throwIfNoRights(self::ACTION_MANAGE);
+
+        $this->getUrlCache()->clean([
             Cache::TAGS => [
                 $this->getGlobalTag($globalId),
             ],
         ]);
-        $this->globalCache->clean([
+        $this->getGlobalCache()->clean([
             Cache::TAGS => [
                 $this->getGlobalTag($globalId),
             ]]);
@@ -104,19 +96,15 @@ class PageManager extends Manager {
         $this->getDatabase()->table(self::MAIN_TABLE)->where([self::MAIN_COLUMN_ID => $globalId])->delete();
 
 
-        $this->getHeaderManager()->trigger(HeaderManager::TRIGGER_PAGE_DELETED, $globalId);
+        $this->trigger(self::TRIGGER_PAGE_DELETED, $globalId);
     }
 
     protected function init() {
-        $cache = new Cache($this->getDefaultStorage(), "page");
-        $this->urlCache = $cache->derive("url");
-        $this->globalCache = $cache->derive("global");
-
-        $this->on(self::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
+        LanguageManager::on(LanguageManager::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
             $this->throwIfNoRights(self::ACTION_MANAGE);
-            //TODO solve ux of deleting
-            $this->urlCache->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
-            $this->globalCache->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
+
+            $this->getUrlCache()->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
+            $this->getGlobalCache()->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
 
             $this->getDatabase()->table(self::LOCAL_TABLE)->where([
                 self::LOCAL_COLUMN_LANG => $language->getId(),
@@ -128,8 +116,8 @@ class PageManager extends Manager {
 
     public function rebuildCache() {
         $this->throwIfNoRights(self::ACTION_CACHE);
-        $this->urlCache->clean();
-        $this->globalCache->clean();
+        $this->getUrlCache()->clean();
+        $this->getGlobalCache()->clean();
 
         $this->rebuildGlobalUrlCache();
     }
@@ -227,10 +215,12 @@ class PageManager extends Manager {
             ])->getPrimary();
         }
 
-        foreach ($localIds as $localId) {
-            $this->cache($this->getByLocalId($localId));
-        }
+        $localPages = [];
 
+        foreach ($localIds as $localId) {
+            $this->cache($localPages[] = $this->getByLocalId($localId));
+        }
+        $this->trigger(self::TRIGGER_PAGE_ADDED, $localPages);
         return $globalId;
     }
 
@@ -451,7 +441,7 @@ class PageManager extends Manager {
         $parent = $parentId === 0 ? null : $this->getFromGlobalCache($parentId, $page->getLang());
         if ($parentId !== 0 && !$parent instanceof Page) throw new InvalidStateOfDB("Parent not found");
 
-        if(!preg_match(self::LOCAL_URL_CHARSET,$url)) throw new Exception("URL not the right pattern: ".self::LOCAL_URL_CHARSET);
+        if (!preg_match(self::LOCAL_URL_CHARSET, $url)) throw new Exception("URL not the right pattern: " . self::LOCAL_URL_CHARSET);
 
         $image = $imageId === 0 ? null : $this->getMediaManager()->getById($imageId);
         if ($imageId !== 0 && !$image instanceof Media) throw new InvalidStateOfDB("Image not found");
@@ -500,27 +490,27 @@ class PageManager extends Manager {
         ]);
 
         //force header and other shit to update
-        $this->getHeaderManager()->trigger(HeaderManager::TRIGGER_PAGE_EDITED, $newPage);
+        $this->trigger(self::TRIGGER_PAGE_EDITED, $page);
     }
 
     private function getFromUrlCache(string $url, Language $language):?Page {
-        return $this->urlCache->load($this->getUrlCacheKey($url, $language->getId()));
+        return $this->getUrlCache()->load($this->getUrlCacheKey($url, $language->getId()));
     }
 
     private function getFromGlobalCache(int $id, Language $language):?Page {
-        return $this->globalCache->load($this->getGlobalCacheKey($id, $language->getId()));
+        return $this->getGlobalCache()->load($this->getGlobalCacheKey($id, $language->getId()));
     }
 
     private function cache(Page $page) {
         $urlKey = $this->getUrlCacheKey($page->getUrl(), $page->getLanguageId());
         $globalKey = $this->getGlobalCacheKey($page->getGlobalId(), $page->getLanguageId());
-        $this->urlCache->save($urlKey, $page, [
+        $this->getUrlCache()->save($urlKey, $page, [
             Cache::TAGS => [
                 $this->getGlobalTag($page->getGlobalId()),
                 $this->getLanguageTag($page->getLanguageId()),
             ],
         ]);
-        $this->globalCache->save($globalKey, $page, [
+        $this->getGlobalCache()->save($globalKey, $page, [
             Cache::TAGS => [
                 $this->getGlobalTag($page->getGlobalId()),
                 $this->getLanguageTag($page->getLanguageId()),
@@ -536,7 +526,18 @@ class PageManager extends Manager {
         return $this->getFreeUrl($language);
     }
 
-    private function throwIfNoRights(string $action) {
-        if (!$this->getUser()->isAllowed($action)) throw new Exception("Not allowed.");
+    private function getUrlCache(): Cache {
+        static $urlCache = null;
+        return $urlCache instanceof Cache ? $urlCache : $urlCache = $this->getCache()->derive("url");
+    }
+
+    private function getGlobalCache(): Cache {
+        static $globalCache = null;
+        return $globalCache instanceof Cache ? $globalCache : $globalCache = $this->getCache()->derive("global");
+    }
+
+    private function getCache(): Cache {
+        static $cache = null;
+        return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "page");
     }
 }

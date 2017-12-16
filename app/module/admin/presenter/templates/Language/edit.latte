@@ -1,3 +1,33 @@
 {block content}
     {control languageEditForm}
+    <a id="language-delete"
+       href="{plink Language:delete \adminModule\LanguagePresenter::ID_KEY=>$id}">{_"admin.language.edit.action.delete.label"}</a>
+    <script>
+        _stack.push(function (di) {
+            jQuery(document).ready(function ($) {
+                $("a#language-delete").click(function (e) {
+                    if (!confirm({_"admin.language.edit.action.delete.confirm"}))
+                        e.preventDefault();
+                })
+
+                if ($("*[name={\FormFactory::LANGUAGE_EDIT_CODE_NAME|noescape}]").length)
+                    window.Nette.validators.{\FormFactory::LANGUAGE_EDIT_CODE_NAME|noescape}_rule4 = function (elem, args, val) {
+                        $.ajax({
+                            url: {plink Availability: \adminModule\AvailabilityPresenter::KEY=>\adminModule\AvailabilityPresenter::LANGUAGE_CODE_KEY},
+                            data: {l}{\adminModule\AvailabilityPresenter::VALUE}:val{r},
+                        success: function (r) {
+                            if (r === false) {
+                                di.getService('formLocator').getForm('frm-languageEditForm').trigger('error', {
+                                    element: elem,
+                                    message: args
+                                });
+                            }
+                        }
+                    })
+
+                        return true;
+                    }
+            })
+        })
+    </script>
 {/block}

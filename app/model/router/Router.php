@@ -42,6 +42,8 @@ class Router {
         ]);
         $frontRouteList[] = new Route("test", "Test:default");
 
+        $frontRouteList[] = new Route("<locale {$languages}>/","Page:Home");
+
         $frontRouteList[] = new Route("<locale {$languages}>/" . PageManager::PAGE_URL_PERMANENT . "/<" . \frontModule\PagePresenter::PARAM_ID . " [0-9]+>", "Page:Permanent");
         $frontRouteList[] = new Route("<locale {$languages}>/[<" . \frontModule\PagePresenter::PARAM_URL . " " . PageManager::LOCAL_URL_CHARSET . ">]", "Page:default");
 

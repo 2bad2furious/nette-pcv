@@ -1,12 +1,7 @@
 <?php
 
-
-use Nette\Caching\IStorage;
-use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
-use Nette\Security\User;
 
-//TODO onCreatePage create new page or use empty one
 class SettingsManager extends Manager {
 
     const
@@ -17,19 +12,7 @@ class SettingsManager extends Manager {
         COLUMN_LANG = "lang_id",
 
         ACTION_MANAGE_SETTINGS = "settings.manage";
-
-    /**
-     * @var \Nette\Caching\Cache
-     */
-    private $cache;
-
-    protected function init() {
-        /** @var IStorage $storage */
-        $storage = $this->getContext()->getByType(IStorage::class);
-        $this->cache = new Cache($storage, "settings");
-        parent::init();
-    }
-
+    
 
     public function get(string $option, ?Language $language = null):?Setting {
 
@@ -38,23 +21,13 @@ class SettingsManager extends Manager {
         $cacheKey = $this->getCacheKey($option, $langId);
 
         /** @var Setting $setting */
-        $setting = $this->cache->load($cacheKey);
+        $setting = $this->getCache()->load($cacheKey);
 
         if ($setting instanceof Setting && $setting->getLanguageId() !== 0) {
             $setting->setLanguage($this->getLanguageManager()->getById($langId));
         }
 
         return $setting;
-    }
-
-    public function getOrGlobal(string $option, Language $language): Setting {
-        $local = $this->get($option, $language);
-
-        /* if found */
-        if ($local instanceof Setting)
-            return $local;
-
-        return $this->get($option);
     }
 
     public function set(string $option, string $value, ?Language $language = null, bool $createIfNotFound = false) {
@@ -83,7 +56,7 @@ class SettingsManager extends Manager {
             else if ($createIfNotFound) $settingId = $this->getDatabase()->table(self::TABLE)->insert($data)->getPrimary();
             else throw new Exception("Setting not found");
 
-            $this->cache->save($this->getCacheKey($option, $langId), new Setting(
+            $this->getCache()->save($this->getCacheKey($option, $langId), new Setting(
                 $settingId, $langId, $option, $value
             ));
         }
@@ -96,21 +69,27 @@ class SettingsManager extends Manager {
         return true;
     }
 
+    private function getLogo(Language $language):?Media {
+        $setting = $this->get(PageManager::SETTINGS_LOGO, $language);
+
+        if ((int)$setting->getValue() === 0) $setting = $this->get(PageManager::SETTINGS_LOGO);
+
+        $logoId = (int)$setting->getValue();
+        return $this->getMediaManager()->getById($logoId);
+    }
+
     public function getPageSettings(Language $language): PageSettings {
-        $logoId = (int)$this->getOrGlobal(PageManager::SETTINGS_LOGO, $language)->getValue();
-        $logo = $this->getMediaManager()->getById($logoId);
-        if ($logo instanceof Media && !$logo->isImage()) throw new Exception("Image not an image");
         return new PageSettings(
-            $this->getOrGlobal(PageManager::SETTINGS_SITE_NAME, $language)->getValue(),
-            $this->getOrGlobal(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language)->getValue(),
-            $this->getOrGlobal(PageManager::SETTINGS_TITLE_SEPARATOR, $language)->getValue(),
-            $logo
+            $this->getSiteName($language),
+            $this->getGoogleAnalytics($language),
+            $this->getTitleSeparator($language),
+            $this->getLogo($language)
         );
     }
 
     public function rebuildCache() {
         /** @var ActiveRow $setting */
-        $this->cache->clean();
+        $this->getCache()->clean();
         foreach ($this->getDatabase()->table(self::TABLE)->fetchAll() as $settingRow) {
             $setting = new Setting(
                 $settingRow[self::COLUMN_ID],
@@ -118,7 +97,7 @@ class SettingsManager extends Manager {
                 $settingRow[self::COLUMN_OPTION],
                 $settingRow[self::COLUMN_VALUE]
             );
-            $this->cache->save($this->getCacheKey($setting->getOption(), $settingRow[self::COLUMN_LANG]), $setting);
+            $this->getCache()->save($this->getCacheKey($setting->getOption(), $settingRow[self::COLUMN_LANG]), $setting);
         }
     }
 
@@ -126,4 +105,32 @@ class SettingsManager extends Manager {
         return $option . "_" . $langId;
     }
 
+    public function getSiteName(Language $language): string {
+        return $this->getLocalOrGlobal(PageManager::SETTINGS_SITE_NAME, $language)->getValue();
+    }
+
+    private function getGoogleAnalytics(Language $language): string {
+        return $this->getLocalOrGlobal(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language)->getValue();
+    }
+
+    private function getTitleSeparator(Language $language): string {
+        return $this->getLocalOrGlobal(PageManager::SETTINGS_TITLE_SEPARATOR, $language)->getValue();
+    }
+
+    /**
+     * Gets local or global setting, works only for string values
+     * @param string $option
+     * @param Language $language
+     * @return Setting
+     */
+    private function getLocalOrGlobal(string $option, Language $language): Setting {
+        $setting = $this->get($option, $language);
+        if (!$setting->getValue()) $setting = $this->get($option);
+        return $setting;
+    }
+
+    private function getCache(): Cache {
+        static $cache = null;
+        return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "settings");
+    }
 }

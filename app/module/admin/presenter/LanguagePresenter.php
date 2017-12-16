@@ -4,6 +4,9 @@
 namespace adminModule;
 
 
+use Nette\Application\UI\Form;
+use Nette\Utils\ArrayHash;
+
 class LanguagePresenter extends AdminPresenter {
 
     const ID_KEY = "id";
@@ -30,10 +33,11 @@ class LanguagePresenter extends AdminPresenter {
 
     public function actionEdit() {
         $language = $this->getLanguageManager()->getById($this->getParameter(self::ID_KEY));
-        if (!\LanguageManager::isCodeGenerated($language->getCode())) {
-            $this->addWarning("admin.language.edit.code_not_generated");
-            $this->redirect(302, "default");
+        if(!$language instanceof \Language){
+            $this->addWarning("admin.language.edit.not_exist");
+            $this->redirect(302,"Language:default",[self::ID_KEY=>null]);
         }
+        $this->template->id = $language->getId();
     }
 
     public function actionCreate() {
@@ -44,6 +48,9 @@ class LanguagePresenter extends AdminPresenter {
     public function createComponentLanguageEditForm() {
         $language = $this->getLanguageManager()->getById($this->getParameter(self::ID_KEY));
         $form = $this->getFormFactory()->createLanguageEditForm($language);
+        $form->onSuccess[] = function (Form $form, ArrayHash $values) {
+            diedump(func_get_args());
+        };
         return $form;
     }
 }

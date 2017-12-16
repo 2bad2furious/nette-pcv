@@ -11,38 +11,16 @@ use Nittro\Bridges\NittroUI\Presenter;
 abstract class BasePresenter extends Presenter {
     const SOMETHING_WENT_WRONG = "messages.message.something_went_wrong";
 
-    /** @var  LanguageManager */
-    private $languageManager;
-
-    /** @var  PageManager */
-    private $pageManager;
-
-    /** @var  SettingsManager */
-    private $settingsManager;
-
-    /** @var  HeaderManager */
-    private $headerManager;
-
-    /** @var  UserManager */
-    private $userManager;
-
-    /** @var  TagManager */
-    private $tagManager;
-
-    /** @var MediaManager */
-    private $mediaManager;
-
     /** @var Language|null */
     private $localeLang;
-
-    /** @var FormFactory */
-    private $formFactory;
 
     /** @persistent */
     public $locale;
 
     /** @var \Kdyby\Translation\Translator @inject */
     public $translator;
+    /** @var  ServiceLoader */
+    private $serviceLoader;
 
     public function checkRequirements($element) {
         $this->checkCurrentIdentity();
@@ -103,9 +81,11 @@ abstract class BasePresenter extends Presenter {
         };
     }
 
-    protected function getLocaleLanguage(): ?Language {
+    protected function getLocaleLanguage(): Language {
         if (!$this->localeLang instanceof Language)
             $this->localeLang = $this->getLanguageManager()->getByCode($this->translator->getLocale());
+        if (!$this->localeLang instanceof Language)
+            $this->localeLang = $this->getLanguageManager()->getDefaultLanguage();
         return $this->localeLang;
     }
 
@@ -129,8 +109,8 @@ abstract class BasePresenter extends Presenter {
         $this->addError(self::SOMETHING_WENT_WRONG);
     }
 
-    protected function addSuccess(string $message){
-        $this->flashMessage($message,'success');
+    protected function addSuccess(string $message) {
+        $this->flashMessage($message, 'success');
     }
 
     protected function addError(string $message) {
@@ -141,62 +121,44 @@ abstract class BasePresenter extends Presenter {
         $this->flashMessage($message, 'warning');
     }
 
+    protected final function getServiceLoader(): ServiceLoader {
+        if(!$this->serviceLoader instanceof ServiceLoader)
+            $this->serviceLoader =  $this->context->getByType(ServiceLoader::class);
+        return $this->serviceLoader;
+    }
+
     protected final function getUserManager(): UserManager {
-        if (!$this->userManager instanceof UserManager) {
-            $this->userManager = $this->context->getByType(UserManager::class);
-        }
-        return $this->userManager;
+        return $this->getServiceLoader()->getUserManager();
     }
 
 
     protected final function getLanguageManager(): LanguageManager {
-        if (!$this->languageManager instanceof LanguageManager) {
-            $this->languageManager = $this->context->getByType(LanguageManager::class);
-        }
-        return $this->languageManager;
+        return $this->getServiceLoader()->getLanguageManager();
     }
 
     protected final function getHeaderManager(): HeaderManager {
-        if (!$this->headerManager instanceof HeaderManager) {
-            $this->headerManager = $this->context->getByType(HeaderManager::class);
-        }
-        return $this->headerManager;
+        return $this->getServiceLoader()->getHeaderManager();
     }
 
     protected final function getTagManager(): TagManager {
-        if (!$this->tagManager instanceof TagManager) {
-            $this->tagManager = $this->context->getByType(TagManager::class);
-        }
-        return $this->tagManager;
+        return $this->getServiceLoader()->getTagManager();
     }
 
     protected final function getPageManager(): PageManager {
-        if (!$this->pageManager instanceof PageManager) {
-            $this->pageManager = $this->context->getByType(PageManager::class);
-        }
-        return $this->pageManager;
+        return $this->getServiceLoader()->getPageManager();
     }
 
     protected final function getSettingsManager(): SettingsManager {
-        if (!$this->settingsManager instanceof SettingsManager) {
-            $this->settingsManager = $this->context->getByType(SettingsManager::class);
-        }
-        return $this->settingsManager;
+        return $this->getServiceLoader()->getSettingsManager();
     }
 
 
     protected final function getMediaManager(): MediaManager {
-        if (!$this->mediaManager instanceof MediaManager) {
-            $this->mediaManager = $this->context->getByType(MediaManager::class);
-        }
-        return $this->mediaManager;
+        return $this->getServiceLoader()->getMediaManager();
     }
 
     protected final function getFormFactory(): FormFactory {
-        if (!$this->formFactory instanceof FormFactory) {
-            $this->formFactory = $this->context->getByType(FormFactory::class);
-        }
-        return $this->formFactory;
+        return $this->context->getByType(FormFactory::class);
     }
 
 

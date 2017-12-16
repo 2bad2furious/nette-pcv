@@ -33,13 +33,12 @@ abstract class AdminPresenter extends BasePresenter {
         $translator = $this->translator;
         $language = $this->getLocaleLanguage();
         $this->template->locale = $language->getCode();
-        $pageSettings = $this->getSettingsManager()->getPageSettings($language);
+
         $this->template->page_subtitle = $translator->translate($this->setPageSubtitle());
         $title = $translator->translate($this->setPageTitle());
-        $this->template->page_title = $title . " - " . $translator->translate("admin.global.title") . " | " . $pageSettings->getSiteName();
+        $this->template->page_title = $title . " - " . $translator->translate("admin.global.title") . " | " . $this->getSettingsManager()->getSiteName($language);
         $this->template->title = $title;
         $this->payload->title = $this->template->page_title;
-        $this->template->logo = $pageSettings->getLogo();
 
         parent::beforeRender();
     }

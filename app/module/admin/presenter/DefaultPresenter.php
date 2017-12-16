@@ -11,11 +11,7 @@ class DefaultPresenter extends BasePresenter {
         /** @var \UserIdentity|null $identity */
         $identity = $this->getUser()->getIdentity();
 
-        $lang = $this->getLocaleLanguage() instanceof \Language ? $this->getLocaleLanguage()->getCode() : (
-        $identity instanceof \UserIdentity ?
-            $identity->getCurrentLanguage()->getCode() :
-            $this->getLanguageManager()->getDefaultLanguage()->getCode()
-        );
+        $lang = $this->getLocaleLanguage()->getCode();
 
         if ($this->getUser()->isLoggedIn()) {
             $this->redirect(302, "Home:Default", ["locale" => $lang]);

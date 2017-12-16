@@ -4,6 +4,13 @@ div.ck-editor__editable {
   background-color: white;
 }
 
+textarea, input, select {
+  padding: 5px;
+  border-radius: 1px;
+  border: none;
+  font-size: 1em;
+}
+
 ul {
   list-style-type: none;
   padding: 0;
@@ -28,10 +35,12 @@ ul {
 }
 
 html {
-  transition: 0.3s all linear;
-  box-sizing: border-box;
 
   body {
+    /* inheritance */
+    transition: 0.3s all linear;
+    box-sizing: border-box;
+
     background-color: #ddd;
     padding: 0;
     margin: 0;
@@ -64,7 +73,7 @@ html {
     }
     main {
       width: 100%;
-      padding: 10px 10px 10px 210px; /* 200 + normal padding */
+      padding: 10px 10px 10px 250px; /* 200 + normal padding */
       overflow-x: hidden;
 
       a.create_new {
