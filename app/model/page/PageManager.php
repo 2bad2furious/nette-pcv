@@ -326,6 +326,7 @@ class PageManager extends Manager {
      * @throws InvalidStateOfDB
      */
     public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search) {
+        //TODO get localIds and return array of pages instead of this ugly-ass title and lang_id stuff
         $selection = $this->getDatabase()->table(self::LOCAL_TABLE)->select(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->group(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->select("GROUP_CONCAT(" . self::LOCAL_COLUMN_LANG . " SEPARATOR '|') langs")->select("GROUP_CONCAT(" . self::LOCAL_COLUMN_TITLE . " SEPARATOR ', ') titles")->select(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE)->order(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID);
 
         if (is_int($type)) $selection = $selection->where(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE, $type);
@@ -441,7 +442,9 @@ class PageManager extends Manager {
         $parent = $parentId === 0 ? null : $this->getFromGlobalCache($parentId, $page->getLang());
         if ($parentId !== 0 && !$parent instanceof Page) throw new InvalidStateOfDB("Parent not found");
 
-        if (!preg_match(self::LOCAL_URL_CHARSET, $url)) throw new Exception("URL not the right pattern: " . self::LOCAL_URL_CHARSET);
+        dump($url, "#" . self::LOCAL_URL_CHARSET_FOR_ADMIN . "#");
+        dump(preg_match("#" . self::LOCAL_URL_CHARSET_FOR_ADMIN . "#", $url));
+        if (!preg_match("#" . self::LOCAL_URL_CHARSET_FOR_ADMIN . "#", $url)) throw new Exception("URL not the right pattern: " . self::LOCAL_URL_CHARSET);
 
         $image = $imageId === 0 ? null : $this->getMediaManager()->getById($imageId);
         if ($imageId !== 0 && !$image instanceof Media) throw new InvalidStateOfDB("Image not found");

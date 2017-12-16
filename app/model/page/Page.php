@@ -44,7 +44,7 @@ class Page {
     /**
      * @var Tag[]
      */
-    private $tags;
+    private $tags = [];
     /**
      * @var int|Page
      */
@@ -327,6 +327,12 @@ class Page {
      */
     public function getTags(): array {
         return $this->tags;
+    }
+
+    public function getTagValues(): string {
+        return implode(", ", array_map(function (Tag $tag) {
+            return $tag->getName();
+        }, $this->getTags()));
     }
 
     /**

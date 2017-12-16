@@ -27,7 +27,7 @@
         <meta property="article:published_time" content="{$page->getCreated()}"/>
         <meta property="article:modified_time" content="{$page->getEdited()}"/>
         <meta property="article:tag" content="{$page->getTagValues()}"/>
-        <meta property="article:section" content="{$page->getSection()}"/>
+        <meta property="article:section" content="{_"page_no_section"}"/>
     {/if}
     <link rel="canonical" href="{$baseUrl}/{$page->getPermanentUrl()}"/>
 

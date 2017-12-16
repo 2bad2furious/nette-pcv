@@ -188,7 +188,7 @@ class PagePresenter extends AdminPresenter {
             try {
                 $this->getPageManager()->update(
                     $page,
-                    $values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_PARENT_NAME],
+                    (int)@$values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_PARENT_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_TITLE_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_DESCRIPTION_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_URL_NAME],
