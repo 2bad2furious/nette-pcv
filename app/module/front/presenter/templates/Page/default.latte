@@ -64,6 +64,7 @@
 {control header $page}
 <main>
     {snippet content}
+        {dump $page->isArticle()}
         {if $page->isArticle()}
             {control articlePage $page}
         {elseif $page->isPage()}
