@@ -51,7 +51,7 @@ abstract class Manager {
     }
 
     protected function throwIfNoRights(string $action) {
-        if (!$this->getUser()->isAllowed($action)) throw new Exception("Not allowed.");
+        if (!$this->getUser()->isAllowed($action) && !defined("FULL_RIGHTS")) throw new Exception("Not allowed.");
     }
 
     protected final function getDefaultStorage(): IStorage {

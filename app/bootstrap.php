@@ -30,18 +30,30 @@ $configurator->addConfig(__DIR__ . "/../config/config.product.neon");
 
 $container = $configurator->createContainer();
 
-
 //Dont do this until you can rollback cache as well
 /** @var \Nette\Database\Context $connection */
-//$connection = $container->getByType(\Nette\Database\Context::class);
-//$connection->beginTransaction();
+$connection = $container->getByType(\Nette\Database\Context::class);
+$connection->beginTransaction();
 
 try {
     /** @var \Nette\Application\Application $app */
     $app = $container->getByType(Nette\Application\Application::class);
     $app->run();
-    //$connection->commit();
-} catch (Exception $ex) {
-    //$connection->rollBack();
+    $connection->commit();
+} catch (Throwable $ex) {
+    define("FULL_RIGHTS", true);
+    $connection->rollBack();
+    dump("shitty solution", $ex);
+    //shitty solution incoming
+    $rebuildableManagers = [];
+    $rebuildableManagers[] = $container->getByType(SettingsManager::class);
+    $rebuildableManagers[] = $container->getByType(LanguageManager::class);
+    $rebuildableManagers[] = $container->getByType(PageManager::class);
+    $rebuildableManagers[] = $container->getByType(HeaderManager::class);
+    $rebuildableManagers[] = $container->getByType(UserManager::class);
+    foreach ($rebuildableManagers as $rebuildableManager) {
+        $rebuildableManager->rebuildCache();
+    }
+    //shitty solution ended xd
     throw $ex;
 }
