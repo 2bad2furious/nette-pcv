@@ -50,13 +50,8 @@ trait ManagerUtils {
             }
     }
 
-<<<<<<< HEAD:app/model/ManagerUtils.php
     private function throwIfNoRights(string $action) {
         if (!$this->getUser()->isAllowed($action) && !defined("FULL_RIGHTS")) throw new Exception("Not allowed.");
-=======
-    protected function throwIfNoRights(string $action) {
-        if (!$this->getUser()->isAllowed($action)) throw new Exception("Not allowed.");
->>>>>>> parent of 4adfc0c... temporary? transaction cache solution:app/model/Manager.php
     }
 
     private final function getDefaultStorage(): IStorage {

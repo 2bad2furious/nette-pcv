@@ -147,18 +147,8 @@ class LanguageManager {
 
             $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
     }
 
-
-    protected function throwIfNoRights(string $action) {
-        if (!$this->getUser()->isAllowed($action)) throw new Exception("Not allowed");
-=======
->>>>>>> parent of e132ef1... Implementing form for language ediding
-=======
->>>>>>> parent of e132ef1... Implementing form for language ediding
-    }
 
     private function cache(Language $language) {
         $this->getIdCache()->save($language->getId(), $language);
