@@ -6,8 +6,8 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Security\Passwords;
 use Nette\Security\User;
 
-class UserManager extends Manager implements \Nette\Security\IAuthenticator {
-
+class UserManager implements \Nette\Security\IAuthenticator {
+use ManagerUtils;
     const
         TABLE = "user",
         COLUMN_ID = "user_id",

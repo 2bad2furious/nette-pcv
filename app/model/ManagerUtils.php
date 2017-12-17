@@ -7,7 +7,7 @@ use Nette\Database\Context;
 use Nette\DI\Container;
 use Nette\Security\User;
 
-abstract class Manager {
+trait ManagerUtils {
 
     private static $initingClasses = null;
 
@@ -31,8 +31,7 @@ abstract class Manager {
         return self::$initingClasses;
     }
 
-    protected function init() {
-    }
+    protected abstract function init();
 
     protected final function getContext(): Container {
         return $this->context;
@@ -78,7 +77,7 @@ abstract class Manager {
         return $this->getServiceLoader()->getTranslator();
     }
 
-    protected final function getTagManager(): TagManager {
+    protected final function getTagManager(): TagManagerUtils {
         return $this->getServiceLoader()->getTagManager();
     }
 

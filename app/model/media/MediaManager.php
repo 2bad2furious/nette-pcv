@@ -3,7 +3,8 @@
 
 use Nette\Database\Table\ActiveRow;
 
-class MediaManager extends Manager {
+class MediaManager{
+    use ManagerUtils;
 
     const TABLE = "media",
         COLUMN_ID = "media_id",

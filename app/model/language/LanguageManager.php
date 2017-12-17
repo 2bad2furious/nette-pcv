@@ -2,8 +2,8 @@
 
 use Nette\Database\Table\ActiveRow;
 
-class LanguageManager extends Manager {
-
+class LanguageManager {
+    use ManagerUtils;
     const TABLE = "language",
         COLUMN_ID = "language_id",
         COLUMN_CODE = "code", COLUMN_CODE_LENGTH = 5, COLUMN_CODE_PATTERN = "[a-z]{2}_[A-Z]{2}|[a-z]{2}",
@@ -176,5 +176,9 @@ class LanguageManager extends Manager {
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "language");
+    }
+
+    protected function init() {
+        // TODO: Implement init() method.
     }
 }

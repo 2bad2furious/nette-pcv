@@ -4,6 +4,7 @@ use Nette\Security\User;
 use Nette\Utils\DateTime;
 
 class TokenManager {
+    use ManagerUtils;
 
     const TOKEN_TABLE = "token",
         COLUMN_TOKEN = "token",
@@ -57,10 +58,10 @@ class TokenManager {
         if (!is_null($expireTime))
             $expireTime = DateTime::from($expireTime);
         $this->database->table(self::TOKEN_TABLE)->insert([
-            self::COLUMN_TOKEN  => $token,
+            self::COLUMN_TOKEN     => $token,
             UserManager::COLUMN_ID => $user_id,
-            self::COLUMN_ACTION         => $action,
-            self::COLUMN_EXPIRE         => $expireTime,
+            self::COLUMN_ACTION    => $action,
+            self::COLUMN_EXPIRE    => $expireTime,
         ]);
         return $token;
     }
@@ -121,5 +122,9 @@ class TokenManager {
     public function injectUser(User $user) {
         if($this->user instanceof User) throw new Exception("User already set");
         $this->user = $user;
+    }
+
+    protected function init() {
+        // TODO: Implement init() method.
     }
 }

@@ -4,7 +4,8 @@
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 
-class TagManager extends Manager {
+class TagManager{
+    use ManagerUtils;
 
     const MAIN_TABLE = "tag",
         MAIN_COLUMN_ID = "tag_id",
@@ -61,4 +62,7 @@ class TagManager extends Manager {
         );
     }
 
+    protected function init() {
+        // TODO: Implement init() method.
+    }
 }

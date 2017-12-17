@@ -3,7 +3,8 @@
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\TextInput;
 
-class FormFactory extends Manager {
+class FormFactory {
+    use ManagerUtils;
 
     const LOGIN_IDENTIFICATION_NAME = "login_identification",
         LOGIN_PASSWORD_NAME = "login_password",
@@ -189,5 +190,9 @@ class FormFactory extends Manager {
 
         $form->addSubmit("submit", "admin.settings.edit.save");
         return $form;
+    }
+
+    protected function init() {
+        // TODO: Implement init() method.
     }
 }

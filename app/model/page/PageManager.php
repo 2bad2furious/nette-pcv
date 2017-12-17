@@ -3,7 +3,9 @@
 use Nette\Database\Table\ActiveRow;
 
 //TODO rewrite for performace gain
-class PageManager extends Manager {
+class PageManager {
+    use ManagerUtils;
+
     const MAIN_TABLE = "page",
         MAIN_COLUMN_ID = "page_id",
         MAIN_COLUMN_TYPE = "type", /** int 1 if page 0 if post more at @var Type */
@@ -133,7 +135,6 @@ class PageManager extends Manager {
                 self::LOCAL_COLUMN_LANG => $language->getId(),
             ])->delete();
         });
-        parent::init();
     }
 
 
