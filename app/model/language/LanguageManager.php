@@ -104,7 +104,6 @@ class LanguageManager {
         $sm->set(PageManager::SETTINGS_LOGO, 0, true);
         $sm->set(PageManager::SETTINGS_HOMEPAGE, 0, true);
 
-        $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
         return $language;
     }
 
@@ -129,7 +128,7 @@ class LanguageManager {
         return $unique;
     }
 
-    public function edit(Language $language, string $code, string $ga, string $title, string $separator, int $logoId, int $pageId) {
+    public function edit(Language $language, string $code, string $ga, string $title, string $separator, int $logoId) {
         if ($language->getCode() !== $code) {
             if (!self::isCodeGenerated($language->getCode())) throw new Exception("Cannot edit non-generated language codes");
 
@@ -142,11 +141,13 @@ class LanguageManager {
                 ->update([
                     self::COLUMN_CODE => $code,
                 ]);
-        }/*
-        $sm = $this->getSettingsManager();
-        $sm->set(PageManager::SETTINGS_HOMEPAGE)*/
 
-        $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
+            $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
+        } else {
+            //TODO ADD settings editing
+
+            $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
+        }
     }
 
     private function cache(Language $language) {

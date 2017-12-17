@@ -36,7 +36,6 @@ class FormFactory {
     const LANGUAGE_EDIT_LOGO_NAME = "logo";
     const LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME = "ga";
     const ONE_LINE_TEXTAREA_CLASS = "oneline";
-    const LANGUAGE_EDIT_HOMEPAGE = "homepage_id";
 
     public function createPageEditForm(Page $page, callable $urlValidator) {
 
@@ -123,42 +122,28 @@ class FormFactory {
 
     public function createLanguageEditForm(Language $language): Form {
         $form = $this->createNewAdminForm();
-        $pageSettings = $this->getSettingsManager()->getPageSettings($language);
         if (LanguageManager::isCodeGenerated($language->getCode()))
             $form->addText(self::LANGUAGE_EDIT_CODE_NAME, "admin.language.code.label")
                 ->addRule(Form::REQUIRED, "admin.language.edit.code.required")
                 ->addRule(Form::MAX_LENGTH, "admin.language.edit.code.length", 5)
-                ->addRule(Form::PATTERN, "admin.language.edit.code.pattern", LanguageManager::COLUMN_CODE_PATTERN)
+                ->addRule(Form::PATTERN,"admin.language.edit.code.pattern",LanguageManager::COLUMN_CODE_PATTERN)
                 ->addRule(function (TextInput $item) {
                     return !$this->getLanguageManager()->getByCode($item->getValue()) instanceof Language;
                 }, $message = "admin.language.edit.code.not_available", $message);
 
-        $pm = $this->getPageManager();
-        $availablePages = $pm->getAllPages($language, false);
-        $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", $availablePages);
+        $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label");
 
-        $currentHomePage = $pm->getHomePage($language, false);
-        if ($currentHomePage) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
-        //if has homepage set default value
-
-
-        $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label")
-            ->setDefaultValue($pageSettings->getSiteName());
-
-        $form->addTextArea(self::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME, "admin.language.edit.separator.label")
-            ->setDefaultValue($pageSettings->getTitleSeparator())
-            ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
+        $form->addTextArea(self::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME, "admin.language.edit.separator.label")->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
         $sm = $this->getSettingsManager();
 
         $images = $this->getMediaManager()->getAvailableImages();
         $images[0] = "admin.language.edit.logo.no";
-        $logo = $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME, "admin.language.edit.logo.label", $images)->setDefaultValue(($logo = $pageSettings->getLogo()) instanceof Media ? $logo->getId() : 0);
+        $logo = $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME, "admin.language.edit.logo.label", $images);
         if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO)->getValue()))
             $logo->setDefaultValue($logoId);
 
-        $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label")
-            ->setDefaultValue($pageSettings->getGoogleAnalytics());
+        $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label");
 
         $form->addSubmit("submit", "admin.language.edit.submit");
         return $form;
