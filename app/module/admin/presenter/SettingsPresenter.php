@@ -40,9 +40,6 @@ class SettingsPresenter extends AdminPresenter {
             $sm->rebuildCache();
             $hm = $this->getHeaderManager();
             $hm->rebuildCache();
-            $um = $this->getUserManager();
-            $um->rebuildCache();
-            //TODO rebuild media and tag cache
 
             $this->addSuccess("admin.settings.rebuild.success");
         } catch (Exception $exception) {

@@ -9,7 +9,7 @@ use Nette\Http\Url;
 use Nittro\Bridges\NittroUI\Presenter;
 
 abstract class BasePresenter extends Presenter {
-    const SOMETHING_WENT_WRONG = "something_went_wrong";
+    const SOMETHING_WENT_WRONG = "messages.message.something_went_wrong";
 
     /** @var Language|null */
     private $localeLang;
@@ -46,7 +46,6 @@ abstract class BasePresenter extends Presenter {
                 $this->getUser()->login($newIdentity);
             } else {
                 $this->somethingWentWrong();
-                dump("Identity not found");
                 $this->getUser()->logout(true);
             }
         }

@@ -46,8 +46,7 @@ class LanguageManager {
     public function getDefaultLanguage(): Language {
         $defaultLang = $this->getSettingsManager()->get(self::SETTINGS_DEFAULT_LANGUAGE);
 
-        if (!($language = $defaultLang) instanceof Setting || !($language = $this->getById((int)$defaultLang->getValue())) instanceof Language) {
-            dump($defaultLang, $this->getById((int)$defaultLang->getValue()));
+        if (!$defaultLang instanceof Setting || !($language = $this->getById((int)$defaultLang->getValue())) instanceof Language) {
             throw new Exception("DefaultLang not set or doesnt exist");
         }
 
@@ -148,6 +147,17 @@ class LanguageManager {
 
             $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
         }
+<<<<<<< HEAD
+<<<<<<< HEAD
+    }
+
+
+    protected function throwIfNoRights(string $action) {
+        if (!$this->getUser()->isAllowed($action)) throw new Exception("Not allowed");
+=======
+>>>>>>> parent of e132ef1... Implementing form for language ediding
+=======
+>>>>>>> parent of e132ef1... Implementing form for language ediding
     }
 
     private function cache(Language $language) {
@@ -164,12 +174,12 @@ class LanguageManager {
         return substr($code, 0, strlen(LanguageManager::GENERATED_CODE_PREFIX)) === LanguageManager::GENERATED_CODE_PREFIX;
     }
 
-    private function getCodeCache(): Cache {
+    private function getCodeCache():Cache{
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = $this->getCache()->derive("code");
     }
 
-    private function getIdCache(): Cache {
+    private function getIdCache():Cache{
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = $this->getCache()->derive("id");
     }

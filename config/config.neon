@@ -5,8 +5,6 @@ session:
     identity: UserIdentity
 
 services:
-    #cacheStorage:
-        #factory: TransactioningFileStorage(%tempDir%/cache)
     routerFactory: Router(%consoleMode%)
     router: @routerFactory::createRouter
     authenticator: UserManager
