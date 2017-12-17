@@ -130,4 +130,8 @@ use ManagerUtils;
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "user");
     }
+
+    protected function init() {
+        // TODO: Implement init() method.
+    }
 }

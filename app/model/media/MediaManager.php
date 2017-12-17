@@ -61,4 +61,8 @@ class MediaManager{
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "media");
     }
+
+    protected function init() {
+        // TODO: Implement init() method.
+    }
 }

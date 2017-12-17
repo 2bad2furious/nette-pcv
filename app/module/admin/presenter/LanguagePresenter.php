@@ -48,7 +48,8 @@ class LanguagePresenter extends AdminPresenter {
     public function createComponentLanguageEditForm() {
         $language = $this->getLanguageManager()->getById($this->getParameter(self::ID_KEY));
         $form = $this->getFormFactory()->createLanguageEditForm($language);
-        $form->onSuccess[] = function (Form $form, ArrayHash $values) {
+        $form->onSuccess[] = function (Form $form, array $values) {
+
             diedump(func_get_args());
         };
         return $form;

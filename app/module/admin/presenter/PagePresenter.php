@@ -6,6 +6,7 @@ namespace adminModule;
 
 use Kdyby\Translation\Translator;
 use Nette\Application\UI\Form;
+use Nette\ArrayHash;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Forms\Controls\TextInput;
 use Nette\Http\IResponse;
@@ -183,8 +184,7 @@ class PagePresenter extends AdminPresenter {
             function (BaseControl $url) use ($page) {
                 return $this->getPageManager()->isUrlAvailable($url->getValue(), $page->getLang(), $page->getLocalId());
             });
-        $form->onSuccess[] = function (Form $form) use ($page) {
-            $values = $form->getValues(true);
+        $form->onSuccess[] = function (Form $form, array $values) use ($page) {
             try {
                 $this->getPageManager()->update(
                     $page,
