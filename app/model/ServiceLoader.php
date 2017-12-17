@@ -23,8 +23,7 @@ class ServiceLoader {
 
         //INITING for listener-registration, TODO better - maybe do static listener registration
         foreach (self::CLASS_NAMES as $k => $v) {
-            dump(ManagerUtils::getInitingClass());
-            if (ManagerUtils::getInitingClass() !== $v)
+            if (Manager::getInitingClass() !== $v)
                 $this->context->getByType($v);
         }
     }

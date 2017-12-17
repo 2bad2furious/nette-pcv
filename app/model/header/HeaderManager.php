@@ -3,8 +3,7 @@
 
 use Nette\Database\Table\ActiveRow;
 
-class HeaderManager {
-    use ManagerUtils;
+class HeaderManager extends Manager {
     const TABLE = "header",
         COLUMN_ID = "header_id",
         COLUMN_LANG = "lang",

@@ -2,8 +2,7 @@
 
 use Nette\Database\Table\ActiveRow;
 
-class SettingsManager {
-    use ManagerUtils;
+class SettingsManager extends Manager {
 
     const
         TABLE = "settings",
@@ -13,7 +12,7 @@ class SettingsManager {
         COLUMN_LANG = "lang_id",
 
         ACTION_MANAGE_SETTINGS = "settings.manage";
-
+    
 
     public function get(string $option, ?Language $language = null):?Setting {
 
@@ -133,9 +132,5 @@ class SettingsManager {
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "settings");
-    }
-
-    protected function init() {
-        // TODO: Implement init() method.
     }
 }

@@ -6,8 +6,8 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Security\Passwords;
 use Nette\Security\User;
 
-class UserManager implements \Nette\Security\IAuthenticator {
-use ManagerUtils;
+class UserManager extends Manager implements \Nette\Security\IAuthenticator {
+
     const
         TABLE = "user",
         COLUMN_ID = "user_id",
@@ -116,9 +116,12 @@ use ManagerUtils;
 
     public function rebuildCache() {
         //TODO rights
+        dump("rebuilding user");
+        $this->getCache()->clean([ ]);
         /** @var ActiveRow $row */
         foreach ($this->getDatabase()->table(self::TABLE)->fetchAll() as $row) {
             $identity = $this->createFromDbRow($row);
+            dump($identity);
             $this->getCache()->save($identity->getId(), $identity);
         }
     }
@@ -126,9 +129,5 @@ use ManagerUtils;
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "user");
-    }
-
-    protected function init() {
-        // TODO: Implement init() method.
     }
 }

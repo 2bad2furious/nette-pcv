@@ -3,9 +3,7 @@
 use Nette\Database\Table\ActiveRow;
 
 //TODO rewrite for performace gain
-class PageManager {
-    use ManagerUtils;
-
+class PageManager extends Manager {
     const MAIN_TABLE = "page",
         MAIN_COLUMN_ID = "page_id",
         MAIN_COLUMN_TYPE = "type", /** int 1 if page 0 if post more at @var Type */
@@ -73,6 +71,29 @@ class PageManager {
         return $this->getFromGlobalCache($globalId, $language) instanceof Page;
     }
 
+    public function getAllPages(Language $language, $asObjects = true): array {
+        $selection = $this->getDatabase()->table(self::LOCAL_TABLE)
+            ->order(self::LOCAL_MAIN_COLUMN_ID)
+            ->select(self::LOCAL_MAIN_COLUMN_ID);
+
+        if (!$asObjects) $selection = $selection->select(self::LOCAL_COLUMN_TITLE);
+        $pages = [];
+        while ($page = $selection->fetch()) {
+            $globalId = $page[self::LOCAL_MAIN_COLUMN_ID];
+            $pages[$globalId] = $asObjects ? $this->getFromGlobalCache($globalId, $language) : $page[self::LOCAL_COLUMN_TITLE];
+        }
+        return $pages;
+    }
+
+    public function getHomePage(Language $language, bool $full = true):?Page {
+        $setting = $this->getSettingsManager()->get(self::SETTINGS_HOMEPAGE, $language);
+        $id = (int)$setting->getValue();
+        if ($id === 0) return null;
+        return $full ?
+            $this->getByGlobalId($language, $id) :
+            $this->getFromGlobalCache($id, $language);
+    }
+
     private function getLanguageTag(int $langId): string {
         return self::CACHE_LANGUAGE_KEY . "/" . $langId;
     }
@@ -112,6 +133,7 @@ class PageManager {
                 self::LOCAL_COLUMN_LANG => $language->getId(),
             ])->delete();
         });
+        parent::init();
     }
 
 

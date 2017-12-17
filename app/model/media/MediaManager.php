@@ -3,8 +3,7 @@
 
 use Nette\Database\Table\ActiveRow;
 
-class MediaManager{
-    use ManagerUtils;
+class MediaManager extends Manager {
 
     const TABLE = "media",
         COLUMN_ID = "media_id",
@@ -60,9 +59,5 @@ class MediaManager{
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "media");
-    }
-
-    protected function init() {
-        // TODO: Implement init() method.
     }
 }

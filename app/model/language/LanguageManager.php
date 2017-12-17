@@ -2,8 +2,8 @@
 
 use Nette\Database\Table\ActiveRow;
 
-class LanguageManager {
-    use ManagerUtils;
+class LanguageManager extends Manager {
+
     const TABLE = "language",
         COLUMN_ID = "language_id",
         COLUMN_CODE = "code", COLUMN_CODE_LENGTH = 5, COLUMN_CODE_PATTERN = "[a-z]{2}_[A-Z]{2}|[a-z]{2}",
@@ -46,7 +46,8 @@ class LanguageManager {
     public function getDefaultLanguage(): Language {
         $defaultLang = $this->getSettingsManager()->get(self::SETTINGS_DEFAULT_LANGUAGE);
 
-        if (!$defaultLang instanceof Setting || !($language = $this->getById((int)$defaultLang->getValue())) instanceof Language) {
+        if (!($language = $defaultLang) instanceof Setting || !($language = $this->getById((int)$defaultLang->getValue())) instanceof Language) {
+            dump($defaultLang, $this->getById((int)$defaultLang->getValue()));
             throw new Exception("DefaultLang not set or doesnt exist");
         }
 
@@ -103,6 +104,7 @@ class LanguageManager {
         $sm->set(PageManager::SETTINGS_LOGO, 0, true);
         $sm->set(PageManager::SETTINGS_HOMEPAGE, 0, true);
 
+        $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
         return $language;
     }
 
@@ -127,7 +129,7 @@ class LanguageManager {
         return $unique;
     }
 
-    public function edit(Language $language, string $code, string $ga, string $title, string $separator, int $logoId) {
+    public function edit(Language $language, string $code, string $ga, string $title, string $separator, int $logoId, int $pageId) {
         if ($language->getCode() !== $code) {
             if (!self::isCodeGenerated($language->getCode())) throw new Exception("Cannot edit non-generated language codes");
 
@@ -140,15 +142,12 @@ class LanguageManager {
                 ->update([
                     self::COLUMN_CODE => $code,
                 ]);
+        }/*
+        $sm = $this->getSettingsManager();
+        $sm->set(PageManager::SETTINGS_HOMEPAGE)*/
 
-            $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
-        } else {
-            //TODO ADD settings editing
-
-            $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
-        }
+        $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
     }
-
 
     private function cache(Language $language) {
         $this->getIdCache()->save($language->getId(), $language);
@@ -164,12 +163,12 @@ class LanguageManager {
         return substr($code, 0, strlen(LanguageManager::GENERATED_CODE_PREFIX)) === LanguageManager::GENERATED_CODE_PREFIX;
     }
 
-    private function getCodeCache():Cache{
+    private function getCodeCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = $this->getCache()->derive("code");
     }
 
-    private function getIdCache():Cache{
+    private function getIdCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = $this->getCache()->derive("id");
     }
@@ -177,9 +176,5 @@ class LanguageManager {
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "language");
-    }
-
-    protected function init() {
-        // TODO: Implement init() method.
     }
 }
