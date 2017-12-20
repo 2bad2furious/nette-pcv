@@ -8,21 +8,18 @@ class Media {
     private $alt;
     private $src;
     private $type;
-    private $languageId;
 
 
     /**
      * Media constructor.
      * @param int $id
-     * @param int $languageId
      * @param string $name
      * @param string $alt
      * @param string $src
      * @param int $type
      */
-    public function __construct(int $id, int $languageId, string $name, string $alt, string $src, int $type) {
+    public function __construct(int $id, string $name, string $alt, string $src, int $type) {
         $this->id = $id;
-        $this->languageId = $languageId;
         $this->name = $name;
         $this->alt = $alt;
         $this->src = $src;
@@ -30,27 +27,10 @@ class Media {
     }
 
     /**
-     * @param Language $language
-     * @throws Exception
-     */
-    public function setLanguage(Language $language) {
-        if($this->language instanceof Language) throw new Exception("Language already set");
-        if($this->getLanguageId() !== $language->getId()) throw new Exception("Ids are not the same");
-        $this->language = $language;
-    }
-
-    /**
      * @return int
      */
     public function getId(): int {
         return $this->id;
-    }
-
-    /**
-     * @return Language|null
-     */
-    public function getLanguage():?Language {
-        return $this->language;
     }
 
     /**

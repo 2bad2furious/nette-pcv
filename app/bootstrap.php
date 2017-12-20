@@ -41,19 +41,23 @@ try {
     $app->run();
     $connection->commit();
 } catch (Throwable $ex) {
-    define("FULL_RIGHTS", true);
+    $hasAnythingBeenChanged = $connection->getInsertId();
     $connection->rollBack();
-    dump("shitty solution", $ex);
-    //shitty solution incoming
-    $rebuildableManagers = [];
-    $rebuildableManagers[] = $container->getByType(SettingsManager::class);
-    $rebuildableManagers[] = $container->getByType(LanguageManager::class);
-    $rebuildableManagers[] = $container->getByType(PageManager::class);
-    $rebuildableManagers[] = $container->getByType(HeaderManager::class);
-    $rebuildableManagers[] = $container->getByType(UserManager::class);
-    foreach ($rebuildableManagers as $rebuildableManager) {
-        $rebuildableManager->rebuildCache();
+    //dump($hasAnythingBeenChanged,(bool)$hasAnythingBeenChanged);
+    if ($hasAnythingBeenChanged) {
+        define("FULL_RIGHTS", true);
+        dump("shitty solution", $ex);
+        //shitty solution incoming
+        $rebuildableManagers = [];
+        $rebuildableManagers[] = $container->getByType(SettingsManager::class);
+        $rebuildableManagers[] = $container->getByType(LanguageManager::class);
+        $rebuildableManagers[] = $container->getByType(PageManager::class);
+        $rebuildableManagers[] = $container->getByType(HeaderManager::class);
+        $rebuildableManagers[] = $container->getByType(UserManager::class);
+        foreach ($rebuildableManagers as $rebuildableManager) {
+            $rebuildableManager->rebuildCache();
+        }
+        //shitty solution ended xd
     }
-    //shitty solution ended xd
     throw $ex;
 }

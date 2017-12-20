@@ -36,6 +36,7 @@ class FormFactory extends Manager {
     const LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME = "ga";
     const ONE_LINE_TEXTAREA_CLASS = "oneline";
     const LANGUAGE_EDIT_HOMEPAGE = "homepage_id";
+    const LANGUAGE_EDIT_FAVICON_NAME = "favicon";
 
     public function createPageEditForm(Page $page, callable $urlValidator) {
 
@@ -83,7 +84,7 @@ class FormFactory extends Manager {
             ->setDefaultValue($page->getContent())
             ->getControlPrototype()->data(self::TEXTAREA_ID_FOR_EDITOR, true);
 
-        $container->addSelect(self::PAGE_EDIT_IMAGE_NAME, "admin.page.edit.local.image.label", array_merge([0 => "admin.page.edit.local.image.no"], $this->getMediaManager()->getAvailableImages($page->getLang())))->setDefaultValue($page->getImageId());
+        $container->addSelect(self::PAGE_EDIT_IMAGE_NAME, "admin.page.edit.local.image.label", array_merge([0 => "admin.page.edit.local.image.no"], $this->getMediaManager()->getAvailableImages()))->setDefaultValue($page->getImageId());
 
         //todo add tag editing - not "in form"
 
@@ -122,15 +123,17 @@ class FormFactory extends Manager {
 
     public function createLanguageEditForm(Language $language): Form {
         $form = $this->createNewAdminForm();
-        $pageSettings = $this->getSettingsManager()->getPageSettings($language);
-        if (LanguageManager::isCodeGenerated($language->getCode()))
-            $form->addText(self::LANGUAGE_EDIT_CODE_NAME, "admin.language.code.label")
-                ->addRule(Form::REQUIRED, "admin.language.edit.code.required")
-                ->addRule(Form::MAX_LENGTH, "admin.language.edit.code.length", 5)
-                ->addRule(Form::PATTERN, "admin.language.edit.code.pattern", LanguageManager::COLUMN_CODE_PATTERN)
-                ->addRule(function (TextInput $item) {
-                    return !$this->getLanguageManager()->getByCode($item->getValue()) instanceof Language;
-                }, $message = "admin.language.edit.code.not_available", $message);
+
+        $code = $form->addText(self::LANGUAGE_EDIT_CODE_NAME, "admin.language.code.label")
+            ->addRule(Form::REQUIRED, "admin.language.edit.code.required")
+            ->addRule(Form::MAX_LENGTH, "admin.language.edit.code.length", 5)
+            ->addRule(Form::PATTERN, "admin.language.edit.code.pattern", LanguageManager::COLUMN_CODE_PATTERN)
+            ->addRule(function (TextInput $item) {
+                return !$this->getLanguageManager()->getByCode($item->getValue()) instanceof Language;
+            }, $message = "admin.language.edit.code.not_available", $message);
+        if(!LanguageManager::isCodeGenerated($language->getCode())){
+            $code->setDisabled(true)->setEmptyValue($language->getCode());
+        }
 
         $pm = $this->getPageManager();
         $availablePages = $pm->getAllPages($language, false);
@@ -138,26 +141,25 @@ class FormFactory extends Manager {
 
         $currentHomePage = $pm->getHomePage($language, false);
         if ($currentHomePage) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
-        //if has homepage set default value
-
 
         $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label")
-            ->setDefaultValue($pageSettings->getSiteName());
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME,$language)->getValue());
 
         $form->addTextArea(self::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME, "admin.language.edit.separator.label")
-            ->setDefaultValue($pageSettings->getTitleSeparator())
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME,$language)->getValue())
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
         $sm = $this->getSettingsManager();
 
         $images = $this->getMediaManager()->getAvailableImages();
         $images[0] = "admin.language.edit.logo.no";
-        $logo = $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME, "admin.language.edit.logo.label", $images)->setDefaultValue(($logo = $pageSettings->getLogo()) instanceof Media ? $logo->getId() : 0);
-        if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO)->getValue()))
-            $logo->setDefaultValue($logoId);
+        $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME, "admin.language.edit.logo.label", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_LOGO,$language)->getValue());
+
+        $images[0] = "admin.language.edit.favicon.no";
+        $form->addSelect(self::LANGUAGE_EDIT_FAVICON_NAME, "admin.settings.edit.favicon", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_FAVICON,$language)->getValue());
 
         $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label")
-            ->setDefaultValue($pageSettings->getGoogleAnalytics());
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_GOOGLE_ANALYTICS,$language)->getValue());
 
         $form->addSubmit("submit", "admin.language.edit.submit");
         return $form;
@@ -183,6 +185,7 @@ class FormFactory extends Manager {
         $logo = $form->addSelect(self::SETTINGS_EDIT_LOGO, "admin.settings.edit.logo.label", $images);
         if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO)->getValue()))
             $logo->setDefaultValue($logoId);
+
 
         $form->addText(self::SETTINGS_EDIT_DEFAULT_GOOGLE_ANALYTICS, "admin.settings.edit.ga.label")
             ->setDefaultValue($sm->get(PageManager::SETTINGS_GOOGLE_ANALYTICS)->getValue());

@@ -65,6 +65,7 @@ class PageManager extends Manager {
     const TRIGGER_PAGE_ADDED = "trigger.page.added",
         TRIGGER_PAGE_EDITED = "trigger.page.edited",
         TRIGGER_PAGE_DELETED = "trigger.page.deleted";
+    const SETTINGS_FAVICON = "site.favicon";
 
     public function exists(int $globalId): bool {
         $language = $this->getLanguageManager()->getDefaultLanguage();
@@ -80,7 +81,7 @@ class PageManager extends Manager {
         $pages = [];
         while ($page = $selection->fetch()) {
             $globalId = $page[self::LOCAL_MAIN_COLUMN_ID];
-            $pages[$globalId] = $asObjects ? $this->getFromGlobalCache($globalId, $language) : $page[self::LOCAL_COLUMN_TITLE];
+            $pages[$globalId] = $asObjects ? $this->getFromGlobalCache($globalId, $language) : $page[self::LOCAL_COLUMN_TITLE] . " " . $globalId;
         }
         return $pages;
     }

@@ -72,11 +72,7 @@
             {_"admin.page.show.create.label"}
             {foreach adminModule\PagePresenter::TYPES as $type_val}
                 {continueIf $type_val == adminModule\PagePresenter::TYPE_ALL}
-                <a href="{plink create adminModule\PagePresenter::TYPE_KEY=>$type_val,
-                adminModule\PagePresenter::VISIBILITY_KEY=>null,
-                adminModule\PagePresenter::LANGUAGE_KEY=>null,
-                adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,
-                FormFactory::PAGE_SHOW_SEARCH_NAME=>null}"
+                <a href="{plink create adminModule\PagePresenter::TYPE_KEY=>$type_val}"
                    class="create_new">{_"admin.page.show.create.{$type_val}"}</a>
             {/foreach}
         </div>
@@ -101,11 +97,7 @@
                             <td>{_"admin.page.show.table.body.type.{$page['type']}"}</td>
                             <td>{foreach $page['languages'] as $lang}<a class="action page-edit"
                                                                         href="{plink edit adminModule\PagePresenter::ID_KEY=>$id,
-                            adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),
-                            adminModule\PagePresenter::TYPE_KEY=>null,
-                            adminModule\PagePresenter::VISIBILITY_KEY=>null,
-                            adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,
-                            FormFactory::PAGE_SHOW_SEARCH_NAME=>null}">{_$lang->getCode()}</a>{/foreach}</td>
+                            adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$lang->getCode()}">{_$lang->getCode()}</a>{/foreach}</td>
                             <td><a class="action page-delete"
                                    href="{plink delete adminModule\PagePresenter::ID_KEY=>$id}">{_"admin.page.show.delete.label"}</a>
                             </td>

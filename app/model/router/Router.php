@@ -83,11 +83,11 @@ class Router {
             ],
         ]);
 
-        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action edit>/<" . PagePresenter::ID_KEY . ">/<" . PagePresenter::LANGUAGE_KEY . ">", [
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action edit>/<" . PagePresenter::ID_KEY . ">/<" . PagePresenter::EDIT_LANGUAGE_KEY . ">", [
             PagePresenter::ID_KEY       => [
                 Route::PATTERN => "\d+",
             ],
-            PagePresenter::LANGUAGE_KEY => [
+            PagePresenter::EDIT_LANGUAGE_KEY => [
                 Route::PATTERN => $languages,
             ],
         ]);

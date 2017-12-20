@@ -54,6 +54,7 @@ class PagePresenter extends AdminPresenter {
         HAS_TRANSLATION_KEY = "has_translation",
 
         ID_KEY = "page_id";
+    const EDIT_LANGUAGE_KEY = "edit_language";
 
     /** @persistent */
     public $page_id;
@@ -92,14 +93,14 @@ class PagePresenter extends AdminPresenter {
 
     public function actionCreate() {
         $globalId = $this->getPageManager()->addEmpty(self::TYPE_TABLE[$this->getParameter(self::TYPE_KEY)]);
-        $args = [self::ID_KEY => $globalId, self::TYPE_KEY => null];
-        if ($this->getLanguage() === null) $args[self::LANGUAGE_KEY] = $this->getLocaleLanguage()->getCode();
+        $args = [self::ID_KEY => $globalId, self::TYPE_KEY => null, self::EDIT_LANGUAGE_KEY => $this->getLanguage()];
+        if ($this->getParameter(self::EDIT_LANGUAGE_KEY) === null) $args[self::EDIT_LANGUAGE_KEY] = $this->getLanguageManager()->getDefaultLanguage()->getCode();
         $this->redirect(302, "edit", $args);
     }
 
     public function actionEdit() {
         $globalId = $this->getParameter(self::ID_KEY);
-        $langCode = $this->getParameter(self::LANGUAGE_KEY);
+        $langCode = $this->getParameter(self::EDIT_LANGUAGE_KEY);
         $language = $this->getLanguageManager()->getByCode($langCode);
 
         $page = $this->getPageManager()->getByGlobalId($language, $globalId);
@@ -129,7 +130,7 @@ class PagePresenter extends AdminPresenter {
             is_string($post_query = $this->getSearchQuery()) ? $post_query : null);
         $this->template->paginator_page_key = self::PAGE_KEY;
 
-        if($this->isAjax()){ //needs to be here for some reason xd
+        if ($this->isAjax()) { //needs to be here for some reason xd
             $this->redrawControl();
         }
     }
@@ -139,12 +140,12 @@ class PagePresenter extends AdminPresenter {
         if ($pm->exists($deleteId = $this->getParameter(self::ID_KEY))) {
             try {
                 $pm->delete($deleteId);
-                $this->flashMessage("admin.page.delete.success");
+                $this->addSuccess("admin.page.delete.success");
             } catch (Exception $ex) {
                 $this->somethingWentWrong();
             }
         } else {
-            $this->flashMessage("admin.page.delete.not_found");
+            $this->addWarning("admin.page.delete.not_found");
         }
         $this->redirect(302, "show", [self::ID_KEY => null]);
     }
@@ -199,13 +200,13 @@ class PagePresenter extends AdminPresenter {
                 );
 
                 $this->flashMessage("admin.page.edit.success");
-                $this->redirect(302, "Page:show", [self::ID_KEY => null, self::LANGUAGE_KEY => null]);
+                $this->redirect(302, "Page:show", [self::ID_KEY => null, self::EDIT_LANGUAGE_KEY => null]);
             } catch (Exception $ex) {
                 Debugger::log($ex);
                 $this->somethingWentWrong();
             }
         };
-        return $form->setAction($this->link("edit", [self::ID_KEY => $page->getGlobalId()]));
+        return $form->setAction($this->link("edit", [self::ID_KEY => $page->getGlobalId(), self::EDIT_LANGUAGE_KEY => $this->getParameter(self::EDIT_LANGUAGE_KEY)]));
     }
 
     public function createComponentAdminPageSearch() {

@@ -12,7 +12,7 @@ class SettingsManager extends Manager {
         COLUMN_LANG = "lang_id",
 
         ACTION_MANAGE_SETTINGS = "settings.manage";
-    
+
 
     public function get(string $option, ?Language $language = null):?Setting {
 
@@ -42,7 +42,7 @@ class SettingsManager extends Manager {
                 self::COLUMN_VALUE  => $value,
                 self::COLUMN_LANG   => $langId,
             ];
-
+            dump($option, $langId, $exists, $createIfNotFound);
             // if exists update
             if ($exists instanceof Setting) {
                 $settingId = $exists->getId();
@@ -83,7 +83,8 @@ class SettingsManager extends Manager {
             $this->getSiteName($language),
             $this->getGoogleAnalytics($language),
             $this->getTitleSeparator($language),
-            $this->getLogo($language)
+            $this->getLogo($language),
+            $this->getFavicon($language)
         );
     }
 
@@ -132,5 +133,14 @@ class SettingsManager extends Manager {
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "settings");
+    }
+
+    private function getFavicon(Language $language):?Media {
+        $setting = $this->get(PageManager::SETTINGS_LOGO, $language);
+
+        if ((int)$setting->getValue() === 0) $setting = $this->get(PageManager::SETTINGS_FAVICON);
+
+        $faviconId = (int)$setting->getValue();
+        return $this->getMediaManager()->getById($faviconId);
     }
 }
