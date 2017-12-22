@@ -1,4 +1,20 @@
 {block content}
+    {form languageSearchForm}
+        <ul class="admin-form-errors" n:formErrors></ul>
+        {input \adminModule\LanguagePresenter::SEARCH_KEY}
+        <a id="search_cancel"
+           href="{plink this \adminModule\LanguagePresenter::SEARCH_KEY=>null}"><i
+                    class="fa fa-times"></i></a>
+        {input submit}
+    {/form}
+    {var $bools = [null,true,false]}
+    <div>
+        {dump $bools}
+        {foreach $bools as $key => $bool}
+            <a class="{if $bool == $isGenerated}active{/if}"
+               href="{plink this \adminModule\LanguagePresenter::GENERATED_KEY=>$bool}">{_"admin.language.default.generated.{$key}"}</a>
+        {/foreach}
+    </div>
     <a href="{plink create}">{_"admin.language.default.create.label"}</a>
     <table>
         {foreach $languages as $lang}
@@ -7,10 +23,21 @@
                 <td>{if LanguageManager::isCodeGenerated($lang->getCode())}{_"admin.language.default.no_code"}{else}{$lang->getCode()}{/if}</td>
                 <td>
                     <a
-                        href="{plink edit \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">{_"admin.language.default.edit.label"}</a>
+                            href="{plink edit \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">{_"admin.language.default.edit.label"}</a>
                 </td>
-                <td>{_"admin.language.default.delete.label"}</td>
+                <td><a class="language-delete"
+                       href="{plink Language:delete \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">{_"admin.language.default.delete.label"}</a>
+                </td>
             </tr>
         {/foreach}
     </table>
+    {control paginator}
+    <script>
+        jQuery(document).ready(function ($) {
+            $("a.language-delete").click(function (e) {
+                if (!confirm({_"admin.language.default.action.delete.confirm"}))
+                    e.preventDefault();
+            })
+        })
+    </script>
 {/block}

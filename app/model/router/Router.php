@@ -42,7 +42,7 @@ class Router {
         ]);
         $frontRouteList[] = new Route("test", "Test:default");
 
-        $frontRouteList[] = new Route("<locale {$languages}>/","Page:Home");
+        $frontRouteList[] = new Route("<locale {$languages}>/", "Page:Home");
 
         $frontRouteList[] = new Route("<locale {$languages}>/" . PageManager::PAGE_URL_PERMANENT . "/<" . \frontModule\PagePresenter::PARAM_ID . " [0-9]+>", "Page:Permanent");
         $frontRouteList[] = new Route("<locale {$languages}>/[<" . \frontModule\PagePresenter::PARAM_URL . " " . PageManager::LOCAL_URL_CHARSET . ">]", "Page:default");
@@ -51,7 +51,7 @@ class Router {
 
         $availableAdminLangs = implode("|", ["en_US"]);
 
-        $adminRouteList[] = new Route("admin/<locale>/<presenter page>/<action show>/<" . PagePresenter::TYPE_KEY . ">/<" . PagePresenter::VISIBILITY_KEY . ">/<" . PagePresenter::LANGUAGE_KEY . ">/<" . PagePresenter::HAS_TRANSLATION_KEY . "> ? <" . PagePresenter::PAGE_KEY . ">", [
+        $adminRouteList[] = new Route("admin/<locale>/<presenter page>/<action show>/<" . PagePresenter::TYPE_KEY . ">/<" . PagePresenter::VISIBILITY_KEY . ">/<" . PagePresenter::LANGUAGE_KEY . ">/<" . PagePresenter::HAS_TRANSLATION_KEY . "> ? <" . PagePresenter::PAGE_KEY . "><" . FormFactory::PAGE_SHOW_SEARCH_NAME . ">", [
             "locale"                           => [
                 Route::PATTERN => $availableAdminLangs,
             ],
@@ -84,7 +84,7 @@ class Router {
         ]);
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action edit>/<" . PagePresenter::ID_KEY . ">/<" . PagePresenter::EDIT_LANGUAGE_KEY . ">", [
-            PagePresenter::ID_KEY       => [
+            PagePresenter::ID_KEY            => [
                 Route::PATTERN => "\d+",
             ],
             PagePresenter::EDIT_LANGUAGE_KEY => [
@@ -115,8 +115,6 @@ class Router {
 
         $adminRouteList[] = new Route("admin", "Default:");
 
-        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter=Default>[/<action=default default>]");
-
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action edit|delete>/<" . \adminModule\LanguagePresenter::ID_KEY . ">", [
             \adminModule\LanguagePresenter::ID_KEY => [
                 Route::PATTERN => "\d+",
@@ -126,6 +124,14 @@ class Router {
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter settings>/<action rebuild>");
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action create>");
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<" . \adminModule\LanguagePresenter::PAGE_ID . "=1 \d+>/[<" . \adminModule\LanguagePresenter::GENERATED_KEY . " 1|0>]?<" . \adminModule\LanguagePresenter::SEARCH_KEY . ">", [
+            "action" => [
+                Route::VALUE => "default",
+            ],
+        ]);
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter=Default>[/<action=default default>]");
 
         return $router;
     }

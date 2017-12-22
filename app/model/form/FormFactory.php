@@ -117,7 +117,7 @@ class FormFactory extends Manager {
         $form = $this->createNewAdminForm();
         $form->setMethod("get");
         $form->addText(self::PAGE_SHOW_SEARCH_NAME)->setRequired(false)->setDefaultValue($query);
-        $form->addSubmit("submit");
+        $form->addSubmit("submit", "admin.page.show.search.submit");
         return $form;
     }
 
@@ -131,35 +131,37 @@ class FormFactory extends Manager {
             ->addRule(function (TextInput $item) {
                 return !$this->getLanguageManager()->getByCode($item->getValue()) instanceof Language;
             }, $message = "admin.language.edit.code.not_available", $message);
-        if(!LanguageManager::isCodeGenerated($language->getCode())){
+        if (!LanguageManager::isCodeGenerated($language->getCode())) {
             $code->setDisabled(true)->setEmptyValue($language->getCode());
         }
 
-        $pm = $this->getPageManager();
-        $availablePages = $pm->getAllPages($language, false);
-        $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", $availablePages);
+        if (!LanguageManager::isCodeGenerated($language->getCode())) {
+            $pm = $this->getPageManager();
+            $availablePages = $pm->getAllPages($language, false);
+            $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", $availablePages);
 
-        $currentHomePage = $pm->getHomePage($language, false);
-        if ($currentHomePage) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
-
+            $currentHomePage = $pm->getHomePage($language, false);
+            if ($currentHomePage instanceof Page) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
+        }
+        
         $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label")
-            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME,$language)->getValue());
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language)->getValue());
 
         $form->addTextArea(self::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME, "admin.language.edit.separator.label")
-            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME,$language)->getValue())
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language)->getValue())
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
         $sm = $this->getSettingsManager();
 
         $images = $this->getMediaManager()->getAvailableImages();
         $images[0] = "admin.language.edit.logo.no";
-        $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME, "admin.language.edit.logo.label", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_LOGO,$language)->getValue());
+        $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME, "admin.language.edit.logo.label", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_LOGO, $language)->getValue());
 
         $images[0] = "admin.language.edit.favicon.no";
-        $form->addSelect(self::LANGUAGE_EDIT_FAVICON_NAME, "admin.settings.edit.favicon", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_FAVICON,$language)->getValue());
+        $form->addSelect(self::LANGUAGE_EDIT_FAVICON_NAME, "admin.settings.edit.favicon", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_FAVICON, $language)->getValue());
 
         $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label")
-            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_GOOGLE_ANALYTICS,$language)->getValue());
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language)->getValue());
 
         $form->addSubmit("submit", "admin.language.edit.submit");
         return $form;
@@ -191,6 +193,15 @@ class FormFactory extends Manager {
             ->setDefaultValue($sm->get(PageManager::SETTINGS_GOOGLE_ANALYTICS)->getValue());
 
         $form->addSubmit("submit", "admin.settings.edit.save");
+        return $form;
+    }
+
+    public function createLanguageSearchForm(?string $query) {
+        $form = $this->createNewAdminForm();
+        $form->setMethod("get");
+        $form->addText(\adminModule\LanguagePresenter::SEARCH_KEY)->setRequired(false)->setDefaultValue($query);
+
+        $form->addSubmit("submit", "admin.language.default.search.submit");
         return $form;
     }
 }

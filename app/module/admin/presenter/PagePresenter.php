@@ -74,6 +74,9 @@ class PagePresenter extends AdminPresenter {
     /** @persistent */
     public $search_query;
 
+    /** @persistent */
+    public $edit_language;
+
     private $numberOfPages = 0;
 
     protected function getAllowedRoles(): array {
@@ -128,11 +131,10 @@ class PagePresenter extends AdminPresenter {
             15,//TODO should be an option?
             $this->numberOfPages,
             is_string($post_query = $this->getSearchQuery()) ? $post_query : null);
-        $this->template->paginator_page_key = self::PAGE_KEY;
-
-        if ($this->isAjax()) { //needs to be here for some reason xd
+        if (!$this->template->pages && $this->getPage() !== 1) $this->redirect(302, "this", [self::PAGE_KEY => $this->numberOfPages]);
+        /*if ($this->isAjax()) { //needs to be here for some reason xd
             $this->redrawControl();
-        }
+        }*/
     }
 
     public function actionDelete() {
@@ -142,6 +144,7 @@ class PagePresenter extends AdminPresenter {
                 $pm->delete($deleteId);
                 $this->addSuccess("admin.page.delete.success");
             } catch (Exception $ex) {
+                Debugger::log($ex);
                 $this->somethingWentWrong();
             }
         } else {
@@ -206,11 +209,14 @@ class PagePresenter extends AdminPresenter {
                 $this->somethingWentWrong();
             }
         };
-        return $form->setAction($this->link("edit", [self::ID_KEY => $page->getGlobalId(), self::EDIT_LANGUAGE_KEY => $this->getParameter(self::EDIT_LANGUAGE_KEY)]));
+        return $form/*->setAction($this->link("edit", [self::ID_KEY => $page->getGlobalId(), self::EDIT_LANGUAGE_KEY => $this->getParameter(self::EDIT_LANGUAGE_KEY)]))*/;
     }
 
     public function createComponentAdminPageSearch() {
         $form = $this->getFormFactory()->createAdminPageSearch($this->getSearchQuery());
+        $form->onSubmit[] = function () {
+            $this->redirect(302, "this", [\FormFactory::PAGE_SHOW_SEARCH_NAME => $this->getSearchQuery()]);
+        };
         return $form;
     }
 

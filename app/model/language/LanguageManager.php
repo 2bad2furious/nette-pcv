@@ -17,6 +17,29 @@ class LanguageManager extends Manager {
     const TRIGGER_LANGUAGE_EDITED = "trigger.language.edited";
 
 
+    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated) {
+        $selection = $this->getDatabase()
+            ->table(self::TABLE)
+            ->order(self::COLUMN_ID);
+
+        if (is_bool($codeIsGenerated)) {
+            $selection = $selection->where([self::COLUMN_CODE . ($codeIsGenerated ? "" : "NOT LIKE (?)") => self::GENERATED_CODE_PREFIX . "%"]);
+        }
+
+        if (is_string($search)) {
+            $selection = $selection->where(self::COLUMN_CODE, "%" . $search . "%");
+        }
+
+        $data = $selection->page($page, $perPage, $numOfPages)->fetchAll();
+        $languages = [];
+
+        foreach ($data as $row) {
+            $langId = $row[self::COLUMN_ID];
+            $languages[] = $this->getIdCache()->load($langId);
+        }
+        return $languages;
+    }
+
     /**
      * @param bool $asObjects
      * @param bool $check whether to include languages that are not finished (=code is generated)
@@ -119,7 +142,7 @@ class LanguageManager extends Manager {
         if (!$language instanceof Language) throw new InvalidArgumentException("Language does not exist");
 
         //check if its the last
-        if(count($this->getAvailableLanguages(false,false)) === 1) throw new CannotDeleteLastLanguage();
+        if (count($this->getAvailableLanguages(false, false)) === 1) throw new CannotDeleteLastLanguage();
 
         $this->getIdCache()->remove($language->getId());
         $this->getCodeCache()->remove($language->getCode());

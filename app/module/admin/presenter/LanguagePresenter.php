@@ -4,20 +4,34 @@
 namespace adminModule;
 
 
+use Language;
 use Nette\Application\UI\Form;
 use Nette\Neon\Exception;
 use Nette\Utils\ArrayHash;
+use PaginatorControl;
 use Tracy\Debugger;
 
 class LanguagePresenter extends AdminPresenter {
 
-    const ID_KEY = "id";
+    const ID_KEY = "id",
+        GENERATED_KEY = "generated",
+        SEARCH_KEY = "search",
+        PAGE_ID = "page";
 
-    /** @var int $id @persistent */
+    private $numOfPages = 0;
+    /** @persistent */
+    public $generated;
+    /** @persistent */
+    public $search;
+    /** @persistent */
+    public $page;
+    /** @persistent */
     public $id;
 
     protected function getAllowedRoles(): array {
         switch ($this->getAction()) {
+            case "show":
+                return \UserManager::ROLES_PAGE_DRAFTING;
             case "default":
                 return \UserManager::ROLES_PAGE_DRAFTING;
             case "create":
@@ -30,7 +44,14 @@ class LanguagePresenter extends AdminPresenter {
     }
 
     public function actionDefault() {
-        $this->template->languages = $this->getLanguageManager()->getAvailableLanguages(true, false);
+        $this->template->isGenerated = $this->isGenerated();
+        $this->template->languages = $this->getLanguageManager()->getFiltered($this->getCurrentPage(), 10, $this->numOfPages, $this->getSearched(), $this->isGenerated());
+        if (!$this->template->languages && $this->getCurrentPage() !== 1) $this->redirect(302, "this", [self::PAGE_ID => $this->numOfPages]);
+    }
+
+
+    public function createComponentPaginator(string $name) {
+        return new PaginatorControl($this, $name, self::PAGE_ID, $this->getCurrentPage(), $this->numOfPages);
     }
 
     public function actionEdit() {
@@ -47,14 +68,21 @@ class LanguagePresenter extends AdminPresenter {
         $this->redirect(302, "edit", [self::ID_KEY => $language->getId()]);
     }
 
-    public function actionDelete(){
+    public function actionDelete() {
         $id = (int)$this->getParameter(self::ID_KEY);
-        $this->getLanguageManager()->delete($id);
+        if (!$this->getLanguageManager()->getById($id) instanceof Language)
+            $this->addWarning("admin.language.delete.not_exist");
+        else
+            $this->getLanguageManager()->delete($id);
+
+
+        $this->redirect(302, ":default", [self::ID_KEY => null]);
     }
 
     public function createComponentLanguageEditForm() {
         $language = $this->getLanguageManager()->getById($this->getParameter(self::ID_KEY));
         $form = $this->getFormFactory()->createLanguageEditForm($language);
+        //$form->setAction($this->link("this", [self::ID_KEY => $language->getId()]));
         $form->onSuccess[] = function (Form $form, array $values) use ($language) {
             try {
                 $this->getLanguageManager()->edit(
@@ -67,13 +95,35 @@ class LanguagePresenter extends AdminPresenter {
                     $values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE],
                     $values[\FormFactory::LANGUAGE_EDIT_FAVICON_NAME]
                 );
-                $this->redirect(302,":default",[self::ID_KEY=>null]);
+                $this->redirect(302, ":default", [self::ID_KEY => null]);
             } catch (Exception $e) {
                 Debugger::log($e);
                 $this->somethingWentWrong();
                 throw $e;
-                $this->redirect(302,"this");
+                $this->redirect(302, "this");
             }
+        };
+        return $form;
+    }
+
+    private function getCurrentPage(): int {
+        $page = (int)$this->getParameter(self::PAGE_ID);
+        if ($page === 0) $page = 1;
+        return $page;
+    }
+
+    private function getSearched():?string {
+        return $this->getParameter(self::SEARCH_KEY);
+    }
+
+    private function isGenerated():?bool {
+        return $this->getParameter(self::GENERATED_KEY);
+    }
+
+    public function createComponentLanguageSearchForm(string $name) {
+        $form = $this->getFormFactory()->createLanguageSearchForm($this->getSearched());
+        $form->onSubmit[] = function () {
+            $this->redirect(302, "this", [self::SEARCH_KEY => $this->getSearched()]);
         };
         return $form;
     }

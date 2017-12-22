@@ -41,10 +41,9 @@ try {
     $app->run();
     $connection->commit();
 } catch (Throwable $ex) {
-    $hasAnythingBeenChanged = $connection->getInsertId();
     $connection->rollBack();
     //dump($hasAnythingBeenChanged,(bool)$hasAnythingBeenChanged);
-    if ($hasAnythingBeenChanged) {
+    if (true/* would be cool if we could check if anything was updated/inserted/deleted*/) {
         define("FULL_RIGHTS", true);
         dump("shitty solution", $ex);
         //shitty solution incoming

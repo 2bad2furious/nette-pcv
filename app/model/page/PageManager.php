@@ -75,7 +75,8 @@ class PageManager extends Manager {
     public function getAllPages(Language $language, $asObjects = true): array {
         $selection = $this->getDatabase()->table(self::LOCAL_TABLE)
             ->order(self::LOCAL_MAIN_COLUMN_ID)
-            ->select(self::LOCAL_MAIN_COLUMN_ID);
+            ->select(self::LOCAL_MAIN_COLUMN_ID)
+            ->where([self::LOCAL_COLUMN_LANG => $language->getId()]);
 
         if (!$asObjects) $selection = $selection->select(self::LOCAL_COLUMN_TITLE);
         $pages = [];
@@ -351,7 +352,7 @@ class PageManager extends Manager {
      */
     public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search) {
         //TODO get localIds and return array of pages instead of this ugly-ass title and lang_id stuff
-        $selection = $this->getDatabase()->table(self::LOCAL_TABLE)->select(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->group(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->select("GROUP_CONCAT(" . self::LOCAL_COLUMN_LANG . " SEPARATOR '|') langs")->select("GROUP_CONCAT(" . self::LOCAL_COLUMN_TITLE . " SEPARATOR ', ') titles")->select(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE)->order(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID);
+        $selection = $this->getDatabase()->table(self::LOCAL_TABLE)->select(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->group(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)->select("GROUP_CONCAT(" . self::LOCAL_COLUMN_LANG . " SEPARATOR '|') langs")->select("GROUP_CONCAT(" . self::LOCAL_COLUMN_TITLE . " SEPARATOR ', ') titles")->select(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE)->order(self::LOCAL_COLUMN_LANG)->order(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID);
 
         if (is_int($type)) $selection = $selection->where(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE, $type);
 
