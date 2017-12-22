@@ -27,7 +27,7 @@ class LanguageManager extends Manager {
         }
 
         if (is_string($search)) {
-            $selection = $selection->where(self::COLUMN_CODE, "%" . $search . "%");
+            $selection = $selection->where(self::COLUMN_CODE. " LIKE (?)", "%" . $search . "%");
         }
 
         $data = $selection->page($page, $perPage, $numOfPages)->fetchAll();
