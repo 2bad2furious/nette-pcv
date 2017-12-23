@@ -77,7 +77,7 @@ class PagePresenter extends AdminPresenter {
     /** @persistent */
     public $edit_language;
 
-    private $numberOfPages = 0;
+    private $numberOfPages;
 
     protected function getAllowedRoles(): array {
         switch ($this->getAction()) {
@@ -132,7 +132,7 @@ class PagePresenter extends AdminPresenter {
             $this->numberOfPages,
             is_string($post_query = $this->getSearchQuery()) ? $post_query : null);
         $this->checkPaging($this->getPage(), $this->numberOfPages, self::PAGE_KEY);
-        /*if ($this->isAjax()) { //needs to be here for some reason xd
+        /*if ($this->isAjax()) { //needs to be here if you don't redirect after receiving form
             $this->redrawControl();
         }*/
     }
