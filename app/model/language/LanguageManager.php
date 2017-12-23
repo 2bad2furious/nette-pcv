@@ -28,6 +28,7 @@ class LanguageManager extends Manager implements ILanguageManager {
         }
 
         $data = $selection->page($page, $perPage, $numOfPages);
+        if ($numOfPages === 0) $numOfPages = 1;
         $languages = [];
 
         while ($row = $data->fetch()) {
