@@ -155,7 +155,7 @@ abstract class BasePresenter extends Presenter {
         return $this->getServiceLoader()->getPageManager();
     }
 
-    protected final function getSettingsManager(): SettingsManager {
+    protected final function getSettingsManager(): ISettingsManager {
         return $this->getServiceLoader()->getSettingsManager();
     }
 

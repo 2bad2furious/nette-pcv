@@ -30,21 +30,21 @@ class SettingsPresenter extends AdminPresenter {
         return \UserManager::ROLES_USER_ADMINISTRATION;
     }
 
-    public function actionRebuild() {
+    public function actionClean() {
         try {
             $pm = $this->getPageManager();
-            $pm->rebuildCache();
+            $pm->cleanCache();
             $lm = $this->getLanguageManager();
-            $lm->rebuildCache();
+            $lm->cleanCache();
             $sm = $this->getSettingsManager();
-            $sm->rebuildCache();
+            $sm->cleanCache();
             $hm = $this->getHeaderManager();
-            $hm->rebuildCache();
+            $hm->cleanCache();
             $um = $this->getUserManager();
-            $um->rebuildCache();
+            $um->cleanCache();
             //TODO rebuild media and tag cache
 
-            $this->addSuccess("admin.settings.rebuild.success");
+            $this->addSuccess("admin.settings.clean.success");
         } catch (Exception $exception) {
             Debugger::log($exception);
             $this->somethingWentWrong();
@@ -57,7 +57,7 @@ class SettingsPresenter extends AdminPresenter {
         $form->onSuccess[] = function (Form $form) {
             $values = $form->getValues(true);
             foreach (self::TABLE as $k => $v) {
-                $this->getSettingsManager()->set($v, $values[$k], null, false);
+                $this->getSettingsManager()->set($v, $values[$k], null);
             }
             $this->addSuccess("admin.settings.edit.success");
             $this->redirect(302, "this");

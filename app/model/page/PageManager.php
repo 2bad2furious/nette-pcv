@@ -251,20 +251,20 @@ class PageManager extends Manager {
 
     private function getByLocalId(int $localId): Page {
         $localRow = $this->getDatabase()->table(self::LOCAL_TABLE)->get($localId);
-        if (!$localRow instanceof ActiveRow) throw new InvalidStateOfDB("row not found");
+        if (!$localRow instanceof ActiveRow) throw new InvalidState("row not found");
 
         $language = $this->getLanguageManager()->getById($localRow[self::LOCAL_COLUMN_LANG]);
         if (!$language instanceof Language) {
-            throw new InvalidStateOfDB("Page with unknown language. localId:" . $localRow[self::LOCAL_COLUMN_ID] . " langId:" . $localRow[self::LOCAL_COLUMN_LANG]);
+            throw new InvalidState("Page with unknown language. localId:" . $localRow[self::LOCAL_COLUMN_ID] . " langId:" . $localRow[self::LOCAL_COLUMN_LANG]);
         }
 
         $globalRow = $this->getDatabase()->table(self::MAIN_TABLE)->get($globalId = $localRow[self::LOCAL_MAIN_COLUMN_ID]);
         $type = Type::getById($globalRow[self::MAIN_COLUMN_TYPE]);
-        if (!$type instanceof Type) throw new InvalidStateOfDB("Type not found");
+        if (!$type instanceof Type) throw new InvalidState("Type not found");
 
         $image = $this->getMediaManager()->getById($imageId = $localRow[self::LOCAL_COLUMN_IMAGE]);
-        if ($image instanceof Media && !$image->isImage()) throw new InvalidStateOfDB("Media not image");
-        if ($imageId !== 0 && !$image instanceof Media) throw new InvalidStateOfDB("Media not found");
+        if ($image instanceof Media && !$image->isImage()) throw new InvalidState("Media not image");
+        if ($imageId !== 0 && !$image instanceof Media) throw new InvalidState("Media not found");
 
         return new Page(
             $globalId,
@@ -348,7 +348,7 @@ class PageManager extends Manager {
      * @param $numOfPages
      * @param null|string $search
      * @return array => [id=>[titles => "" ,type=>"",languages=>[LangObj,...]]]
-     * @throws InvalidStateOfDB
+     * @throws InvalidState
      */
     public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search) {
         //TODO get localIds and return array of pages instead of this ugly-ass title and lang_id stuff
@@ -465,14 +465,14 @@ class PageManager extends Manager {
         if (in_array($parentId, $this->getInvalidParents($page->getGlobalId()))) throw new Exception("Parent is invalid");
 
         $parent = $parentId === 0 ? null : $this->getFromGlobalCache($parentId, $page->getLang());
-        if ($parentId !== 0 && !$parent instanceof Page) throw new InvalidStateOfDB("Parent not found");
+        if ($parentId !== 0 && !$parent instanceof Page) throw new InvalidState("Parent not found");
 
         dump($url, "#" . self::LOCAL_URL_CHARSET_FOR_ADMIN . "#");
         dump(preg_match("#" . self::LOCAL_URL_CHARSET_FOR_ADMIN . "#", $url));
         if (!preg_match("#" . self::LOCAL_URL_CHARSET_FOR_ADMIN . "#", $url)) throw new Exception("URL not the right pattern: " . self::LOCAL_URL_CHARSET);
 
         $image = $imageId === 0 ? null : $this->getMediaManager()->getById($imageId);
-        if ($imageId !== 0 && !$image instanceof Media) throw new InvalidStateOfDB("Image not found");
+        if ($imageId !== 0 && !$image instanceof Media) throw new InvalidState("Image not found");
         if ($image instanceof Media && !$image->isImage()) throw new Exception("Not an image");
 
         if ($parentId !== $page->getParentId() || $globalVisibility !== $page->getGlobalStatus()) {
@@ -503,7 +503,7 @@ class PageManager extends Manager {
             ]);
 
         $newPage = $this->getByLocalId($page->getLocalId());
-        if (!$newPage instanceof Page) throw new InvalidStateOfDB("Page not found");
+        if (!$newPage instanceof Page) throw new InvalidState("Page not found");
 
         $this->cache($newPage);
 

@@ -63,12 +63,14 @@ class Setting {
 
     /**
      * @param Language $language
+     * @return Setting
      * @throws Exception
      */
-    public function setLanguage(Language $language) {
-        if ($this->language instanceof Language) throw new Exception("Language already set");
-        if ($this->languageId !== $language->getId()) throw new Exception("Ids are not the same");
+    public function setLanguage(Language $language): self {
+        if ($this->language instanceof Language) throw new InvalidState("Language already set");
+        if ($this->languageId !== $language->getId()) throw new InvalidArgumentException("Ids are not the same");
         $this->language = $language;
+        return $this;
     }
 
     /**
@@ -76,5 +78,9 @@ class Setting {
      */
     public function getLanguageId(): int {
         return $this->languageId;
+    }
+
+    public function isGlobal(): bool {
+        return $this->getLanguageId() === 0;
     }
 }

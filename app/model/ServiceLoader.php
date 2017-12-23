@@ -58,8 +58,8 @@ class ServiceLoader {
         return $this->context->getByType(PageManager::class);
     }
 
-    public final function getSettingsManager(): SettingsManager {
-        return $this->context->getByType(SettingsManager::class);
+    public final function getSettingsManager(): ISettingsManager {
+        return $this->context->getByType(ISettingsManager::class);
     }
 
     public final function getTranslator(): \Kdyby\Translation\Translator {

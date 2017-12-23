@@ -6,7 +6,6 @@ namespace adminModule;
 
 use BasePresenter;
 use Nette\Http\SessionSection;
-use SettingsManager;
 use Tracy\Debugger;
 
 abstract class AdminPresenter extends BasePresenter {
@@ -36,7 +35,7 @@ abstract class AdminPresenter extends BasePresenter {
 
         $this->template->page_subtitle = $translator->translate($this->setPageSubtitle());
         $title = $translator->translate($this->setPageTitle());
-        $this->template->page_title = $title . " - " . $translator->translate("admin.global.title") . " | " . $this->getSettingsManager()->getSiteName($language);
+        $this->template->page_title = $title . " - " . $translator->translate("admin.global.title");
         $this->template->title = $title;
         $this->payload->title = $this->template->page_title;
 

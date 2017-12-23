@@ -121,7 +121,7 @@ class Router {
             ],
         ]);
 
-        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter settings>/<action rebuild>");
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter settings>/<action clean>");
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action create>");
 

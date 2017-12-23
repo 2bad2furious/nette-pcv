@@ -1,9 +1,9 @@
 <?php
 
-use Nette\Database\Table\ActiveRow;
 
-class SettingsManager extends Manager {
+use Nette\Database\Table\IRow;
 
+class SettingsManager extends Manager implements ISettingsManager {
     const
         TABLE = "settings",
         COLUMN_ID = "settings_id",
@@ -13,121 +13,90 @@ class SettingsManager extends Manager {
 
         ACTION_MANAGE_SETTINGS = "settings.manage";
 
+    private static function getLangId(?Language $language): int {
+        return $language instanceof Language ? $language->getId() : 0;
+    }
 
     public function get(string $option, ?Language $language = null):?Setting {
-
-        $langId = $language instanceof Language ? $language->getId() : 0;
-
-        $cacheKey = $this->getCacheKey($option, $langId);
-
-        /** @var Setting $setting */
-        $setting = $this->getCache()->load($cacheKey);
-
-        if ($setting instanceof Setting && $setting->getLanguageId() !== 0) {
-            $setting->setLanguage($this->getLanguageManager()->getById($langId));
+        $cached = $this->getCache()->load($cacheKey = $this->getCacheKey($option, $language),
+            function () use ($cacheKey, $option, $language) {
+                return $this->saveToCache($cacheKey, $this->getFromDb($option, self::getLangId($language)));
+            });
+        if ($cached instanceof Setting) {
+            $cached->setLanguage($this->getLanguageManager()->getById($cached->getLanguageId()));
+            return $cached;
         }
-
-        return $setting;
+        return null;
     }
 
-    public function set(string $option, string $value, ?Language $language = null, bool $createIfNotFound = false) {
-        if (strlen($option) > self::COLUMN_OPTION_LENGTH) throw new Exception(sprintf("Option must be at most %s characters long", self::COLUMN_OPTION_LENGTH));
-        if ($this->isAllowedOrThrow()) {
-            $exists = $this->get($option, $language);
+    public function set(string $option, string $value, ?Language $language = null): Setting {
+        $existing = $this->get($option, $language);
 
-            $langId = $language instanceof Language ? $language->getId() : 0;
+        $this->uncache($cacheKey = $this->getCacheKey($option, $language));
 
-            $data = [
+        $this->getDatabase()->beginTransaction();
+        try {
+
+            $langId = self::getLangId($language);
+
+            $whereData = [
                 self::COLUMN_OPTION => $option,
-                self::COLUMN_VALUE  => $value,
                 self::COLUMN_LANG   => $langId,
             ];
-            dump($option, $langId, $exists, $createIfNotFound);
-            // if exists update
-            if ($exists instanceof Setting) {
-                $settingId = $exists->getId();
-                $this->getDatabase()
-                    ->table(self::TABLE)
-                    ->where([
-                        self::COLUMN_OPTION => $option,
-                        self::COLUMN_LANG   => $langId,
-                    ])->update($data);
-            } // else insert
-            else if ($createIfNotFound) $settingId = $this->getDatabase()->table(self::TABLE)->insert($data)->getPrimary();
-            else throw new Exception("Setting not found");
 
-            $this->getCache()->save($this->getCacheKey($option, $langId), new Setting(
-                $settingId, $langId, $option, $value
-            ));
+            $updateData = [
+                self::COLUMN_VALUE => $value,
+            ];
+
+            if ($existing instanceof Setting) {
+                $this->getDatabase()->table(self::TABLE)
+                    ->where($whereData)
+                    ->update($updateData);
+
+            } else {
+                $insertData = array_merge($updateData, $whereData);
+                $this->getDatabase()->table(self::TABLE)
+                    ->insert($insertData);
+
+                \Tracy\Debugger::log("Added settings for $cacheKey - $value");
+            }
+
+            $this->getDatabase()->commit();
+        } catch (Exception $exception) {
+            $this->getDatabase()->rollBack();
+            throw $exception;
         }
+
+        return $this->get($option, $language);
     }
 
-    private function isAllowedOrThrow(): bool {
-        if (!$this->getUser()->isAllowed(self::ACTION_MANAGE_SETTINGS))
-            throw new Exception("Not enough rights to edit settings");
-
-        return true;
-    }
-
-    private function getLogo(Language $language):?Media {
-        $setting = $this->get(PageManager::SETTINGS_LOGO, $language);
-
-        if ((int)$setting->getValue() === 0) $setting = $this->get(PageManager::SETTINGS_LOGO);
-
-        $logoId = (int)$setting->getValue();
-        return $this->getMediaManager()->getById($logoId);
+    public function cleanCache() {
+        $this->getCache()->clean();
     }
 
     public function getPageSettings(Language $language): PageSettings {
         return new PageSettings(
-            $this->getSiteName($language),
-            $this->getGoogleAnalytics($language),
-            $this->getTitleSeparator($language),
+            $this->getLocalOrGlobal(PageManager::SETTINGS_SITE_NAME, $language)->getValue(),
+            $this->getLocalOrGlobal(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language)->getValue(),
+            $this->getLocalOrGlobal(PageManager::SETTINGS_TITLE_SEPARATOR, $language)->getValue(),
             $this->getLogo($language),
             $this->getFavicon($language)
         );
     }
 
-    public function rebuildCache() {
-        /** @var ActiveRow $setting */
-        $this->getCache()->clean();
-        foreach ($this->getDatabase()->table(self::TABLE)->fetchAll() as $settingRow) {
-            $setting = new Setting(
-                $settingRow[self::COLUMN_ID],
-                $settingRow[self::COLUMN_LANG],
-                $settingRow[self::COLUMN_OPTION],
-                $settingRow[self::COLUMN_VALUE]
-            );
-            $this->getCache()->save($this->getCacheKey($setting->getOption(), $settingRow[self::COLUMN_LANG]), $setting);
-        }
+    private function getFromDb(string $option, int $langId):?Setting {
+        $data = $this->getDatabase()
+            ->table(self::TABLE)
+            ->where([
+                self::COLUMN_OPTION => $option,
+                self::COLUMN_LANG   => $langId,
+            ])->fetch();
+
+        return $data instanceof IRow ? $this->getFromRow($data) : null;
     }
 
-    private function getCacheKey(string $option, int $langId): string {
-        return $option . "_" . $langId;
-    }
-
-    public function getSiteName(Language $language): string {
-        return $this->getLocalOrGlobal(PageManager::SETTINGS_SITE_NAME, $language)->getValue();
-    }
-
-    private function getGoogleAnalytics(Language $language): string {
-        return $this->getLocalOrGlobal(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language)->getValue();
-    }
-
-    private function getTitleSeparator(Language $language): string {
-        return $this->getLocalOrGlobal(PageManager::SETTINGS_TITLE_SEPARATOR, $language)->getValue();
-    }
-
-    /**
-     * Gets local or global setting, works only for string values
-     * @param string $option
-     * @param Language $language
-     * @return Setting
-     */
-    private function getLocalOrGlobal(string $option, Language $language): Setting {
-        $setting = $this->get($option, $language);
-        if (!$setting->getValue()) $setting = $this->get($option);
-        return $setting;
+    private function getFromRow(IRow $row): Setting {
+        return new Setting($row[self::COLUMN_ID], $row[self::COLUMN_LANG], $row[self::COLUMN_OPTION], $row[self::COLUMN_VALUE]);
     }
 
     private function getCache(): Cache {
@@ -135,12 +104,63 @@ class SettingsManager extends Manager {
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "settings");
     }
 
+    /**
+     * Saves either Setting or false to cache
+     * @param string $key
+     * @param null|Setting $setting
+     * @return null|Setting
+     */
+    private function saveToCache(string $key, ?Setting $setting):?Setting {
+        $value = $setting instanceof Setting ? $setting : false;
+        $this->getCache()->save($key, function () use ($value) {
+            return $value;
+        });
+        return $setting;
+    }
+
+    private function uncache(string $key) {
+        $this->getCache()->remove($key);
+    }
+
+    private function getCacheKey(string $option, ?Language $language): string {
+        return $option . "_" . self::getLangId($language);
+    }
+
+    private function getLocalOrGlobal(string $option, Language $language): Setting {
+        $local = $this->get($option, $language);
+        return ($local->getValue()) ? $local : $this->get($option, null);
+    }
+
+    //TODO fix copy-paste
     private function getFavicon(Language $language):?Media {
-        $setting = $this->get(PageManager::SETTINGS_LOGO, $language);
+        $option = PageManager::SETTINGS_FAVICON;
+        $faviconSetting = $this->getLocalOrGlobal($option, $language);
+        $faviconId = (int)$faviconSetting->getValue();
+        $favicon = $this->getMediaManager()->getById($faviconId, MediaManager::TYPE_IMAGE);
+        if (!$favicon instanceof Media && $faviconId !== 0) {
+            trigger_error("Favicon not found, unsetting.");
+            $this->set($option, 0, $faultyLang = $faviconSetting->isGlobal() ? null : $language);
 
-        if ((int)$setting->getValue() === 0) $setting = $this->get(PageManager::SETTINGS_FAVICON);
+            $this->uncache($this->getCacheKey($option, $faultyLang));
 
-        $faviconId = (int)$setting->getValue();
-        return $this->getMediaManager()->getById($faviconId);
+            return $this->getFavicon($language);
+        }
+        return $favicon;
+    }
+
+    private function getLogo(Language $language):?Media {
+        $option = PageManager::SETTINGS_LOGO;
+        $logoSetting = $this->getLocalOrGlobal($option, $language);
+        $logoId = (int)$logoSetting->getValue();
+        $logo = $this->getMediaManager()->getById($logoId, MediaManager::TYPE_IMAGE);
+        if (!$logo instanceof Media && $logoId !== 0) {
+            trigger_error("Logo not found, unsetting.");
+            $this->set($option, 0, $faultyLang = $logoSetting->isGlobal() ? null : $language);
+
+            $this->uncache($this->getCacheKey($option, $faultyLang));
+
+            return $this->getLogo($language);
+        }
+        return $logo;
     }
 }

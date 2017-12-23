@@ -41,7 +41,7 @@ class MediaManager extends Manager {
         );
     }
 
-    public function getById(int $id):?Media {
+    public function getById(int $id, string $desiredType = null):?Media {
         return $this->getCache()->load($id);
     }
 
