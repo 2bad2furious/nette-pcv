@@ -16,7 +16,7 @@ class LanguagePresenter extends AdminPresenter {
     const ID_KEY = "id",
         GENERATED_KEY = "generated",
         SEARCH_KEY = "search",
-        PAGE_ID = "page";
+        PAGE_KEY = "page";
 
     private $numOfPages = 0;
     /** @persistent */
@@ -46,12 +46,12 @@ class LanguagePresenter extends AdminPresenter {
     public function actionDefault() {
         $this->template->isGenerated = $this->isGenerated();
         $this->template->languages = $this->getLanguageManager()->getFiltered($this->getCurrentPage(), 10, $this->numOfPages, $this->getSearched(), $this->isGenerated());
-        if (!$this->template->languages && $this->getCurrentPage() !== 1) $this->redirect(302, "this", [self::PAGE_ID => $this->numOfPages]);
+        $this->checkPaging($this->getCurrentPage(),$this->numOfPages,self::PAGE_KEY);
     }
 
 
     public function createComponentPaginator(string $name) {
-        return new PaginatorControl($this, $name, self::PAGE_ID, $this->getCurrentPage(), $this->numOfPages);
+        return new PaginatorControl($this, $name, self::PAGE_KEY, $this->getCurrentPage(), $this->numOfPages);
     }
 
     public function actionEdit() {
@@ -107,7 +107,7 @@ class LanguagePresenter extends AdminPresenter {
     }
 
     private function getCurrentPage(): int {
-        $page = (int)$this->getParameter(self::PAGE_ID);
+        $page = (int)$this->getParameter(self::PAGE_KEY);
         if ($page === 0) $page = 1;
         return $page;
     }

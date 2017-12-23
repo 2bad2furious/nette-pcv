@@ -131,7 +131,7 @@ class PagePresenter extends AdminPresenter {
             15,//TODO should be an option?
             $this->numberOfPages,
             is_string($post_query = $this->getSearchQuery()) ? $post_query : null);
-        if (!$this->template->pages && $this->getPage() !== 1) $this->redirect(302, "this", [self::PAGE_KEY => $this->numberOfPages]);
+        $this->checkPaging($this->getPage(),$this->numberOfPages,self::PAGE_KEY);
         /*if ($this->isAjax()) { //needs to be here for some reason xd
             $this->redrawControl();
         }*/

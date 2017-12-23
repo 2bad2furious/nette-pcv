@@ -35,6 +35,11 @@ abstract class BasePresenter extends Presenter {
         parent::startup();
     }
 
+    protected function checkPaging(int $currentPage, int $maxPage, string $page_key) {
+        if ($currentPage < 1) $this->redirect(302, "this", [$page_key => 1]);
+        else if ($currentPage > $maxPage) $this->redirect(302, "this", [$page_key => $maxPage]);
+    }
+
     protected function checkCurrentIdentity() {
         $id = $this->getUser()->getId();
         if (is_int($id)) {
@@ -124,8 +129,8 @@ abstract class BasePresenter extends Presenter {
     }
 
     protected final function getServiceLoader(): ServiceLoader {
-        if(!$this->serviceLoader instanceof ServiceLoader)
-            $this->serviceLoader =  $this->context->getByType(ServiceLoader::class);
+        if (!$this->serviceLoader instanceof ServiceLoader)
+            $this->serviceLoader = $this->context->getByType(ServiceLoader::class);
         return $this->serviceLoader;
     }
 
