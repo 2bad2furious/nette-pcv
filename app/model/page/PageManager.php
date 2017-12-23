@@ -128,16 +128,24 @@ class PageManager extends Manager implements IPageManager {
             $explosion = explode(" ", $search);
             foreach ($explosion as $item) {
                 if (($possibleId = intval($item)) !== 0) {
-                    $searchWheres[] = self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID . " = ?";
                     $values[] = $possibleId;
                 }
-                $searchWheres[] = "MATCH(" . self::LOCAL_SEARCH . ") AGAINST (?)";
-                $values[] = $item;
+                $searchWheres[] = "MATCH(" . self::LOCAL_SEARCH . ") AGAINST (? IN BOOLEAN MODE)";
             }
-            if (count($searchWheres) === 1) {
-                $values = $search;
+
+            $whereData = ["MATCH(" . self::LOCAL_SEARCH . ") AGAINST (? IN BOOLEAN MODE)" =>
+                              implode(" ", array_map(function (string $item) {
+                                  return "%" . $item . "%";
+                              }, $explosion)),];
+            if ($values) {
+                dump($values);
+                $whereData[self::MAIN_TABLE . "." . self::MAIN_COLUMN_ID] = $values;
+                $whereData[self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID] = $values;
             }
-            $selection = $selection->where("(" . implode(") OR (", $searchWheres) . ")", $values);
+
+            $selection = $selection->whereOr($whereData);
+
+            //$selection = $selection->where(["(" . implode(") OR (", $searchWheres) . ")"=> $values]);
         }
 
         if ($language instanceof Language && is_bool($hasTranslation)) {
@@ -154,7 +162,7 @@ class PageManager extends Manager implements IPageManager {
         }
 
         $result = $selection->page($page, $perPage, $numOfPages);
-
+        if ($numOfPages === 0) $numOfPages = 1;
         $pages = [];
 
         while ($page = $result->fetch()) {
