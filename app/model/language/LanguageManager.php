@@ -14,7 +14,7 @@ class LanguageManager extends Manager implements ILanguageManager {
     const ACTION_CACHE = "language.cache",
         ACTION_MANAGE = "language.manage";
 
-    public function getFiltered(int $page, int $perPage, &$numOfPages, ? $search, ? $codeIsGenerated) {
+    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated) {
         $selection = $this->getDatabase()
             ->table(self::TABLE)
             ->order(self::COLUMN_ID);
@@ -27,10 +27,10 @@ class LanguageManager extends Manager implements ILanguageManager {
             $selection = $selection->where(self::COLUMN_CODE . " LIKE (?)", "%" . $search . "%");
         }
 
-        $data = $selection->page($page, $perPage, $numOfPages)->fetchAll();
+        $data = $selection->page($page, $perPage, $numOfPages);
         $languages = [];
 
-        foreach ($data as $row) {
+        while ($row = $data->fetch()) {
             $langId = $row[self::COLUMN_ID];
             $languages[] = $this->getById($langId);
         }
@@ -38,11 +38,10 @@ class LanguageManager extends Manager implements ILanguageManager {
     }
 
     /**
-     * @param bool $asObjects
      * @param bool $check whether to include languages that are not finished (=code is generated)
-     * @return array
+     * @return Language[]
      */
-    public function getAvailableLanguages($asObjects = false, $check = true): array {
+    public function getAvailableLanguages($check = true): array {
         $data = $this->getDatabase()
             ->table(self::TABLE)
             ->order(self::COLUMN_ID);
@@ -50,11 +49,10 @@ class LanguageManager extends Manager implements ILanguageManager {
         if ($check)
             $data = $data->where([self::COLUMN_CODE . " NOT LIKE(?)" => self::GENERATED_CODE_PREFIX . "%"]);
 
-        $data = $data->fetchAll();
         $langs = [];
         /** @var IRow $lang */
-        foreach ($data as $lang) {
-            $langs[$lang[self::COLUMN_ID]] = ($asObjects) ? $this->getById($lang[self::COLUMN_ID]) : $lang[self::COLUMN_CODE];
+        while ($lang = $data->fetch()) {
+            $langs[$lang[self::COLUMN_ID]] = $this->getById($lang[self::COLUMN_ID]);
         }
         return $langs;
     }
@@ -95,11 +93,15 @@ class LanguageManager extends Manager implements ILanguageManager {
     public function createNew(): Language {
         $code = $this->getUniqueCode();
 
-        $this->getDatabase()->beginTransaction();
+        if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
+            $this->getDatabase()->beginTransaction();
         try {
             $id = $this->getDatabase()->table(self::TABLE)->insert([
                 self::COLUMN_CODE => $code,
             ])->getPrimary();
+
+            $this->uncacheId($id);
+            $this->uncacheCode($code);
 
             $language = $this->getById($id);
 
@@ -107,9 +109,9 @@ class LanguageManager extends Manager implements ILanguageManager {
 
             $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
 
-            $this->getDatabase()->commit();
+            if (!$inTransaction) $this->getDatabase()->commit();
         } catch (Exception $exception) {
-            $this->getDatabase()->rollBack();
+            if (!$inTransaction) $this->getDatabase()->rollBack();
             throw $exception;
         }
         return $language;
@@ -123,7 +125,8 @@ class LanguageManager extends Manager implements ILanguageManager {
 
             $this->uncache($language);
 
-            $this->getDatabase()->beginTransaction();
+            if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
+                $this->getDatabase()->beginTransaction();
             try {
 
                 $this->getDatabase()->table(self::TABLE)
@@ -133,9 +136,9 @@ class LanguageManager extends Manager implements ILanguageManager {
                     ->update([
                         self::COLUMN_CODE => $code,
                     ]);
-                $this->getDatabase()->commit();
+                if (!$inTransaction) $this->getDatabase()->commit();
             } catch (Exception $exception) {
-                $this->getDatabase()->rollBack();
+                if (!$inTransaction) $this->getDatabase()->rollBack();
                 throw $exception;
             }
         }
@@ -150,18 +153,20 @@ class LanguageManager extends Manager implements ILanguageManager {
         if (!$language instanceof Language) throw new InvalidArgumentException("Language not found");
 
         //check if its the last
-        if (count($this->getAvailableLanguages(false, false)) === 1) throw new CannotDeleteLastLanguage();
+        if (count($this->getAvailableLanguages(false)) === 1) throw new CannotDeleteLastLanguage();
 
         $this->uncache($language);
-        $this->getDatabase()->beginTransaction();
+        if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
+            $this->getDatabase()->beginTransaction();
 
         try {
             $this->getDatabase()->table(self::TABLE)
                 ->where(self::COLUMN_ID, $language->getId())
                 ->delete();
-            $this->getDatabase()->commit();
+
+            if (!$inTransaction) $this->getDatabase()->commit();
         } catch (Exception $exception) {
-            $this->getDatabase()->rollBack();
+            if (!$inTransaction) $this->getDatabase()->rollBack();
             throw  $exception;
         }
 
@@ -169,7 +174,7 @@ class LanguageManager extends Manager implements ILanguageManager {
     }
 
     public static function isCodeGenerated(string $code): bool {
-        return substr($code, 0, strlen(LanguageManagerOld::GENERATED_CODE_PREFIX)) === LanguageManagerOld::GENERATED_CODE_PREFIX;
+        return substr($code, 0, strlen(self::GENERATED_CODE_PREFIX)) === self::GENERATED_CODE_PREFIX;
     }
 
     private function getCodeCache(): Cache {
@@ -258,7 +263,15 @@ class LanguageManager extends Manager implements ILanguageManager {
     }
 
     private function uncache(Language $language) {
-        $this->getIdCache()->remove($language->getId());
-        $this->getCodeCache()->remove($language->getCode());
+        $this->uncacheId($language->getId());
+        $this->uncacheCode($language->getCode());
+    }
+
+    private function uncacheId(int $id) {
+        $this->getIdCache()->remove($id);
+    }
+
+    private function uncacheCode(string $code) {
+        $this->getCodeCache()->remove($code);
     }
 }

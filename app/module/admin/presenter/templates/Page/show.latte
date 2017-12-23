@@ -44,9 +44,9 @@
                         &nbsp;
                         <div>
                             {foreach $languages as $lang}
-                                <a class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::LANGUAGE_KEY=>$lang}active{/ifCurrent}"
-                                   href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::PAGE_KEY=>1}">
-                                    {_$lang}
+                                <a class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode()}active{/ifCurrent}"
+                                   href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::PAGE_KEY=>1}">
+                                    {$lang->getCode()}
                                 </a>
                             {/foreach}
                         </div>
@@ -58,9 +58,9 @@
                         <div>
                             {foreach $languages as $lang}
                                 <a
-                                        class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::LANGUAGE_KEY=>$lang}active{/ifCurrent}"
-                                        href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::PAGE_KEY=>1}">
-                                    {_$lang}
+                                        class="{ifCurrent this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode()}active{/ifCurrent}"
+                                        href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::PAGE_KEY=>1}">
+                                    {$lang->getCode()}
                                 </a>
                             {/foreach}
                         </div>
@@ -78,30 +78,37 @@
         </div>
         <div id="pages">
             <a href="{plink this}">{_"admin.page.show.refresh"}</a>
-            {if $pages}
+            {if $results}
                 <table>
                     <thead>
                     <tr>
                         <td>{_"admin.page.show.table.header.globalId"}</td>
-                        <td>{_"admin.page.show.table.header.titles"}</td>
                         <td>{_"admin.page.show.table.header.type"}</td>
+                        <td>{_"admin.page.show.table.header.titles"}</td>
                         <td>{_"admin.page.show.table.header.edit"}</td>
                         <td>{_"admin.page.show.table.header.delete"}</td>
                     </tr>
                     </thead>
                     <tbody>
-                    {foreach $pages as $id => $page}
-                        <tr>
-                            <td>{$id}</td>
-                            <td>{$page['titles']|truncate:25}</td>
-                            <td>{_"admin.page.show.table.body.type.{$page['type']}"}</td>
-                            <td>{foreach $page['languages'] as $lang}<a class="action page-edit"
-                                                                        href="{plink edit adminModule\PagePresenter::ID_KEY=>$id,
-                            adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$lang->getCode()}">{_$lang->getCode()}</a>{/foreach}</td>
-                            <td><a class="action page-delete"
-                                   href="{plink delete adminModule\PagePresenter::ID_KEY=>$id}">{_"admin.page.show.delete.label"}</a>
+                    {foreach $results as $globalId => $pages}
+                        {dump $pages}
+                        {dump count($pages)}
+                        {foreach $pages as $page}
+                            <tr>
+                            {first}
+                                <td rowspan="{count($pages)}">{$globalId}</td>
+                                <td rowspan="{count($pages)}">{_"admin.page.show.table.body.type.{$page->getType()}"}</td>
+                            {/first}
+                            <td>{$page->getTitle()|truncate:25}</td>
+                            <td><a class="action page-edit"
+                                                            href="{plink edit adminModule\PagePresenter::ID_KEY=>$globalId,
+                            adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLang()->getCode()}">{$page->getLang()->getCode()}</a>
                             </td>
-                        </tr>
+                            <td><a class="action page-delete"
+                                   href="{plink delete adminModule\PagePresenter::ID_KEY=>$globalId}">{_"admin.page.show.delete.label"}</a>
+                            </td>
+                            </tr>
+                        {/foreach}
                     {/foreach}
                     </tbody>
                 </table>

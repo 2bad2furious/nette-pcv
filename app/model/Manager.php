@@ -27,7 +27,7 @@ abstract class Manager implements IManager {
         $this->init();
     }
 
-    public static function getInitingClass():?string{
+    public static function getInitingClass():?string {
         return self::$initingClasses;
     }
 

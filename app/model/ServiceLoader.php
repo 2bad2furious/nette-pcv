@@ -8,7 +8,7 @@ use Nette\Security\User;
 
 class ServiceLoader {
 //TODO dont always call DIC
-    private const CLASS_NAMES = [TagManager::class, PageManager::class, LanguageManagerOld::class, UserManager::class, SettingsManager::class, HeaderManager::class, MediaManager::class];
+    private const CLASS_NAMES = [TagManager::class, PageManager::class, LanguageManager::class, UserManager::class, SettingsManager::class, HeaderManager::class, MediaManager::class];
 
     /** @var  Container */
     private $context;

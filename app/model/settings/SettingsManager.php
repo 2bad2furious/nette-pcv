@@ -9,9 +9,7 @@ class SettingsManager extends Manager implements ISettingsManager {
         COLUMN_ID = "settings_id",
         COLUMN_OPTION = "option", COLUMN_OPTION_LENGTH = 60,
         COLUMN_VALUE = "value",
-        COLUMN_LANG = "lang_id",
-
-        ACTION_MANAGE_SETTINGS = "settings.manage";
+        COLUMN_LANG = "lang_id";
 
     private static function getLangId(?Language $language): int {
         return $language instanceof Language ? $language->getId() : 0;
@@ -23,7 +21,7 @@ class SettingsManager extends Manager implements ISettingsManager {
                 return $this->getFromDb($option, self::getLangId($language));
             });
         if ($cached instanceof Setting) {
-            $cached->setLanguage($this->getLanguageManager()->getById($cached->getLanguageId()));
+            if ($cached->getLanguageId() !== 0) $cached->setLanguage($this->getLanguageManager()->getById($cached->getLanguageId()));
             return $cached;
         }
         return null;
@@ -34,7 +32,8 @@ class SettingsManager extends Manager implements ISettingsManager {
 
         $this->uncache($cacheKey = $this->getCacheKey($option, $language));
 
-        $this->getDatabase()->beginTransaction();
+        if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
+            $this->getDatabase()->beginTransaction();
         try {
 
             $langId = self::getLangId($language);
@@ -61,9 +60,9 @@ class SettingsManager extends Manager implements ISettingsManager {
                 \Tracy\Debugger::log("Added settings for $cacheKey - $value");
             }
 
-            $this->getDatabase()->commit();
+            if (!$inTransaction) $this->getDatabase()->commit();
         } catch (Exception $exception) {
-            $this->getDatabase()->rollBack();
+            if (!$inTransaction) $this->getDatabase()->rollBack();
             throw $exception;
         }
 
@@ -132,8 +131,6 @@ class SettingsManager extends Manager implements ISettingsManager {
             trigger_error("Favicon not found, unsetting.");
             $this->set($option, 0, $faultyLang = $faviconSetting->isGlobal() ? null : $language);
 
-            $this->uncache($this->getCacheKey($option, $faultyLang));
-
             return $this->getFavicon($language);
         }
         return $favicon;
@@ -147,8 +144,6 @@ class SettingsManager extends Manager implements ISettingsManager {
         if (!$logo instanceof Media && $logoId !== 0) {
             trigger_error("Logo not found, unsetting.");
             $this->set($option, 0, $faultyLang = $logoSetting->isGlobal() ? null : $language);
-
-            $this->uncache($this->getCacheKey($option, $faultyLang));
 
             return $this->getLogo($language);
         }

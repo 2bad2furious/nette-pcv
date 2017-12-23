@@ -13,7 +13,7 @@
                 {label FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}{input FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}
                 {label FormFactory::PAGE_EDIT_TITLE_NAME}{input \FormFactory::PAGE_EDIT_TITLE_NAME}
                 {label \FormFactory::PAGE_EDIT_URL_NAME}{input FormFactory::PAGE_EDIT_URL_NAME}
-                <span>{_"admin.page.edit.local.url.prelabel"}: '/{$page->getLang()->getCode()}/<span
+                <span id="url-content-wrapper">{_"admin.page.edit.local.url.prelabel"}: '/{$page->getLang()->getCode()}/<span
                             id="url-content" n:class="$page->isUrlGenerated() ? failure">{if $page->isUrlGenerated()}{_"admin.page.edit.local.url.check.isnt_checked"}{else}{$page->getCheckedUrl()}{/if}</span>'</span>
                 {label FormFactory::PAGE_EDIT_DESCRIPTION_NAME}{input FormFactory::PAGE_EDIT_DESCRIPTION_NAME}
                 {label FormFactory::PAGE_EDIT_CONTENT_NAME}{input FormFactory::PAGE_EDIT_CONTENT_NAME}

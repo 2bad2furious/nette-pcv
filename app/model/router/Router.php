@@ -31,8 +31,10 @@ class Router {
             $router[] = new Route("Console:");
             return $router;
         }*/
-        $availableLanguages = $this->languageManager->getAvailableLanguages();
-        $languages = implode("|", $availableLanguages);
+        $availableLanguages = $this->languageManager->getAvailableLanguages(true);
+        $languages = implode("|", array_map(function (Language $language) {
+            return $language->getCode();
+        }, $availableLanguages));
 
         $router[] = $adminRouteList = new RouteList("admin");
         $router[] = $frontRouteList = new RouteList("front");

@@ -47,10 +47,10 @@ class HeaderManager extends Manager {
         $rows = $this->getDatabase()->table(self::TABLE)->where([
             self::COLUMN_LANG      => $language->getId(),
             self::COLUMN_PARENT_ID => $header->getHeaderPageId(),
-        ])->fetchAll();
+        ]);
 
         /** @var ActiveRow $row */
-        foreach ($rows as $row) {
+        while ($row = $rows->fetch()) {
             $headerPage = new HeaderPage(
                 $row[self::COLUMN_ID],
                 $row[self::COLUMN_PAGE_ID],
@@ -87,7 +87,7 @@ class HeaderManager extends Manager {
         }
     }
 
-    private function getCache():Cache{
+    private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "header");
     }

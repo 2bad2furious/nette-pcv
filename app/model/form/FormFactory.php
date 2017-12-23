@@ -50,10 +50,10 @@ class FormFactory extends Manager {
         )->setDefaultValue($page->getGlobalStatus());
 
         if ($page->isPage()) {
-            $parents = array_merge([0 => "admin.page.edit.global.parent.no"], $this->getPageManager()->getViableParents($page->getGlobalId(), $page->getLang()));
-            foreach ($parents as $k => $v) {
-                if ($v === "") $parents[$k] = "admin.global.page.no_title";
-            }
+            $parents = array_merge([0 => "admin.page.edit.global.parent.no"], array_map(function (Page $page) {
+                return $page->getTitle();
+            }, $this->getPageManager()->getViableParents($page->getGlobalId(), $page->getLang())));
+
             $container->addSelect(self::PAGE_EDIT_PARENT_NAME, "admin.page.edit.global.parent.label", $parents)
                 ->setDefaultValue($page->getParentId());
         }
@@ -127,21 +127,23 @@ class FormFactory extends Manager {
         $code = $form->addText(self::LANGUAGE_EDIT_CODE_NAME, "admin.language.code.label")
             ->addRule(Form::REQUIRED, "admin.language.edit.code.required")
             ->addRule(Form::MAX_LENGTH, "admin.language.edit.code.length", 5)
-            ->addRule(Form::PATTERN, "admin.language.edit.code.pattern", LanguageManagerOld::COLUMN_CODE_PATTERN)
+            ->addRule(Form::PATTERN, "admin.language.edit.code.pattern", LanguageManager::COLUMN_CODE_PATTERN)
             ->addRule(function (TextInput $item) {
                 return !$this->getLanguageManager()->getByCode($item->getValue()) instanceof Language;
             }, $message = "admin.language.edit.code.not_available", $message);
-        if (!LanguageManagerOld::isCodeGenerated($language->getCode())) {
+        if (!LanguageManager::isCodeGenerated($language->getCode())) {
             $code->setDisabled(true)->setEmptyValue($language->getCode())
                 ->setOmitted(false);
         }
 
-        if (!LanguageManagerOld::isCodeGenerated($language->getCode())) {
+        if (!LanguageManager::isCodeGenerated($language->getCode())) {
             $pm = $this->getPageManager();
-            $availablePages = $pm->getAllPages($language, false);
-            $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", $availablePages);
+            $allPages = $pm->getAllPages($language);
+            $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", array_map(function (Page $page) {
+                return $page->getTitle();
+            }, $allPages));
 
-            $currentHomePage = $pm->getHomePage($language, false);
+            $currentHomePage = $pm->getHomePage($language);
             if ($currentHomePage instanceof Page) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
         }
 
@@ -180,7 +182,10 @@ class FormFactory extends Manager {
             ->setDefaultValue($sm->get(PageManager::SETTINGS_TITLE_SEPARATOR)->getValue())
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
-        $form->addSelect(self::SETTINGS_EDIT_DEFAULT_LANGUAGE_NAME, "admin.settings.edit.language.label", $lm->getAvailableLanguages())
+        $availableLanguages = array_map(function (Language $language) {
+            return $language->getCode();
+        }, $lm->getAvailableLanguages());
+        $form->addSelect(self::SETTINGS_EDIT_DEFAULT_LANGUAGE_NAME, "admin.settings.edit.language.label", $availableLanguages)
             ->setDefaultValue($lm->getDefaultLanguage()->getId());
 
         $images = $this->getMediaManager()->getAvailableImages();

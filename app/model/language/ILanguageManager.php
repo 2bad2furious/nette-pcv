@@ -6,14 +6,13 @@ interface ILanguageManager extends IManager {
     const TRIGGER_LANGUAGE_ADDED = "trigger.language.added";
     const TRIGGER_LANGUAGE_EDITED = "trigger.language.edited";
 
-    public function getFiltered(int $page, int $perPage, &$numOfPages, ? $search, ? $codeIsGenerated);
+    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated);
 
     /**
-     * @param bool $asObjects
      * @param bool $check whether to include languages that are not finished (=code is generated)
-     * @return array
+     * @return Language[]
      */
-    public function getAvailableLanguages($asObjects = false, $check = true): array;
+    public function getAvailableLanguages($check = true): array;
 
     public function getByCode(string $langCode): ?Language;
 

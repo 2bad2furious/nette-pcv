@@ -120,9 +120,9 @@ class PagePresenter extends AdminPresenter {
         $this->template->language = $this->getVisibility();
         $this->template->has_translation = $this->hasTranslation();
         $this->template->action = $this->getAction();
-        $this->template->languages = $this->getLanguageManager()->getAvailableLanguages();
+        $this->template->languages = $this->getLanguageManager()->getAvailableLanguages(true);
         $this->template->language = $this->getLanguage();
-        $this->template->pages = $this->getPageManager()->getFiltered(
+        $this->template->results = $this->getPageManager()->getFiltered(
             self::TYPE_TABLE[$this->getType()],
             self::VISIBILITY_TABLE[$this->getVisibility()],
             $this->getLanguageManager()->getByCode($this->getLanguage()),
@@ -131,7 +131,7 @@ class PagePresenter extends AdminPresenter {
             15,//TODO should be an option?
             $this->numberOfPages,
             is_string($post_query = $this->getSearchQuery()) ? $post_query : null);
-        $this->checkPaging($this->getPage(),$this->numberOfPages,self::PAGE_KEY);
+        $this->checkPaging($this->getPage(), $this->numberOfPages, self::PAGE_KEY);
         /*if ($this->isAjax()) { //needs to be here for some reason xd
             $this->redrawControl();
         }*/
@@ -192,7 +192,7 @@ class PagePresenter extends AdminPresenter {
             try {
                 $this->getPageManager()->update(
                     $page,
-                    (int)@$values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_PARENT_NAME],
+                    @$values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_PARENT_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_TITLE_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_DESCRIPTION_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_URL_NAME],
@@ -203,13 +203,15 @@ class PagePresenter extends AdminPresenter {
                 );
 
                 $this->flashMessage("admin.page.edit.success");
-                $this->redirect(302, "Page:show", [self::ID_KEY => null, self::EDIT_LANGUAGE_KEY => null]);
+                $this->redirect(302, "Language:default", [self::ID_KEY => null, self::EDIT_LANGUAGE_KEY => null]);
+                //$this->redrawDefault(true);
             } catch (Exception $ex) {
                 Debugger::log($ex);
                 $this->somethingWentWrong();
             }
         };
-        return $form/*->setAction($this->link("edit", [self::ID_KEY => $page->getGlobalId(), self::EDIT_LANGUAGE_KEY => $this->getParameter(self::EDIT_LANGUAGE_KEY)]))*/;
+        return $form/*->setAction($this->link("edit", [self::ID_KEY => $page->getGlobalId(), self::EDIT_LANGUAGE_KEY => $this->getParameter(self::EDIT_LANGUAGE_KEY)]))*/
+            ;
     }
 
     public function createComponentAdminPageSearch() {

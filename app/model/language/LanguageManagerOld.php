@@ -102,7 +102,7 @@ class LanguageManagerOld extends Manager implements ILanguageManager {
         $this->throwIfNoRights(self::ACTION_CACHE);
         $this->getIdCache()->clean();
         $this->getCodeCache()->clean();
-        foreach ($this->getAvailableLanguages(true, false) as $language) {
+        foreach ($this->getAvailableLanguages( false) as $language) {
             $this->cache($language);
         }
     }
@@ -139,7 +139,7 @@ class LanguageManagerOld extends Manager implements ILanguageManager {
         if (!$language instanceof Language) throw new InvalidArgumentException("Language does not exist");
 
         //check if its the last
-        if (count($this->getAvailableLanguages(false, false)) === 1) throw new CannotDeleteLastLanguage();
+        if (count($this->getAvailableLanguages( false)) === 1) throw new CannotDeleteLastLanguage();
 
         $this->getIdCache()->remove($language->getId());
         $this->getCodeCache()->remove($language->getCode());
