@@ -1,3 +1,8 @@
 {block content}
-    content xd
+    <div>Choose language:
+        {foreach $languages as $lang}
+            <a href="{plink this \adminModule\HeaderPresenter::LANGUAGE_KEY=>$lang->getCode()}" class="{ifCurrent this \adminModule\HeaderPresenter::LANGUAGE_KEY=>$lang->getCode()}active{/ifCurrent}">{_$lang->getCode()}</a>
+        {/foreach}
+    </div>
+    {dump $header}
 {/block}
