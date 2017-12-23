@@ -10,16 +10,16 @@ class Router {
     /** @var bool */
     private $consoleMode;
     /**
-     * @var LanguageManager
+     * @var ILanguageManager
      */
     private $languageManager;
 
     /**
      * Router constructor.
      * @param bool $consoleMode
-     * @param LanguageManager $languageManager
+     * @param ILanguageManager $languageManager
      */
-    public function __construct(bool $consoleMode, LanguageManager $languageManager) {
+    public function __construct(bool $consoleMode, ILanguageManager $languageManager) {
         $this->consoleMode = $consoleMode;
         $this->languageManager = $languageManager;
     }

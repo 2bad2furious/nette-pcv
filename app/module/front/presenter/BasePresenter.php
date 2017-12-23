@@ -139,7 +139,7 @@ abstract class BasePresenter extends Presenter {
     }
 
 
-    protected final function getLanguageManager(): LanguageManager {
+    protected final function getLanguageManager(): ILanguageManager {
         return $this->getServiceLoader()->getLanguageManager();
     }
 

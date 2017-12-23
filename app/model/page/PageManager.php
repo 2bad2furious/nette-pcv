@@ -125,7 +125,7 @@ class PageManager extends Manager {
     }
 
     protected function init() {
-        LanguageManager::on(LanguageManager::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
+        LanguageManagerOld::on(LanguageManagerOld::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
             $this->throwIfNoRights(self::ACTION_MANAGE);
 
             $this->getUrlCache()->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);

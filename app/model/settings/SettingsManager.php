@@ -18,9 +18,9 @@ class SettingsManager extends Manager implements ISettingsManager {
     }
 
     public function get(string $option, ?Language $language = null):?Setting {
-        $cached = $this->getCache()->load($cacheKey = $this->getCacheKey($option, $language),
-            function () use ($cacheKey, $option, $language) {
-                return $this->saveToCache($cacheKey, $this->getFromDb($option, self::getLangId($language)));
+        $cached = $this->getCache()->load($this->getCacheKey($option, $language),
+            function () use ($option, $language) {
+                return $this->getFromDb($option, self::getLangId($language));
             });
         if ($cached instanceof Setting) {
             $cached->setLanguage($this->getLanguageManager()->getById($cached->getLanguageId()));
@@ -84,7 +84,12 @@ class SettingsManager extends Manager implements ISettingsManager {
         );
     }
 
-    private function getFromDb(string $option, int $langId):?Setting {
+    /**
+     * @param string $option
+     * @param int $langId
+     * @return false|Setting
+     */
+    private function getFromDb(string $option, int $langId) {
         $data = $this->getDatabase()
             ->table(self::TABLE)
             ->where([
@@ -92,7 +97,7 @@ class SettingsManager extends Manager implements ISettingsManager {
                 self::COLUMN_LANG   => $langId,
             ])->fetch();
 
-        return $data instanceof IRow ? $this->getFromRow($data) : null;
+        return $data instanceof IRow ? $this->getFromRow($data) : false;
     }
 
     private function getFromRow(IRow $row): Setting {
@@ -102,20 +107,6 @@ class SettingsManager extends Manager implements ISettingsManager {
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "settings");
-    }
-
-    /**
-     * Saves either Setting or false to cache
-     * @param string $key
-     * @param null|Setting $setting
-     * @return null|Setting
-     */
-    private function saveToCache(string $key, ?Setting $setting):?Setting {
-        $value = $setting instanceof Setting ? $setting : false;
-        $this->getCache()->save($key, function () use ($value) {
-            return $value;
-        });
-        return $setting;
     }
 
     private function uncache(string $key) {

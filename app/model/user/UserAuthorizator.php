@@ -29,10 +29,10 @@ class UserAuthorizator implements \Nette\Security\IAuthorizator {
             case SettingsManager::ACTION_MANAGE_SETTINGS:
                 $allowedRoles = UserManager::ROLES_USER_ADMINISTRATION;
                 break;
-            case LanguageManager::ACTION_CACHE:
+            case LanguageManagerOld::ACTION_CACHE:
                 $allowedRoles = UserManager::ROLES_USER_ADMINISTRATION;
                 break;
-            case LanguageManager::ACTION_MANAGE:
+            case LanguageManagerOld::ACTION_MANAGE:
                 $allowedRoles = UserManager::ROLES_PAGE_MANAGING;
                 break;
         }

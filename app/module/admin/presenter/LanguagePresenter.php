@@ -5,7 +5,7 @@ namespace adminModule;
 
 
 use Language;
-use LanguageManager;
+use LanguageManagerOld;
 use Nette\Application\UI\Form;
 use Nette\Neon\Exception;
 use Nette\Utils\ArrayHash;

@@ -14,7 +14,7 @@ class SettingsPresenter extends AdminPresenter {
         \FormFactory::SETTINGS_EDIT_TITLE_SEPARATOR          => \PageManager::SETTINGS_TITLE_SEPARATOR,
         \FormFactory::SETTINGS_EDIT_DEFAULT_SITE_TITLE       => \PageManager::SETTINGS_SITE_NAME,
         \FormFactory::SETTINGS_EDIT_DEFAULT_GOOGLE_ANALYTICS => \PageManager::SETTINGS_GOOGLE_ANALYTICS,
-        \FormFactory::SETTINGS_EDIT_DEFAULT_LANGUAGE_NAME    => \LanguageManager::SETTINGS_DEFAULT_LANGUAGE,
+        \FormFactory::SETTINGS_EDIT_DEFAULT_LANGUAGE_NAME    => \LanguageManagerOld::SETTINGS_DEFAULT_LANGUAGE,
         \FormFactory::SETTINGS_EDIT_LOGO                     => \PageManager::SETTINGS_LOGO,
     ];
 

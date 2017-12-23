@@ -7,7 +7,7 @@ use Nette\Database\Context;
 use Nette\DI\Container;
 use Nette\Security\User;
 
-abstract class Manager {
+abstract class Manager implements IManager {
 
     private static $initingClasses = null;
 
@@ -50,10 +50,6 @@ abstract class Manager {
             }
     }
 
-    protected function throwIfNoRights(string $action) {
-        if (!$this->getUser()->isAllowed($action) && !defined("FULL_RIGHTS")) throw new Exception("Not allowed.");
-    }
-
     protected final function getDefaultStorage(): IStorage {
         return $this->context->getByType(IStorage::class);
     }
@@ -62,11 +58,11 @@ abstract class Manager {
         return $this->getServiceLoader()->getPageManager();
     }
 
-    protected final function getLanguageManager(): LanguageManager {
+    protected final function getLanguageManager(): ILanguageManager {
         return $this->getServiceLoader()->getLanguageManager();
     }
 
-    protected final function getSettingsManager(): SettingsManager {
+    protected final function getSettingsManager(): ISettingsManager {
         return $this->getServiceLoader()->getSettingsManager();
     }
 

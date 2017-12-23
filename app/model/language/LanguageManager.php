@@ -1,8 +1,9 @@
 <?php
 
-use Nette\Database\Table\ActiveRow;
 
-class LanguageManager extends Manager {
+use Nette\Database\IRow;
+
+class LanguageManager extends Manager implements ILanguageManager {
 
     const TABLE = "language",
         COLUMN_ID = "language_id",
@@ -12,22 +13,18 @@ class LanguageManager extends Manager {
     const GENERATED_CODE_PREFIX = "glc";
     const ACTION_CACHE = "language.cache",
         ACTION_MANAGE = "language.manage";
-    const TRIGGER_LANGUAGE_DELETED = "trigger.language.deleted";
-    const TRIGGER_LANGUAGE_ADDED = "trigger.language.added";
-    const TRIGGER_LANGUAGE_EDITED = "trigger.language.edited";
 
-
-    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated) {
+    public function getFiltered(int $page, int $perPage, &$numOfPages, ? $search, ? $codeIsGenerated) {
         $selection = $this->getDatabase()
             ->table(self::TABLE)
             ->order(self::COLUMN_ID);
 
         if (is_bool($codeIsGenerated)) {
-            $selection = $selection->where([self::COLUMN_CODE . ($codeIsGenerated ? "" : "NOT LIKE (?)") => self::GENERATED_CODE_PREFIX . "%"]);
+            $selection = $selection->where([self::COLUMN_CODE . ($codeIsGenerated ? " LIKE (?)" : " NOT LIKE (?)") => self::GENERATED_CODE_PREFIX . "%"]);
         }
 
         if (is_string($search)) {
-            $selection = $selection->where(self::COLUMN_CODE. " LIKE (?)", "%" . $search . "%");
+            $selection = $selection->where(self::COLUMN_CODE . " LIKE (?)", "%" . $search . "%");
         }
 
         $data = $selection->page($page, $perPage, $numOfPages)->fetchAll();
@@ -35,7 +32,7 @@ class LanguageManager extends Manager {
 
         foreach ($data as $row) {
             $langId = $row[self::COLUMN_ID];
-            $languages[] = $this->getFromCacheById($langId);
+            $languages[] = $this->getById($langId);
         }
         return $languages;
     }
@@ -55,109 +52,67 @@ class LanguageManager extends Manager {
 
         $data = $data->fetchAll();
         $langs = [];
-        /** @var ActiveRow $lang */
+        /** @var IRow $lang */
         foreach ($data as $lang) {
-            $langs[$lang[self::COLUMN_ID]] = ($asObjects) ? $this->createFromRow($lang) : $lang[self::COLUMN_CODE];
+            $langs[$lang[self::COLUMN_ID]] = ($asObjects) ? $this->getById($lang[self::COLUMN_ID]) : $lang[self::COLUMN_CODE];
         }
         return $langs;
     }
 
+    public function getByCode(string $langCode): ?Language {
+        $cached = $this->getCodeCache()->load($langCode,
+            function () use ($langCode) {
+                return $this->getFromDbByCode($langCode);
+            });
+        return $cached instanceof Language ? $cached : null;
+    }
+
+    public function getById(int $id): ?Language {
+        $cached = $this->getIdCache()->load($id,
+            function () use ($id) {
+                return $this->getFromDbById($id);
+            });
+        return $cached instanceof Language ? $cached : null;
+    }
+
+    public function cleanCache() {
+        $this->getCache()->clean();
+    }
+
     /**
      * @return Language
-     * @throws Exception
+     * @throws InvalidState
      */
     public function getDefaultLanguage(): Language {
-        $defaultLang = $this->getSettingsManager()->get(self::SETTINGS_DEFAULT_LANGUAGE);
-
-        if (!($language = $defaultLang) instanceof Setting || !($language = $this->getById((int)$defaultLang->getValue())) instanceof Language) {
-            dump($defaultLang, $this->getById((int)$defaultLang->getValue()));
-            throw new Exception("DefaultLang not set or doesnt exist");
-        }
-
+        $setting = $this->getSettingsManager()->get(self::SETTINGS_DEFAULT_LANGUAGE);
+        if (!$setting instanceof Setting) throw new InvalidState("Default lang setting not found");
+        $languageId = (int)$setting->getValue();
+        $language = $this->getById($languageId);
+        if (!$language instanceof Language) throw new InvalidState("Default lang $languageId not found");
         return $language;
-    }
-
-    public function getByCode(string $langCode): ?Language {
-        return $this->getCodeCache()->load($langCode);
-    }
-
-    private function createFromRow(ActiveRow $data): Language {
-        return new Language(
-            $data[self::COLUMN_ID],
-            $data[self::COLUMN_CODE]
-        );
-    }
-
-    public function getById(int $id):?Language {
-        return $this->getFromCacheById($id);
-    }
-
-    protected function getBy(array $where):?Language {
-        $data = $this->getDatabase()->table(self::TABLE)->where($where)->fetch();
-
-        if ($data instanceof Nette\Database\Table\ActiveRow) {
-            return $this->createFromRow($data);
-        }
-        return null;
-    }
-
-    public function rebuildCache() {
-        $this->throwIfNoRights(self::ACTION_CACHE);
-        $this->getIdCache()->clean();
-        $this->getCodeCache()->clean();
-        foreach ($this->getAvailableLanguages(true, false) as $language) {
-            $this->cache($language);
-        }
     }
 
     public function createNew(): Language {
-        $this->throwIfNoRights(self::ACTION_MANAGE);
         $code = $this->getUniqueCode();
-        $id = $this->getDatabase()->table(self::TABLE)->insert([
-            self::COLUMN_CODE => $code,
-        ])->getPrimary();
 
-        $language = $this->getFromDbById($id);
-        $this->cache($language);
+        $this->getDatabase()->beginTransaction();
+        try {
+            $id = $this->getDatabase()->table(self::TABLE)->insert([
+                self::COLUMN_CODE => $code,
+            ])->getPrimary();
 
-        $sm = $this->getSettingsManager();
-        $sm->set(PageManager::SETTINGS_LOGO, 0, $language);
-        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, "", $language);
-        $sm->set(PageManager::SETTINGS_FAVICON, 0, $language);
-        $sm->set(PageManager::SETTINGS_HOMEPAGE, 0, $language);
-        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, "", $language);
-        $sm->set(PageManager::SETTINGS_SITE_NAME, "", $language);
+            $language = $this->getById($id);
 
-        $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
+            $this->setSettings($language, 0, "", 0, 0, "", "");
+
+            $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
+
+            $this->getDatabase()->commit();
+        } catch (Exception $exception) {
+            $this->getDatabase()->rollBack();
+            throw $exception;
+        }
         return $language;
-    }
-
-    /**
-     * @param int $id
-     * @throws CannotDeleteLastLanguage
-     */
-    public function delete(int $id) {
-        $this->throwIfNoRights(self::ACTION_MANAGE);
-        $language = $this->getById($id);
-        if (!$language instanceof Language) throw new InvalidArgumentException("Language does not exist");
-
-        //check if its the last
-        if (count($this->getAvailableLanguages(false, false)) === 1) throw new CannotDeleteLastLanguage();
-
-        $this->getIdCache()->remove($language->getId());
-        $this->getCodeCache()->remove($language->getCode());
-
-        $this->getDatabase()->table(self::TABLE)
-            ->where(self::COLUMN_ID, $language->getId())
-            ->delete();
-
-        $this->trigger(self::TRIGGER_LANGUAGE_DELETED, $language);
-    }
-
-    private function getUniqueCode(): string {
-        $unique = self::GENERATED_CODE_PREFIX . \Nette\Utils\Strings::truncate($uniqid = sha1(uniqid()), self::COLUMN_CODE_LENGTH - strlen(self::GENERATED_CODE_PREFIX), "");
-        if ($this->getDatabase()->table(self::TABLE)->where([self::COLUMN_CODE => $unique])->fetchField(self::COLUMN_ID)) return $this->getUniqueCode();
-        return $unique;
     }
 
     public function edit(Language $language, string $code, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId) {
@@ -166,46 +121,55 @@ class LanguageManager extends Manager {
 
             if (!preg_match("#" . self::COLUMN_CODE_PATTERN . "#", $code)) throw new InvalidArgumentException("Code pattern not correct");
 
-            $this->getDatabase()->table(self::TABLE)
-                ->where([
-                    self::COLUMN_ID => $language->getId(),
-                ])
-                ->update([
-                    self::COLUMN_CODE => $code,
-                ]);
-            $this->cache($this->getFromDbById($language->getId()));
+            $this->uncache($language);
+
+            $this->getDatabase()->beginTransaction();
+            try {
+
+                $this->getDatabase()->table(self::TABLE)
+                    ->where([
+                        self::COLUMN_ID => $language->getId(),
+                    ])
+                    ->update([
+                        self::COLUMN_CODE => $code,
+                    ]);
+                $this->getDatabase()->commit();
+            } catch (Exception $exception) {
+                $this->getDatabase()->rollBack();
+                throw $exception;
+            }
         }
 
-        $sm = $this->getSettingsManager();
-        $mm = $this->getMediaManager();
-        if ($logoId !== 0 &&
-            (!($media = $mm->getById($logoId)) instanceof Media || !$media->isImage()))
-            throw new InvalidArgumentException("logoId does not corespond to an image or nothing at all");
-        $sm->set(PageManager::SETTINGS_LOGO, $logoId, $language);
-        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, $ga, $language);
+        $this->setSettings($language, $logoId, $ga, $faviconId, $homePageId, $separator, $title);
 
-        if ($faviconId !== 0 && (!($media = $mm->getById($faviconId)) instanceof Media || !$media->isImage()))
-            throw new InvalidArgumentException("logoId does not corespond to an image or nothing at all");
-        $sm->set(PageManager::SETTINGS_FAVICON, $faviconId, $language);
-        if (!$this->getPageManager()->exists($homePageId)) throw new InvalidArgumentException("HomePage does not exist");
-        $sm->set(PageManager::SETTINGS_HOMEPAGE, $homePageId, $language);
-        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, $separator, $language);
-        $sm->set(PageManager::SETTINGS_SITE_NAME, $title, $language);
         $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
     }
 
-    private function cache(Language $language) {
-        $this->getIdCache()->save($language->getId(), $language);
-        $this->getCodeCache()->save($language->getCode(), $language);
-    }
+    public function delete(int $id) {
+        $language = $this->getById($id);
+        if (!$language instanceof Language) throw new InvalidArgumentException("Language not found");
 
-    private function getFromDbById($id): Language {
-        $language = $this->getDatabase()->table(self::TABLE)->where(self::COLUMN_ID, $id)->fetch();
-        return $this->createFromRow($language);
+        //check if its the last
+        if (count($this->getAvailableLanguages(false, false)) === 1) throw new CannotDeleteLastLanguage();
+
+        $this->uncache($language);
+        $this->getDatabase()->beginTransaction();
+
+        try {
+            $this->getDatabase()->table(self::TABLE)
+                ->where(self::COLUMN_ID, $language->getId())
+                ->delete();
+            $this->getDatabase()->commit();
+        } catch (Exception $exception) {
+            $this->getDatabase()->rollBack();
+            throw  $exception;
+        }
+
+        $this->trigger(self::TRIGGER_LANGUAGE_DELETED, $language);
     }
 
     public static function isCodeGenerated(string $code): bool {
-        return substr($code, 0, strlen(LanguageManager::GENERATED_CODE_PREFIX)) === LanguageManager::GENERATED_CODE_PREFIX;
+        return substr($code, 0, strlen(LanguageManagerOld::GENERATED_CODE_PREFIX)) === LanguageManagerOld::GENERATED_CODE_PREFIX;
     }
 
     private function getCodeCache(): Cache {
@@ -223,7 +187,78 @@ class LanguageManager extends Manager {
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "language");
     }
 
-    private function getFromCacheById(int $langId):?Language {
-        return new Language($langId,"en_US");
+    /**
+     * @param string $langCode
+     * @return false|Language
+     */
+    private function getFromDbByCode(string $langCode) {
+        return $this->getFromDb([self::COLUMN_CODE => $langCode]);
+    }
+
+    /**
+     * @param int $id
+     * @return false|Language
+     */
+    private function getFromDbById(int $id) {
+        return $this->getFromDb([self::COLUMN_ID => $id]);
+    }
+
+    /**
+     * @param array $where
+     * @return false|Language
+     */
+    private function getFromDb(array $where) {
+        $data = $this->getDatabase()->table(self::TABLE)
+            ->where($where)
+            ->fetch();
+
+        return $data instanceof IRow ? $this->createFromRow($data) : false;
+    }
+
+    private function createFromRow(IRow $row): Language {
+        return new Language(
+            $row[self::COLUMN_ID],
+            $row[self::COLUMN_CODE]
+        );
+    }
+
+    private function getUniqueCode(): string {
+        $unique = self::GENERATED_CODE_PREFIX . \Nette\Utils\Strings::truncate($uniqid = sha1(uniqid()), self::COLUMN_CODE_LENGTH - strlen(self::GENERATED_CODE_PREFIX), "");
+
+        if ($this->getDatabase()->table(self::TABLE)->where([self::COLUMN_CODE => $unique])->fetchField(self::COLUMN_ID)) return $this->getUniqueCode();
+        return $unique;
+    }
+
+    private function setSettings(Language $language, int $logoId, string $ga, int $faviconId, int $homePageId, string $titleSeparator, string $siteName) {
+        $sm = $this->getSettingsManager();
+        $mm = $this->getMediaManager();
+        if ($logoId !== 0 &&
+            (!($media = $mm->getById($logoId, MediaManager::TYPE_IMAGE)) instanceof Media)) {
+            trigger_error("Logo $logoId not found, not using it.");
+            $logoId = 0;
+        }
+        $sm->set(PageManager::SETTINGS_LOGO, $logoId, $language);
+
+        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, $ga, $language);
+
+        if ($faviconId !== 0 && (!($media = $mm->getById($faviconId, MediaManager::TYPE_IMAGE)) instanceof Media)) {
+            trigger_error("Favicon $faviconId not found, not using it.");
+            $faviconId = 0;
+        }
+        $sm->set(PageManager::SETTINGS_FAVICON, $faviconId, $language);
+
+        if ($homePageId !== 0 && !$this->getPageManager()->exists($homePageId)) {
+            trigger_error("Page $homePageId not found, not using it.");
+            $homePageId = 0;
+        }
+        $sm->set(PageManager::SETTINGS_HOMEPAGE, $homePageId, $language);
+
+        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, $titleSeparator, $language);
+        $sm->set(PageManager::SETTINGS_SITE_NAME, $siteName, $language);
+    }
+
+    private function uncache(Language $language) {
+        $this->getIdCache()->remove($language->getId());
+        $this->getCodeCache()->remove($language->getCode());
     }
 }

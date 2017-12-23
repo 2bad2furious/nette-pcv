@@ -127,16 +127,16 @@ class FormFactory extends Manager {
         $code = $form->addText(self::LANGUAGE_EDIT_CODE_NAME, "admin.language.code.label")
             ->addRule(Form::REQUIRED, "admin.language.edit.code.required")
             ->addRule(Form::MAX_LENGTH, "admin.language.edit.code.length", 5)
-            ->addRule(Form::PATTERN, "admin.language.edit.code.pattern", LanguageManager::COLUMN_CODE_PATTERN)
+            ->addRule(Form::PATTERN, "admin.language.edit.code.pattern", LanguageManagerOld::COLUMN_CODE_PATTERN)
             ->addRule(function (TextInput $item) {
                 return !$this->getLanguageManager()->getByCode($item->getValue()) instanceof Language;
             }, $message = "admin.language.edit.code.not_available", $message);
-        if (!LanguageManager::isCodeGenerated($language->getCode())) {
+        if (!LanguageManagerOld::isCodeGenerated($language->getCode())) {
             $code->setDisabled(true)->setEmptyValue($language->getCode())
                 ->setOmitted(false);
         }
 
-        if (!LanguageManager::isCodeGenerated($language->getCode())) {
+        if (!LanguageManagerOld::isCodeGenerated($language->getCode())) {
             $pm = $this->getPageManager();
             $availablePages = $pm->getAllPages($language, false);
             $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", $availablePages);
