@@ -125,7 +125,13 @@ class Router {
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action create>");
 
-        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<" . \adminModule\LanguagePresenter::PAGE_ID . "=1 \d+>/[<" . \adminModule\LanguagePresenter::GENERATED_KEY . " 1|0>]?<" . \adminModule\LanguagePresenter::SEARCH_KEY . ">", [
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/[<" . \adminModule\LanguagePresenter::GENERATED_KEY . " 1|0>]?<" . \adminModule\LanguagePresenter::SEARCH_KEY . "><" . \adminModule\LanguagePresenter::PAGE_KEY . "=1 \d+>", [
+            "action" => [
+                Route::VALUE => "default",
+            ],
+        ]);
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter header>/<" . \adminModule\HeaderPresenter::LANGUAGE_KEY . " $languages>", [
             "action" => [
                 Route::VALUE => "default",
             ],

@@ -143,7 +143,7 @@ class FormFactory extends Manager {
             $currentHomePage = $pm->getHomePage($language, false);
             if ($currentHomePage instanceof Page) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
         }
-        
+
         $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label")
             ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language)->getValue());
 
