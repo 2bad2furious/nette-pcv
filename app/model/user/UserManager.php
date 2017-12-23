@@ -100,7 +100,7 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator {
         if ($data instanceof ActiveRow && Passwords::verify($password, $data[self::COLUMN_PASSWORD])) {
             $identity = $this->get($data[self::COLUMN_ID]);
             if (!$identity instanceof UserIdentity)
-                throw new InvalidStateOfDB("User in db but not in cache");
+                throw new InvalidState("User in db but not in cache");
             return $identity;
         }
         return null;
