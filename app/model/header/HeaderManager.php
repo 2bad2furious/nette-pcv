@@ -73,11 +73,11 @@ class HeaderManager extends Manager {
         /** @var HeaderPage|null $root */
         $root = $this->getCache()->load($language->getId());
         if ($root instanceof HeaderPage) $this->setPagesOnChildren($root, $currentPage, $language);
-        else return new HeaderPage(-1, -1, $language);
+        else return new HeaderPage(0, -1, $language);
         return $root;
     }
 
-    private function setPagesOnChildren(HeaderPage $parent, ?Page &$currentPage, Language $language) {
+    private function setPagesOnChildren(HeaderPage $parent, ?Page $currentPage, Language $language) {
         foreach ($parent->getChildren() as $child) {
             $this->setPagesOnChildren($child, $currentPage, $language);
             $pageId = $child->getPageId();
