@@ -132,7 +132,8 @@ class FormFactory extends Manager {
                 return !$this->getLanguageManager()->getByCode($item->getValue()) instanceof Language;
             }, $message = "admin.language.edit.code.not_available", $message);
         if (!LanguageManager::isCodeGenerated($language->getCode())) {
-            $code->setDisabled(true)->setEmptyValue($language->getCode());
+            $code->setDisabled(true)->setEmptyValue($language->getCode())
+                ->setOmitted(false);
         }
 
         if (!LanguageManager::isCodeGenerated($language->getCode())) {

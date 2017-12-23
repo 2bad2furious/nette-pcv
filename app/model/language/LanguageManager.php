@@ -35,7 +35,7 @@ class LanguageManager extends Manager {
 
         foreach ($data as $row) {
             $langId = $row[self::COLUMN_ID];
-            $languages[] = $this->getIdCache()->load($langId);
+            $languages[] = $this->getFromCacheById($langId);
         }
         return $languages;
     }
@@ -89,7 +89,7 @@ class LanguageManager extends Manager {
     }
 
     public function getById(int $id):?Language {
-        return $this->getIdCache()->load($id);
+        return $this->getFromCacheById($id);
     }
 
     protected function getBy(array $where):?Language {
@@ -121,12 +121,12 @@ class LanguageManager extends Manager {
         $this->cache($language);
 
         $sm = $this->getSettingsManager();
-        $sm->set(PageManager::SETTINGS_LOGO, 0, $language, true);
-        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, "", $language, true);
-        $sm->set(PageManager::SETTINGS_FAVICON, 0, $language, true);
-        $sm->set(PageManager::SETTINGS_HOMEPAGE, 0, $language, true);
-        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, "", $language, true);
-        $sm->set(PageManager::SETTINGS_SITE_NAME, "", $language, true);
+        $sm->set(PageManager::SETTINGS_LOGO, 0, $language);
+        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, "", $language);
+        $sm->set(PageManager::SETTINGS_FAVICON, 0, $language);
+        $sm->set(PageManager::SETTINGS_HOMEPAGE, 0, $language);
+        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, "", $language);
+        $sm->set(PageManager::SETTINGS_SITE_NAME, "", $language);
 
         $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
         return $language;
@@ -181,16 +181,16 @@ class LanguageManager extends Manager {
         if ($logoId !== 0 &&
             (!($media = $mm->getById($logoId)) instanceof Media || !$media->isImage()))
             throw new InvalidArgumentException("logoId does not corespond to an image or nothing at all");
-        $sm->set(PageManager::SETTINGS_LOGO, $logoId, $language, true);
-        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, $ga, $language, true);
+        $sm->set(PageManager::SETTINGS_LOGO, $logoId, $language);
+        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, $ga, $language);
 
         if ($faviconId !== 0 && (!($media = $mm->getById($faviconId)) instanceof Media || !$media->isImage()))
             throw new InvalidArgumentException("logoId does not corespond to an image or nothing at all");
-        $sm->set(PageManager::SETTINGS_FAVICON, $faviconId, $language, true);
+        $sm->set(PageManager::SETTINGS_FAVICON, $faviconId, $language);
         if (!$this->getPageManager()->exists($homePageId)) throw new InvalidArgumentException("HomePage does not exist");
-        $sm->set(PageManager::SETTINGS_HOMEPAGE, $homePageId, $language, true);
-        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, $separator, $language, true);
-        $sm->set(PageManager::SETTINGS_SITE_NAME, $title, $language, true);
+        $sm->set(PageManager::SETTINGS_HOMEPAGE, $homePageId, $language);
+        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, $separator, $language);
+        $sm->set(PageManager::SETTINGS_SITE_NAME, $title, $language);
         $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
     }
 
@@ -221,5 +221,9 @@ class LanguageManager extends Manager {
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "language");
+    }
+
+    private function getFromCacheById(int $langId):?Language {
+        return new Language($langId,"en_US");
     }
 }

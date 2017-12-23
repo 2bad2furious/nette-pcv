@@ -5,6 +5,7 @@ namespace adminModule;
 
 
 use Language;
+use LanguageManager;
 use Nette\Application\UI\Form;
 use Nette\Neon\Exception;
 use Nette\Utils\ArrayHash;
@@ -46,7 +47,7 @@ class LanguagePresenter extends AdminPresenter {
     public function actionDefault() {
         $this->template->isGenerated = $this->isGenerated();
         $this->template->languages = $this->getLanguageManager()->getFiltered($this->getCurrentPage(), 10, $this->numOfPages, $this->getSearched(), $this->isGenerated());
-        $this->checkPaging($this->getCurrentPage(),$this->numOfPages,self::PAGE_KEY);
+        $this->checkPaging($this->getCurrentPage(), $this->numOfPages, self::PAGE_KEY);
     }
 
 
@@ -92,7 +93,7 @@ class LanguagePresenter extends AdminPresenter {
                     $values[\FormFactory::LANGUAGE_EDIT_SITE_TITLE_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_LOGO_NAME],
-                    $values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE],
+                    (int)$values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE],
                     $values[\FormFactory::LANGUAGE_EDIT_FAVICON_NAME]
                 );
                 $this->redirect(302, ":default", [self::ID_KEY => null]);
