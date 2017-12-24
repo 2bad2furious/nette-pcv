@@ -98,11 +98,6 @@ abstract class BasePresenter extends Presenter {
 
     protected abstract function getAllowedRoles(): array;
 
-    protected function getReferer():?Url {
-        $request = $this->getHttpRequest();
-        return ($request instanceof Nette\Http\Request) ? $request->getReferer() : null;
-    }
-
     protected function isRefererOk(string $path = "", array $args = []): bool {
         $referer = $this->getReferer();
         if (!$referer instanceof Url) return false;
@@ -143,7 +138,7 @@ abstract class BasePresenter extends Presenter {
         return $this->getServiceLoader()->getLanguageManager();
     }
 
-    protected final function getHeaderManager(): HeaderManager {
+    protected final function getHeaderManager(): IHeaderManager {
         return $this->getServiceLoader()->getHeaderManager();
     }
 
@@ -169,10 +164,27 @@ abstract class BasePresenter extends Presenter {
 
 
     private function checkRefererAndDisallowAjax() {
-        if ($referer = $this->getReferer()) {
-            $match = $this->getRouter()->match($request = new \Nette\Http\Request($script = new \Nette\Http\UrlScript($referer)));
-            dump($match, $request, $script, $referer);
+        if ($this->isAjax() && $referer = $this->getReferer()) {
+            $script = ($oldScript = new \Nette\Http\UrlScript($referer, "/"));
+            $request = new \Nette\Http\Request($script);
+            $router = $this->getRouter();
+            $match = $router->match($request);
+            if ($match instanceof Request) {
+                $module = substr($presenterName = $this->getRequest()->getPresenterName(), 0, strpos($presenterName, ":"));
+                $refererModule = substr($refererPresenterName = $match->getPresenterName(), 0, strpos($refererPresenterName, ":"));
+
+                if ($module !== $refererModule) {
+                    trigger_error("MODULES are not the same $presenterName and $refererPresenterName");
+                    $this->disallowAjax();
+                }
+            }
+            //dump("start", $this->getHttpRequest(), $referer, $oldScript, $script, $request, $script->getBasePath(), $match, "end");
         }
+    }
+
+    protected function getReferer():?Url {
+        $request = $this->getHttpRequest();
+        return ($request instanceof Nette\Http\Request) ? $request->getReferer() : null;
     }
 
     private function getRouter(): IRouter {
