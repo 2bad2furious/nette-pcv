@@ -90,7 +90,7 @@ abstract class Manager implements IManager {
         return $this->getServiceLoader()->getUserManager();
     }
 
-    protected final function getHeaderManager(): HeaderManager {
+    protected final function getHeaderManager(): IHeaderManager {
         return $this->getServiceLoader()->getHeaderManager();
     }
 

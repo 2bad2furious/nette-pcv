@@ -7,8 +7,7 @@ use Nette\DI\Container;
 use Nette\Security\User;
 
 class ServiceLoader {
-//TODO dont always call DIC
-    private const CLASS_NAMES = [TagManager::class, PageManager::class, LanguageManager::class, UserManager::class, SettingsManager::class, HeaderManager::class, MediaManager::class];
+    private const CLASS_NAMES = [ITagManager::class, IPageManager::class, ILanguageManager::class, IUserManager::class, ISettingsManager::class, IHeaderManager::class, IMediaManager::class];
 
     /** @var  Container */
     private $context;
@@ -22,10 +21,19 @@ class ServiceLoader {
         $this->context = $context;
 
         //INITING for listener-registration, TODO better - maybe do static listener registration
+        $reflection = $this->getReflection();
+        //dump(Manager::getInitingClass());
         foreach (self::CLASS_NAMES as $k => $v) {
-            if (Manager::getInitingClass() !== $v)
+            if (!$reflection instanceof ReflectionClass) $reflection = $this->getReflection();
+
+            if (!$reflection instanceof ReflectionClass || !$reflection->implementsInterface($v))
                 $this->context->getByType($v);
         }
+    }
+
+    private function getReflection():?ReflectionClass {
+        $managerInitingClass = Manager::getInitingClass();
+        return $managerInitingClass ? new ReflectionClass($managerInitingClass) : null;
     }
 
     public final function getDatabase(): Context {
@@ -37,8 +45,8 @@ class ServiceLoader {
     }
 
 
-    public final function getUserManager(): UserManager {
-        return $this->context->getByType(UserManager::class);
+    public final function getUserManager(): IUserManager {
+        return $this->context->getByType(IUserManager::class);
     }
 
 
@@ -46,16 +54,16 @@ class ServiceLoader {
         return $this->context->getByType(ILanguageManager::class);
     }
 
-    public final function getHeaderManager(): HeaderManager {
-        return $this->context->getByType(HeaderManager::class);
+    public final function getHeaderManager(): IHeaderManager {
+        return $this->context->getByType(IHeaderManager::class);
     }
 
-    public final function getTagManager(): TagManager {
-        return $this->context->getByType(TagManager::class);
+    public final function getTagManager(): ITagManager {
+        return $this->context->getByType(ITagManager::class);
     }
 
-    public final function getPageManager(): PageManager {
-        return $this->context->getByType(PageManager::class);
+    public final function getPageManager(): IPageManager {
+        return $this->context->getByType(IPageManager::class);
     }
 
     public final function getSettingsManager(): ISettingsManager {
@@ -66,8 +74,8 @@ class ServiceLoader {
         return $this->context->getByType(\Kdyby\Translation\Translator::class);
     }
 
-    public final function getMediaManager(): MediaManager {
-        return $this->context->getByType(MediaManager::class);
+    public final function getMediaManager(): IMediaManager {
+        return $this->context->getByType(IMediaManager::class);
     }
 
     public final function getContext(): Container {
