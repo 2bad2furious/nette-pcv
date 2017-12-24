@@ -11,9 +11,9 @@ function printcaller() {
                           "method" => $trace[2]["function"],
                       ],
         ];
-        dump($trace);
+        Tracy\Debugger::barDump($trace);
     } else {
-        dump($trace[2]);
+        Tracy\Debugger::barDump($trace[2]);
     }
 }
 
@@ -22,7 +22,7 @@ function dump() {
         //\Tracy\Debugger::dump($arg);
         Tracy\Debugger::barDump($arg);
     }
-    //printcaller();
+    //\Tracy\Debugger::barDump(debug_backtrace());
 }
 
 //developer function
