@@ -18,6 +18,8 @@ services:
     - HeaderManager
     - MediaManager
 
+    #cacheStorage:
+        #factory: Nette\Caching\Storages\DevNullStorage
 #application:
  #   mapping:
   #      admin: admin\presenter\*Presenter
