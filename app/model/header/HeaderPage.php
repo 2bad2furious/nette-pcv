@@ -30,6 +30,10 @@ class HeaderPage {
      */
     private $pageId;
     /**
+     * @var int
+     */
+    private $languageId;
+    /**
      * @var Language
      */
     private $language;
@@ -38,23 +42,37 @@ class HeaderPage {
      * HeaderPage constructor.
      * @param int $headerPageId
      * @param null|int $pageId
-     * @param Language $language
+     * @param int $languageId
      * @param null|string $url
      * @param string|null $title
      */
-    public function __construct(int $headerPageId, ?int $pageId = null, Language $language, ?string $url = null, ?string $title = null) {
+    public function __construct(int $headerPageId, ?int $pageId = null, int $languageId, ?string $url = null, ?string $title = null) {
         $this->headerPageId = $headerPageId;
         $this->url = $url;
         $this->title = $title;
         $this->pageId = $pageId;
-        $this->language = $language;
+        $this->languageId = $languageId;
     }
 
     public function setPage(Page $page) {
-        if ($this->pageId !== $page->getGlobalId()) throw new Exception("Pages ids are not the same. {$this->pageId} !== {$page->getGlobalId()}");
-        if ($this->language->getId() !== $page->getLang()->getId()) throw new Exception("Languages are not the same");
+        if ($this->pageId !== $page->getGlobalId())
+            throw new InvalidArgumentException("Pages ids are not the same. {$this->pageId} !== {$page->getGlobalId()}");
+
+        if ($this->getLanguageId() !== $page->getLang()->getId())
+            throw new InvalidArgumentException("Languages are not the same");
+
         $this->setUrl($page->getCompleteUrl());
-        $this->setTitle($page->getTitle());
+        if (!$this->getTitle()) $this->setTitle($page->getTitle());
+    }
+
+    public function setLanguage(Language $language) {
+        if ($this->getLanguageId() !== $language->getId())
+            throw new InvalidArgumentException("Language id {$language->getId()} != setId of {$this->getLanguageId()}");
+
+        if ($this->language instanceof Language)
+            throw new InvalidState("Language already set");
+
+        $this->language = $language;
     }
 
     private function setUrl(string $url): void {
@@ -100,7 +118,8 @@ class HeaderPage {
      * @return string
      */
     public function getUrl(): string {
-        return $this->url;
+        return /*TODO think of the business logic for languageCode prepend and stuff */
+            $this->url;
     }
 
     /**
@@ -119,5 +138,9 @@ class HeaderPage {
 
     public function getPageId(): ?int {
         return $this->pageId;
+    }
+
+    public function getLanguageId(): int {
+        return $this->languageId;
     }
 }

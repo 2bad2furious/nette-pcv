@@ -8,7 +8,11 @@ use Language;
 
 class HeaderPresenter extends AdminPresenter {
 
-    const LANGUAGE_KEY = "language";
+
+    const LANGUAGE_KEY = "language",
+        ID_KEY = "id",
+        DIRECTION_KEY = "direction",
+        ALL_KEY = "all";
 
     /** @persistent */
     public $language;
@@ -28,6 +32,7 @@ class HeaderPresenter extends AdminPresenter {
         $this->template->languages = $this->getLanguageManager()->getAvailableLanguages( true);
 
         $this->template->header = $this->getHeaderManager()->getRoot($this->getCurrentLanguage(), null);
+        $this->template->nextId = $this->getHeaderManager()->getNextId();
     }
 
     private function getCurrentLanguage(): Language {

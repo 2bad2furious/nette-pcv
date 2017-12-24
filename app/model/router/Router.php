@@ -139,6 +139,14 @@ class Router {
             ],
         ]);
 
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter header>/<action add>/<" . \adminModule\HeaderPresenter::ID_KEY . " \d+>");
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter header>/<action edit>/<" . \adminModule\HeaderPresenter::ID_KEY . " \d+>");
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter header>/<action delete>/<" . \adminModule\HeaderPresenter::ID_KEY . " \d+>/<" . \adminModule\HeaderPresenter::ALL_KEY . "=0 1|0>");
+
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter header>/<action move>/<" . \adminModule\HeaderPresenter::ID_KEY . " \d+>/<" . \adminModule\HeaderPresenter::DIRECTION_KEY . " 1|0>");
+
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter=Default>[/<action=default default>]");
 
         return $router;

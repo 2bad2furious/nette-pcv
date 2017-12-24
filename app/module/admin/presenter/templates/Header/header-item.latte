@@ -1,0 +1,19 @@
+<li {*data-id="item-{$page->getHeaderPageId()}"*} id="menuItem_{$page->getHeaderPageId()}">
+    <div>TODO content {dump $page}{$page->getHeaderPageId()})
+        <a data-id="{$page->getHeaderPageId()}" class="expand" href="#">show/hide</a>
+        <a data-id="{$page->getHeaderPageId()}" class="add"
+           href="{plink add \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId()}">add</a>
+        <a data-id="{$page->getHeaderPageId()}" class="moveUp"
+           href="{plink move \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId(),\adminModule\HeaderPresenter::DIRECTION_KEY=>1}">moveUp</a>
+        <a data-id="{$page->getHeaderPageId()}" class="moveDown"
+           href="{plink move \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId(),\adminModule\HeaderPresenter::DIRECTION_KEY=>0}">moveDown</a>
+        <a data-id="{$page->getHeaderPageId()}" class="delete-self"
+           href="{plink delete \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId(),\adminModule\HeaderPresenter::ALL_KEY=>0}">delete</a>
+        <a data-id="{$page->getHeaderPageId()}" class="delete-all"
+           href="{plink delete \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId(),\adminModule\HeaderPresenter::ALL_KEY=>1}">delete
+            all</a>
+    </div>
+    <ol>
+        {include 'header-items.latte' page => $page}
+    </ol>
+</li>

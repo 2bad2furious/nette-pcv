@@ -1,9 +1,9 @@
 <?php
 
 
-use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\IRow;
 
-class HeaderManager extends Manager {
+class HeaderManager extends Manager implements IHeaderManager {
     const TABLE = "header",
         COLUMN_ID = "header_id",
         COLUMN_LANG = "lang",
@@ -14,28 +14,9 @@ class HeaderManager extends Manager {
         COLUMN_PARENT_ID = "parent_id";
 
 
-    protected function init() {
-        //TODO register listeners
-    }
-
-
-    /**
-     * TODO optimize this
-     */
-    public function rebuildCache() {
-        //TODO check rights
-        //clean cache
+    public function cleanCache() {
         $this->getCache()->clean();
 
-        $languages = $this->getDatabase()->table(self::TABLE)->select(self::COLUMN_LANG)->group(self::COLUMN_LANG)->fetchAll();
-        /** @var ActiveRow $langRow */
-        foreach ($languages as $langRow) {
-            $language = $this->getLanguageManager()->getById($langRow[self::COLUMN_LANG]);
-            $root = new HeaderPage(0, 0, $language, false);
-            $this->addChildren($root, $language);
-
-            $this->getCache()->save($language->getId(), $root);
-        }
     }
 
     /**
@@ -49,15 +30,12 @@ class HeaderManager extends Manager {
             self::COLUMN_PARENT_ID => $header->getHeaderPageId(),
         ]);
 
-        /** @var ActiveRow $row */
+
+        /** @var IRow $row */
         while ($row = $rows->fetch()) {
-            $headerPage = new HeaderPage(
-                $row[self::COLUMN_ID],
-                $row[self::COLUMN_PAGE_ID],
-                $language,
-                ($row[self::COLUMN_PAGE_ID] === null) ? $row[self::COLUMN_PAGE_URL] : null,
-                ($row[self::COLUMN_PAGE_ID] === null) ? $row[self::COLUMN_TITLE] : null
-            );
+            $headerPage = $this->getFromRow($row);
+
+            dump($headerPage, $row);
 
             $this->addChildren($headerPage, $language);
             $header->addChild($headerPage);
@@ -67,28 +45,72 @@ class HeaderManager extends Manager {
     /**
      * @param Language $language
      * @param null|Page $currentPage
-     * @return HeaderPage|null
+     * @return HeaderPage
      */
-    public function getRoot(Language $language, ?Page $currentPage): ?HeaderPage {
-        /** @var HeaderPage|null $root */
-        $root = $this->getCache()->load($language->getId());
-        if ($root instanceof HeaderPage) $this->setPagesOnChildren($root, $currentPage, $language);
-        else return new HeaderPage(0, -1, $language);
+    public function getRoot(Language $language, ?Page $currentPage): HeaderPage {
+
+        $root = $this->getCache()->load($language->getId(), function () use ($language) {
+            return $this->getHeaderFromDb($language);
+        });
+
+        $this->setPagesOnChildren($root, $currentPage, $language);
+
         return $root;
     }
 
-    private function setPagesOnChildren(HeaderPage $parent, ?Page $currentPage, Language $language) {
+    private function setPagesOnChildren(HeaderPage &$parent, ?Page $currentPage, Language $language): bool {
+        $isActive = false;
         foreach ($parent->getChildren() as $child) {
-            $this->setPagesOnChildren($child, $currentPage, $language);
+            if ($isChildActive = $this->setPagesOnChildren($child, $currentPage, $language)) $isActive = $isChildActive;
             $pageId = $child->getPageId();
+
             $page = (is_int($pageId)) ? $this->getPageManager()->getByGlobalId($language, $pageId) : null;
+
+            if (is_int($pageId) && !$page instanceof Page) throw new InvalidState("Page $pageId for child {$child->getHeaderPageId()} not found");
+
+            $language = $this->getLanguageManager()->getById($langId = $child->getLanguageId());
+            if (!$language instanceof Language) throw new InvalidState("Language {$langId} not found");
+
+            $child->setLanguage($language);
+
             if ($page instanceof Page) $child->setPage($page);
-            $child->setActive($currentPage instanceof Page ? $child->getUrl() === $currentPage->getCompleteUrl() : false);
+
+            $currentPageActive = $currentPage instanceof Page ? $child->getUrl() === $currentPage->getCompleteUrl() : false;
+            if ($currentPageActive) $isActive = $currentPageActive;
+
+            $child->setActive($isActive);
         }
+        return $isActive;
     }
 
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "header");
+    }
+
+    /**
+     * @param Language $language
+     * @return HeaderPage
+     */
+    private function getHeaderFromDb(Language $language) {
+        $headerPage = new HeaderPage(0, null, $language->getId(), null, null);
+        $this->addChildren($headerPage, $language);
+        return $headerPage;
+    }
+
+    private function getFromRow(IRow $row) {
+        return new HeaderPage(
+            $row[self::COLUMN_ID],
+            $row[self::COLUMN_PAGE_ID],
+            $row[self::COLUMN_LANG],
+            ($row[self::COLUMN_PAGE_ID] === null) ? $row[self::COLUMN_PAGE_URL] : null,
+            ($row[self::COLUMN_PAGE_ID] === null) ? $row[self::COLUMN_TITLE] : null
+        );
+    }
+
+    public function getNextId(): int {
+        return $this->getDatabase()->table(self::TABLE)
+                ->aggregation("MAX(" . self::COLUMN_ID . ")")
+            + 1;
     }
 }
