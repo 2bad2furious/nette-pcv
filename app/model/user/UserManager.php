@@ -6,7 +6,7 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Security\Passwords;
 use Nette\Security\User;
 
-class UserManager extends Manager implements \Nette\Security\IAuthenticator {
+class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUserManager {
 
     const
         TABLE = "user",
@@ -111,13 +111,16 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator {
     }
 
     private function get(int $id):?UserIdentity {
-        return $this->getCache()->load($id);
+        return $this->getCache()->load($id, function () use ($id) {
+            $user = $this->getDatabase()->table(self::TABLE)->where([self::COLUMN_ID => $id])->fetch();
+            return $user instanceof \Nette\Database\IRow ? $this->createFromDbRow($user) : null;
+        });
     }
 
     public function rebuildCache() {
         //TODO rights
         dump("rebuilding user");
-        $this->getCache()->clean([ ]);
+        $this->getCache()->clean([]);
         /** @var ActiveRow $row */
         foreach ($this->getDatabase()->table(self::TABLE)->fetchAll() as $row) {
             $identity = $this->createFromDbRow($row);
