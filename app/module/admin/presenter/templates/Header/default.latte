@@ -21,27 +21,27 @@
         <a id="edit-form-close" n:href="this do=>null,id=>null">close</a>
         <div n:snippet="edit-form">
             <div id="tabs" data-action="{$signal}" data-id="{$id}">
-                {var editSnippetId = $control->getSnippetId("edit-form")}
-                <script>{* need to run this everytime *}
-                    _stack.push(function (di) {
-                        jQuery().ready(function ($) {
-                            di.getService("page").getSnippet({$editSnippetId}).setup(
-                                function (elem) {
-                                    var tabs = $(elem).find("#tabs");
-                                    if (tabs.children().length)
-                                        $("#header-edit-form-wrapper").addClass("active");
-                                }).teardown(function () {
-                                $("#header-edit-form-wrapper").removeClass("active")
-                            });
-                        });
-                    });
-                </script>
                 {if $signal === "add"}
                     {include "add-form.latte" type=>$formType}
                 {elseif $signal === "edit"}
                     {include "edit-form.latte" type=>$formType}
                 {/if}
             </div>
+            {var editSnippetId = $control->getSnippetId("edit-form")}
+            <script>{* need to run this everytime *}
+                _stack.push(function (di) {
+                    jQuery().ready(function ($) {
+                        di.getService("page").getSnippet({$editSnippetId}).setup(
+                            function (elem) {
+                                var tabs = $(elem).find("#tabs");
+                                if (tabs.children().length)
+                                    $("#header-edit-form-wrapper").addClass("active");
+                            }).teardown(function () {
+                            $("#header-edit-form-wrapper").removeClass("active")
+                        });
+                    });
+                });
+            </script>
         </div>
     </div>
     <script>

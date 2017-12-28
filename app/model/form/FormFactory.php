@@ -40,6 +40,7 @@ class FormFactory extends Manager {
     const HEADER_PAGE_NAME = "page_id";
     const HEADER_TITLE_NAME = "title";
     const HEADER_URL_NAME = "url";
+    const HEADER_SUBMIT_NAME = "submit";
 
     public function createPageEditForm(Page $page, callable $urlValidator) {
 
@@ -226,6 +227,8 @@ class FormFactory extends Manager {
         $title = $form->addText(self::HEADER_TITLE_NAME, "admin.header.edit.title.optional.label");
         if ($headerPage instanceof HeaderPage) $title->setDefaultValue((string)$headerPage->getTitle());
 
+        $form->addSubmit(self::HEADER_SUBMIT_NAME, "admin.header." . ($headerPage instanceof HeaderPage ? "edit" : "add") . ".submit");
+
         return $form;
     }
 
@@ -240,6 +243,8 @@ class FormFactory extends Manager {
         $title = $form->addText(self::HEADER_TITLE_NAME, "admin.header.edit.title.required.label")
             ->addRule(Form::REQUIRED, "admin.header.edit.title.required.required");
         if ($headerPage instanceof HeaderPage) $title->setDefaultValue((string)$headerPage->getTitle());
+
+        $form->addSubmit(self::HEADER_SUBMIT_NAME, "admin.header." . ($headerPage instanceof HeaderPage ? "edit" : "add") . ".submit");
 
         return $form;
     }

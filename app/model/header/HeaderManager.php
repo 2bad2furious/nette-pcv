@@ -16,7 +16,6 @@ class HeaderManager extends Manager implements IHeaderManager {
 
     public function cleanCache() {
         $this->getCache()->clean();
-
     }
 
     /**
@@ -49,7 +48,7 @@ class HeaderManager extends Manager implements IHeaderManager {
      */
     public function getRoot(Language $language, ?Page $currentPage): HeaderPage {
 
-        $root = $this->getCache()->load($language->getId(), function () use ($language) {
+        $root = $this->getCache()->load($language->getCode(), function () use ($language) {
             return $this->getHeaderFromDb($language);
         });
 
@@ -67,9 +66,154 @@ class HeaderManager extends Manager implements IHeaderManager {
             ->wherePrimary($id)->fetch();
 
         return ($data instanceof IRow) ? $this->getFromRow($data) : null;
-        //TODO implement
-        throw new \Nette\NotImplementedException();
     }
+
+    public function addPage(HeaderPage $parent, int $pageId, string $title): int {
+        $langId = $parent->getLanguageId();
+
+        $language = $this->getLanguageManager()->getById($langId);
+        if (!$language instanceof Language) throw new InvalidState("Language not found");
+
+        $page = $this->getPageManager()->getByGlobalId($language, $pageId);
+        if (!$page instanceof Page) throw new InvalidArgumentException("Page $pageId not found");
+
+        $inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction();
+        if (!$inTransaction) $this->getDatabase()->beginTransaction();
+        try {
+            $this->uncache($language->getCode());
+
+            $id = $this->getDatabase()->table(self::TABLE)
+                ->insert([
+                    self::COLUMN_PAGE_ID   => $pageId,
+                    self::COLUMN_TITLE     => $title,
+                    self::COLUMN_PARENT_ID => $parent->getHeaderPageId(),
+                    self::COLUMN_LANG      => $langId,
+                ])->getPrimary();
+
+            if (!$inTransaction) $this->getDatabase()->commit();
+        } catch (Exception $ex) {
+            if (!$inTransaction) $this->getDatabase()->rollBack();
+            throw $ex;
+        }
+        return $id;
+    }
+
+    public function addCustom(HeaderPage $parent, string $title, string $url): int {
+
+        if (!filter_var($url, FILTER_VALIDATE_URL)) throw new InvalidArgumentException("Url not valid");
+
+        $langId = $parent->getLanguageId();
+
+        $language = $this->getLanguageManager()->getById($langId);
+        if (!$language instanceof Language) throw new InvalidState("Language not found");
+
+        $inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction();
+        if (!$inTransaction) $this->getDatabase()->beginTransaction();
+        try {
+            $this->uncache($language->getCode());
+
+            $id = $this->getDatabase()->table(self::TABLE)
+                ->insert([
+                    self::COLUMN_PAGE_URL  => $url,
+                    self::COLUMN_TITLE     => $title,
+                    self::COLUMN_PARENT_ID => $parent->getHeaderPageId(),
+                    self::COLUMN_LANG      => $langId,
+                ])->getPrimary();
+
+            if (!$inTransaction) $this->getDatabase()->commit();
+        } catch (Exception $ex) {
+            if (!$inTransaction) $this->getDatabase()->rollBack();
+            throw $ex;
+        }
+        return $id;
+    }
+
+    public function editPage(HeaderPage $headerPage, int $pageId, string $title) {
+        $langId = $headerPage->getLanguageId();
+
+        $language = $this->getLanguageManager()->getById($langId);
+        if (!$language instanceof Language) throw new InvalidState("Language not found");
+
+        $page = $this->getPageManager()->getByGlobalId($language, $pageId);
+        if (!$page instanceof Page) throw new InvalidArgumentException("Page $pageId not found");
+
+        $inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction();
+        if (!$inTransaction) $this->getDatabase()->beginTransaction();
+        try {
+            $this->uncache($language->getCode());
+
+            $this->getDatabase()->table(self::TABLE)
+                ->wherePrimary($headerPage->getHeaderPageId())
+                ->update([
+                    self::COLUMN_PAGE_ID => $pageId,
+                    self::COLUMN_TITLE   => $title,
+                ]);
+
+            if (!$inTransaction) $this->getDatabase()->commit();
+        } catch (Exception $ex) {
+            if (!$inTransaction) $this->getDatabase()->rollBack();
+            throw $ex;
+        }
+    }
+
+    public function editCustom(HeaderPage $headerPage, string $title, string $url) {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) throw new InvalidArgumentException("Url not valid");
+
+        $langId = $headerPage->getLanguageId();
+
+        $language = $this->getLanguageManager()->getById($langId);
+        if (!$language instanceof Language) throw new InvalidState("Language not found");
+
+        $inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction();
+        if (!$inTransaction) $this->getDatabase()->beginTransaction();
+        try {
+            $this->uncache($language->getCode());
+
+            $this->getDatabase()->table(self::TABLE)
+                ->wherePrimary($headerPage->getHeaderPageId())
+                ->update([
+                    self::COLUMN_PAGE_ID  => null,
+                    self::COLUMN_TITLE    => $title,
+                    self::COLUMN_PAGE_URL => $url,
+                ]);
+
+            if (!$inTransaction) $this->getDatabase()->commit();
+        } catch (Exception $ex) {
+            if (!$inTransaction) $this->getDatabase()->rollBack();
+            throw $ex;
+        }
+    }
+
+    /**
+     * @param int $id
+     * @return void
+     * @throws InvalidArgumentException|Exception
+     */
+    public function delete(int $id) {
+        $headerPage = $this->getById($id);
+        if (!$headerPage instanceof HeaderPage) throw new InvalidArgumentException("Header page $id not found");
+
+        $langId = $headerPage->getLanguageId();
+        $language = $this->getLanguageManager()->getByCode($langId);
+        if (!$language instanceof Language) throw new InvalidArgumentException("Language $langId not found");
+
+        $this->uncache($language->getCode());
+
+        $inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction();
+        if (!$inTransaction) $this->getDatabase()->beginTransaction();
+        try {
+
+            $this->getDatabase()->table(self::TABLE)
+                ->wherePrimary($headerPage->getHeaderPageId())
+                ->delete();
+
+            if (!$inTransaction) $this->getDatabase()->commit();
+        } catch (Exception $exception) {
+            if (!$inTransaction) $this->getDatabase()->rollBack();
+            throw $exception;
+        }
+    }
+
 
     private function setPagesOnChildren(HeaderPage &$parent, ?Page $currentPage, Language $language): bool {
         $isActive = false;
@@ -122,11 +266,7 @@ class HeaderManager extends Manager implements IHeaderManager {
         );
     }
 
-    /**
-     * @param int $id
-     * @return void
-     */
-    public function delete(int $id) {
-
+    private function uncache(int $langId) {
+        $this->getCache()->remove($langId);
     }
 }
