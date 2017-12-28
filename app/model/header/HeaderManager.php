@@ -58,6 +58,19 @@ class HeaderManager extends Manager implements IHeaderManager {
         return $root;
     }
 
+    /**
+     * @param int $id
+     * @return HeaderPage|null
+     */
+    public function getById(int $id):?HeaderPage {
+        $data = $this->getDatabase()->table(self::TABLE)
+            ->wherePrimary($id)->fetch();
+
+        return ($data instanceof IRow) ? $this->getFromRow($data) : null;
+        //TODO implement
+        throw new \Nette\NotImplementedException();
+    }
+
     private function setPagesOnChildren(HeaderPage &$parent, ?Page $currentPage, Language $language): bool {
         $isActive = false;
         foreach ($parent->getChildren() as $child) {
@@ -93,7 +106,7 @@ class HeaderManager extends Manager implements IHeaderManager {
      * @return HeaderPage
      */
     private function getHeaderFromDb(Language $language) {
-        $headerPage = new HeaderPage(0, null, $language->getId(), null, null);
+        $headerPage = new HeaderPage(0, null, $language->getId(), null, null, 0);
         $this->addChildren($headerPage, $language);
         return $headerPage;
     }
@@ -104,13 +117,16 @@ class HeaderManager extends Manager implements IHeaderManager {
             $row[self::COLUMN_PAGE_ID],
             $row[self::COLUMN_LANG],
             ($row[self::COLUMN_PAGE_ID] === null) ? $row[self::COLUMN_PAGE_URL] : null,
-            ($row[self::COLUMN_PAGE_ID] === null) ? $row[self::COLUMN_TITLE] : null
+            ($row[self::COLUMN_PAGE_ID] === null) ? $row[self::COLUMN_TITLE] : null,
+            $row[self::COLUMN_POSITION]
         );
     }
 
-    public function getNextId(): int {
-        return $this->getDatabase()->table(self::TABLE)
-                ->aggregation("MAX(" . self::COLUMN_ID . ")")
-            + 1;
+    /**
+     * @param int $id
+     * @return void
+     */
+    public function delete(int $id) {
+
     }
 }

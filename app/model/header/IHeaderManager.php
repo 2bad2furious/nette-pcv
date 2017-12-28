@@ -11,5 +11,16 @@ interface IHeaderManager {
      */
     public function getRoot(Language $language, ?Page $currentPage): HeaderPage;
 
-    public function getNextId(): int;
+    /**
+     * @param int $id
+     * @return void
+     * throws
+     */
+    public function delete(int $id);
+
+    /**
+     * @param int $id
+     * @return HeaderPage|null
+     */
+    public function getById(int $id):?HeaderPage;
 }

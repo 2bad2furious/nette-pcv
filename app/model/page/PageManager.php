@@ -46,7 +46,7 @@ class PageManager extends Manager implements IPageManager {
                 ->fetch() instanceof IRow;
     }
 
-    public function getAllPages(Language $language, $asObjects = true): array {
+    public function getAllPages(Language $language): array {
         $data = $this->getDatabase()->table(self::LOCAL_TABLE)
             ->where([self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $language->getId()]);
 

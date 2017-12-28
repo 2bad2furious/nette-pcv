@@ -1,0 +1,17 @@
+    <div class="tab">
+        <input type="radio" name="tabgroup" id="tab-1"
+               {if $formType === \adminModule\HeaderPresenter::TYPE_PAGE}checked{/if}>
+        <label class="tab-label" for="tab-1">Page</label>
+        <div class="tab-content">
+            {control headerPageEditForm}
+        </div>
+    </div>
+
+    <div class="tab">
+        <input type="radio" name="tabgroup" id="tab-2"
+               {if $formType === \adminModule\HeaderPresenter::TYPE_CUSTOM}checked{/if}>
+        <label class="tab-label" for="tab-2">Custom</label>
+        <div class="tab-content">
+            {control headerCustomEditForm}
+        </div>
+    </div>

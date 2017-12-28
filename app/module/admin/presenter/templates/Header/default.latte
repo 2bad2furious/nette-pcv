@@ -13,84 +13,107 @@
     {dump $header}
     <div>
         <div id="sortable-controls">
-            <a href="{plink add \adminModule\HeaderPresenter::ID_KEY=>0}" class="add" data-id="{$nextId}">add</a>
+            <a n:href="add! 0" class="add">add</a>
         </div>
-        <ol id="header-sortable" class="sortable">
-            {include 'header-items.latte' page => $header}
-        </ol>
+        {include 'header-items.latte' parent => $header}
     </div>
-    <div id="edit-form" style="display:none">
-        <div>
-
+    <div id="header-edit-form-wrapper" class="{if $signal}active{/if}">
+        <a id="edit-form-close" n:href="this do=>null,id=>null">close</a>
+        <div n:snippet="edit-form">
+            <div id="tabs" data-action="{$signal}" data-id="{$id}">
+                {var editSnippetId = $control->getSnippetId("edit-form")}
+                <script>{* need to run this everytime *}
+                    _stack.push(function (di) {
+                        jQuery().ready(function ($) {
+                            di.getService("page").getSnippet({$editSnippetId}).setup(
+                                function (elem) {
+                                    var tabs = $(elem).find("#tabs");
+                                    if (tabs.children().length)
+                                        $("#header-edit-form-wrapper").addClass("active");
+                                }).teardown(function () {
+                                $("#header-edit-form-wrapper").removeClass("active")
+                            });
+                        });
+                    });
+                </script>
+                {if $signal === "add"}
+                    {include "add-form.latte" type=>$formType}
+                {elseif $signal === "edit"}
+                    {include "edit-form.latte" type=>$formType}
+                {/if}
+            </div>
         </div>
-
     </div>
     <script>
         _stack.push(function (di) {
             jQuery().ready(function ($) {
+                var preventAndShow = function (event, id, action) {
+                    var tabs = $("#tabs");
+                    if (tabs.children().length &&
+                        tabs.attr("data-id") === ("" + id) &&
+                        tabs.attr("data-action") === action) {
+                        event.preventDefault();
+                        $("#header-edit-form-wrapper").addClass("active");
+                    }
+                };
 
-                var template = function (id) {
-                    return "child - " + id;
-                }
+                $("a#edit-form-close").click(function (e) {
+                    e.preventDefault();
+                    $("#header-edit-form-wrapper").removeClass("active")
+                });
 
                 $("#sortable-controls").find(".add").click(function (e) {
-                    e.preventDefault();
-                    var id = $(this).attr("data-id");
-                    if (!id) throw error("Id not found");
-                    //TODO getFormDataAndShit
-                    nsSelector.append(template(id));
-                    $(this).attr("data-id", id + 1);
-                })
+                    preventAndShow(e, 0, "add")
+                });
 
-                nsSelector = $("ol#header-sortable")
-                ns = nsSelector.nestedSortable({
+                var nsSelector = "ol#{$control->getSnippetId("header-edit")|noescape}";
+                $(nsSelector).nestedSortable({
                     toleranceElement: '> div',
                     placeholder: 'placeholder',
                     items: 'li',
                     isTree: true,
                     startCollapsed: false,
                     rootID: 0
-                })
+                });
 
                 var findLiParent = function (elem) {
-                    console.info(elem.attr("data-id"))
+                    console.info(elem.attr("data-id"));
                     return $("#menuItem_" + elem.attr("data-id"))
-                }
+                };
 
-                $("ol#header-sortable li a.delete-self").click(function (e) {
+                $(document).on("click", nsSelector + " li a.delete-self", function (e) {
                     e.preventDefault();
-                    var parent = findLiParent($(this));
-                    var childrenOl = parent.children("ol")[0]
-                    //console.info(parent, childrenOl,childrenOl.innerHTML);
-                    parent.replaceWith(childrenOl.innerHTML);
-                })
+                    console.info("deleting self" + $(this))
+                });
 
-                $("ol#header-sortable li a.delete-all").click(function (e) {
+                $(nsSelector + " li a.delete-all").click(function (e) {
                     e.preventDefault();
-                    findLiParent($(this)).remove();
-                })
+                    console.info("deleting all" + $(this))
+                });
 
-                $("ol#header-sortable li a.expand").click(function (e) {
-                    e.preventDefault();
+                $(nsSelector + " li a.expand").click(function (e) {
                     findLiParent($(this)).toggleClass('mjs-nestedSortable-expanded').toggleClass('mjs-nestedSortable-collapsed')
-                })
+                });
 
-                $("ol#header-sortable li a.add").click(function (e) {
-                    e.preventDefault()
+                $(nsSelector + " li a.add").click(function (e) {
+                    preventAndShow(e, $(this).attr("data-id"), "add")
+                });
 
-                })
+                $(nsSelector + " li a.edit").click(function (e) {
+                    preventAndShow(e, $(this).attr("data-id"), "edit")
+                });
 
-                $("ol#header-sortable li a.moveUp").click(function (e) {
+                $(nsSelector + " li a.moveUp").click(function (e) {
                     e.preventDefault();
-                })
+                });
 
-                $("ol#header-sortable li a.moveDown").click(function (e) {
+                $(nsSelector + " li a.moveDown").click(function (e) {
                     e.preventDefault();
-                })
-                $("ol#header-sortable li a.moveLeft").click(function (e) {
+                });
+                $(nsSelector + " li a.moveLeft").click(function (e) {
                     e.preventDefault();
-                })
-                $("ol#header-sortable li a.moveRight").click(function (e) {
+                });
+                $(nsSelector + " li a.moveRight").click(function (e) {
                     e.preventDefault();
                 })
             })

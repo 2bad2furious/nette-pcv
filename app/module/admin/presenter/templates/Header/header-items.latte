@@ -1,3 +1,32 @@
-{foreach $page->getChildren() as $child}
-    {include 'header-item.latte' page => $child}
-{/foreach}
+<ol n:snippet="header-edit" class="snippet-container" data-dynamic-mask="{$control->getSnippetId('item-\d+')}"
+                            data-dynamic-sort="sorted: li(position) asc">
+    {define header}
+        {foreach $parent->getChildren() as $page}
+            <li {*data-id="item-{$page->getHeaderPageId()}"*} n:snippet="headerPage-{$page->getHeaderPageId()}"
+                    data-position="{$page->getPosition()}">
+                <div>TODO content {dump $page}{$page->getHeaderPageId()})
+                    <a data-id="{$page->getHeaderPageId()}" class="expand" href="#">show/hide</a>
+                    <a data-id="{$page->getHeaderPageId()}" class="add"
+                            n:href="add! \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId()">add</a>
+                    <a data-id="{$page->getHeaderPageId()}" class="edit"
+                            n:href="edit! \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId()">edit</a>
+                    <a data-id="{$page->getHeaderPageId()}" class="moveUp"
+                            n:href="moveUp! $page->getHeaderPageId()">moveUp</a>
+                    <a data-id="{$page->getHeaderPageId()}" class="moveDown"
+                            n:href="moveDown! $page->getHeaderPageId()">moveDown</a>
+                    <a data-id="{$page->getHeaderPageId()}" class="delete-self"
+                            n:href="deleteSelf! \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId()"
+                       data-dynamic-remove="#{$control->getSnippetId('headerPage-'.$page->getHeaderPageId())}">delete</a>
+                    <a data-id="{$page->getHeaderPageId()}" class="delete-all"
+                            n:href="deleteAll! \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId()"
+                       data-dynamic-remove="#{$control->getSnippetId('headerPage-'.$page->getHeaderPageId())}">delete
+                        all</a>
+                </div>
+                <ol class="snippet-container" data-dynamic-mask="{$control->getSnippetId('item-\d+')}">
+                    {include header parent=>$page}
+                </ol>
+            </li>
+        {/foreach}
+    {/define}
+    {include header parent=>$parent}
+</ol>

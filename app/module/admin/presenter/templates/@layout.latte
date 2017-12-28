@@ -20,7 +20,7 @@
             crossorigin="anonymous" defer></script>
     <script src="/libs/jQuery%20UI/jquery-ui.min.js" type="application/javascript" defer></script>
     <script src="/libs/nestedSortable/jquery.mjs.nestedSortable.js" type="application/javascript" defer></script>
-    <script type="application/javascript" src="/libs/nittro/nittro.min.js" defer></script>
+    <script type="application/javascript" src="/libs/nittro/nittro.js" defer></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/1.0.0-alpha.1/classic/ckeditor.js"
             type="application/javascript" defer></script>
     <script type="application/javascript" src="/js/admin.js" defer></script>
@@ -30,10 +30,13 @@
     {control adminHeader}
 {/ifset}
 <main{ifset $isLoggin} class="no-header"{/ifset}>
-    <div n:snippet="content" class="nittro-transition-fade nittro-transition-auto">
+    <div n:snippet="content" class="nittro-transition-bar nittro-transition-auto">
         <h1 class="admin-title">{$title}</h1>
         {ifset $noSubtitle}{else}{if $page_subtitle}<h2 class="admin-subtitle">{$page_subtitle}</h2>{/if}{/ifset}
-        <ul n:flashes></ul>
+        <div n:snippet="flashes">
+            {if $flashes}<a n:href="clearFlashes!">close flashes</a>{/if}
+            <ul n:flashes></ul>
+        </div>
         {include content}
     </div>
 </main>

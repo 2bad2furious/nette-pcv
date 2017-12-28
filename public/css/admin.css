@@ -1,6 +1,5 @@
 /*if just * was used, you could see the title and scripts xd lmao*/
 body * {
-  transition: inherit;
   box-sizing: inherit;
   text-decoration: inherit;
   color: inherit;
@@ -8,10 +7,42 @@ body * {
   body *:not(p, span, a) {
     display: block; }
   body *:not(textarea) {
-    transition: none; }
-
-textarea.oneline {
-  resize: none; }
+    transition: inherit; }
+  body * textarea.oneline {
+    resize: none; }
+  body * #tabs {
+    position: relative;
+    min-height: 180px;
+    display: block; }
+  body * .tab {
+    float: left; }
+    body * .tab label.tab-label {
+      cursor: pointer;
+      font-size: 1.2em;
+      border-radius: 5px 5px 0 0;
+      padding: .5em 1em; }
+    body * .tab input[type=radio][name=tabgroup] {
+      position: absolute;
+      clip: rect(0, 0, 0, 0); }
+      body * .tab input[type=radio][name=tabgroup]:checked ~ label {
+        /*background: #c99;*/ }
+      body * .tab input[type=radio][name=tabgroup]:checked ~ label ~ .tab-content {
+        display: initial; }
+    body * .tab .tab-content {
+      display: none;
+      border-radius: 0 5px 5px;
+      padding: .5em 2em;
+      position: absolute;
+      width: 100%;
+      top: 2em;
+      left: 0;
+      right: 0;
+      bottom: 0; }
+  body * .center-all, html body * main div#header-edit-form-wrapper.active > div, html body main * div#header-edit-form-wrapper.active > div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); }
 
 div.ck-editor__editable {
   background-color: white; }
@@ -99,5 +130,23 @@ html body {
           border-radius: 1em; }
           html body main div#page-show ul li div a:hover, html body main div#page-show ul li div a.active {
             background-color: #ddd; }
+    html body main div#header-edit-form-wrapper {
+      display: none; }
+      html body main div#header-edit-form-wrapper.active {
+        display: initial;
+        position: fixed;
+        background-color: rgba(51, 51, 51, 0.9);
+        height: 100vh;
+        width: 100vw;
+        top: 0;
+        left: 0; }
+        html body main div#header-edit-form-wrapper.active #edit-form-close {
+          color: white;
+          position: absolute;
+          font-size: 2em;
+          top: 30px;
+          right: 30px; }
+        html body main div#header-edit-form-wrapper.active > div {
+          background-color: white; }
 
 /*# sourceMappingURL=admin.css.map */

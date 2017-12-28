@@ -37,6 +37,10 @@ class HeaderPage {
      * @var Language
      */
     private $language;
+    /**
+     * @var int
+     */
+    private $position;
 
     /**
      * HeaderPage constructor.
@@ -45,13 +49,15 @@ class HeaderPage {
      * @param int $languageId
      * @param null|string $url
      * @param string|null $title
+     * @param int $position
      */
-    public function __construct(int $headerPageId, ?int $pageId = null, int $languageId, ?string $url = null, ?string $title = null) {
+    public function __construct(int $headerPageId, ?int $pageId = null, int $languageId, ?string $url, ?string $title, int $position) {
         $this->headerPageId = $headerPageId;
         $this->url = $url;
         $this->title = $title;
         $this->pageId = $pageId;
         $this->languageId = $languageId;
+        $this->position = $position;
     }
 
     public function setPage(Page $page) {
@@ -143,4 +149,12 @@ class HeaderPage {
     public function getLanguageId(): int {
         return $this->languageId;
     }
+
+    /**
+     * @return int
+     */
+    public function getPosition(): int {
+        return $this->position;
+    }
+
 }

@@ -37,6 +37,9 @@ class FormFactory extends Manager {
     const ONE_LINE_TEXTAREA_CLASS = "oneline";
     const LANGUAGE_EDIT_HOMEPAGE = "homepage_id";
     const LANGUAGE_EDIT_FAVICON_NAME = "favicon";
+    const HEADER_PAGE_NAME = "page_id";
+    const HEADER_TITLE_NAME = "title";
+    const HEADER_URL_NAME = "url";
 
     public function createPageEditForm(Page $page, callable $urlValidator) {
 
@@ -208,6 +211,36 @@ class FormFactory extends Manager {
         $form->addText(\adminModule\LanguagePresenter::SEARCH_KEY)->setRequired(false)->setDefaultValue($query);
 
         $form->addSubmit("submit", "admin.language.default.search.submit");
+        return $form;
+    }
+
+    public function createHeaderPageEditForm(Language $language, ?HeaderPage $headerPage): Form {
+        $form = $this->createNewAdminForm();
+
+        $pages = $this->getPageManager()->getAllPages($language);
+        $pageSelection = $form->addSelect(self::HEADER_PAGE_NAME, "admin.header.edit.page.label", array_map(function (Page $page) {
+            return $page->getTitle() . " " . $page->getGlobalId();
+        }, $pages));
+        if ($headerPage instanceof HeaderPage) $pageSelection->setDefaultValue($headerPage->getPageId());
+
+        $title = $form->addText(self::HEADER_TITLE_NAME, "admin.header.edit.title.optional.label");
+        if ($headerPage instanceof HeaderPage) $title->setDefaultValue((string)$headerPage->getTitle());
+
+        return $form;
+    }
+
+    public function createHeaderCustomEditForm(?HeaderPage $headerPage) {
+        $form = $this->createNewAdminForm();
+
+        $url = $form->addText(self::HEADER_URL_NAME, "admin.header.edit.url.label")
+            ->addRule(Form::URL, "admin.header.edit.url.pattern")
+            ->addRule(Form::REQUIRED, "admin.header.url.required");
+        if ($headerPage instanceof HeaderPage) $url->setDefaultValue($headerPage->getUrl());
+
+        $title = $form->addText(self::HEADER_TITLE_NAME, "admin.header.edit.title.required.label")
+            ->addRule(Form::REQUIRED, "admin.header.edit.title.required.required");
+        if ($headerPage instanceof HeaderPage) $title->setDefaultValue((string)$headerPage->getTitle());
+
         return $form;
     }
 }
