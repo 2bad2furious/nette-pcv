@@ -7,7 +7,7 @@ class NoLangPresenter extends \BasePresenter {
         $language = $this->getLocaleLanguage();
         if (!$language instanceof \Language) $language = $this->getLanguageManager()->getDefaultLanguage();
 
-        $this->redirect(301, ":admin:Language:", ["locale" => $language->getCode()]);
+        $this->redirect(301, ":admin:Header:", ["locale" => $language->getCode()]);
     }
 
     protected function getAllowedRoles(): array {
