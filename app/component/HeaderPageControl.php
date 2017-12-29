@@ -7,8 +7,4 @@ class HeaderPageControl extends BaseControl {
         $this->template->header = $header;
         $this->template->render();
     }
-
-    private function getHeaderManager(): IHeaderManager {
-        return $this->getPresenter()->context->getByType(IHeaderManager::class);
-    }
 }
