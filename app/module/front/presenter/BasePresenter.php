@@ -129,7 +129,7 @@ abstract class BasePresenter extends Presenter {
         return $this->serviceLoader;
     }
 
-    protected final function getUserManager(): UserManager {
+    protected final function getUserManager(): IUserManager {
         return $this->getServiceLoader()->getUserManager();
     }
 
@@ -142,11 +142,11 @@ abstract class BasePresenter extends Presenter {
         return $this->getServiceLoader()->getHeaderManager();
     }
 
-    protected final function getTagManager(): TagManager {
+    protected final function getTagManager(): ITagManager {
         return $this->getServiceLoader()->getTagManager();
     }
 
-    protected final function getPageManager(): PageManager {
+    protected final function getPageManager(): IPageManager {
         return $this->getServiceLoader()->getPageManager();
     }
 
@@ -154,7 +154,7 @@ abstract class BasePresenter extends Presenter {
         return $this->getServiceLoader()->getSettingsManager();
     }
 
-    protected final function getMediaManager(): MediaManager {
+    protected final function getMediaManager(): IMediaManager {
         return $this->getServiceLoader()->getMediaManager();
     }
 

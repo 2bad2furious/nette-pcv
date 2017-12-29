@@ -15,16 +15,16 @@
         <div id="sortable-controls">
             <a n:href="add \adminModule\HeaderPresenter::ID_KEY=>0,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE" class="add">add</a>
         </div>
-        {include 'header-items.latte' parent => $header}
+        {control adminHeaderManaging $header}
     </div>
     <div id="header-edit-form-wrapper" class="{if $action}active{/if}">
-        <a id="edit-form-close" n:href="default \adminModule\HeaderPresenter::ID_KEY=>null,\adminModule\HeaderPresenter::TYPE_KEY=>null">close</a>
+        <a id="edit-form-close" n:href="default \adminModule\HeaderPresenter::ID_KEY=>null,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE">close</a>
         <div n:snippet="edit-form">
             <div id="tabs" data-action="{$action}" data-id="{$id}">
                 {if $action === "add"}
-                    {include "add-form.latte" type=>$formType}
+                    {include "add-form.latte" formType=>$formType}
                 {elseif $action === "edit"}
-                    {include "edit-form.latte" type=>$formType}
+                    {include "edit-form.latte" formType=>$formType}
                 {/if}
             </div>
             {var editSnippetId = $control->getSnippetId("edit-form")}

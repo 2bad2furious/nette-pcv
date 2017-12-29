@@ -5,17 +5,15 @@ namespace adminModule;
 
 
 use Language;
-use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\Http\IResponse;
 use Tracy\Debugger;
 
 class HeaderPresenter extends AdminPresenter {
 
 
     const LANGUAGE_KEY = "language",
-        ID_KEY = "id",
-        TYPE_KEY = "form-type";
+        ID_KEY = "headerPageId",
+        TYPE_KEY = "formType";
 
     const TYPE_PAGE = "page",
         TYPE_CUSTOM = "custom",
@@ -27,7 +25,11 @@ class HeaderPresenter extends AdminPresenter {
     public $language;
 
     /** @persistent */
-    public $id;
+    public $headerPageId;
+
+    /** @persistent */
+    public $formType;
+
     /**
      * @var \HeaderPage
      */
@@ -89,31 +91,7 @@ class HeaderPresenter extends AdminPresenter {
 
     private function getHeaderPageByIdParam():?\HeaderPage {
         $id = $this->getIdParam();
-
-    }
-
-    public function handleDelete(int $id) {
-        try {
-            $this->getHeaderManager()->delete($id);
-        } catch (\Exception $ex) {
-            $this->somethingWentWrong();
-        }
-    }
-
-    public function handleMoveUp(int $id) {
-
-    }
-
-    public function handleMoveDown(int $id) {
-
-    }
-
-    public function handleDeleteAll(int $id) {
-
-    }
-
-    public function handleDeleteSelf(int $id) {
-
+        return $this->getHeaderManager()->getById($id);
     }
 
     public function createComponentHeaderPageAddForm() {
@@ -178,10 +156,17 @@ class HeaderPresenter extends AdminPresenter {
         return $form;
     }
 
-    private function getFormType(): bool {
-        return $this->headerPage instanceof \HeaderPage ?
-            is_int($this->headerPage->getPageId()) :
-            $this->getParameter(self::TYPE_KEY, self::TYPE_PAGE) === self::TYPE_PAGE;
+    public function createComponentAdminHeaderManaging(string $name) {
+        return new \AdminHeaderManagingControl($this, $name);
+    }
+
+    private function getFormType(): string {
+        if ($this->headerPage instanceof \HeaderPage && $this->getAction() !== "add")
+            return self::TYPES[$this->headerPage->getType()];
+
+        $type = $this->getParameter(self::TYPE_KEY);
+        if (!in_array($type, self::TYPES)) trigger_error("type $type not found");
+        return $type;
     }
 
     private function getIdParam():?int {
