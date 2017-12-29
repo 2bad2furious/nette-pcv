@@ -190,7 +190,8 @@ abstract class BasePresenter extends Presenter {
     private function getRouter(): IRouter {
         return $this->context->getByType(IRouter::class);
     }
-    protected function getSignalName():?string{
+
+    protected function getSignalName():?string {
         return $this->getParameter(self::SIGNAL_KEY);
     }
 }

@@ -2,6 +2,9 @@
 
 
 class HeaderPage {
+    const TYPE_PAGE = 1;
+    const TYPE_CUSTOM = 0;
+
     /**
      * @var int
      */
@@ -157,4 +160,7 @@ class HeaderPage {
         return $this->position;
     }
 
+    public function getType(): int {
+        return is_int($this->getPageId()) ? self::TYPE_PAGE : self::TYPE_CUSTOM;
+    }
 }

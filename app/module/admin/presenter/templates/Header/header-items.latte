@@ -7,9 +7,9 @@
                 <div>TODO content {dump $page}{$page->getHeaderPageId()})
                     <a data-id="{$page->getHeaderPageId()}" class="expand" href="#">show/hide</a>
                     <a data-id="{$page->getHeaderPageId()}" class="add"
-                            n:href="add! \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId()">add</a>
+                            n:href="add \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId(),\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE">add</a>
                     <a data-id="{$page->getHeaderPageId()}" class="edit"
-                            n:href="edit! \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId()">edit</a>
+                            n:href="edit \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId(),\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::TYPES[$page->getType()]">edit</a>
                     <a data-id="{$page->getHeaderPageId()}" class="moveUp"
                             n:href="moveUp! $page->getHeaderPageId()">moveUp</a>
                     <a data-id="{$page->getHeaderPageId()}" class="moveDown"

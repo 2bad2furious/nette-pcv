@@ -139,6 +139,12 @@ class Router {
             ],
         ]);
 
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter header>/<" . \adminModule\HeaderPresenter::LANGUAGE_KEY . " $languages>/<action add|edit>/<" . \adminModule\HeaderPresenter::ID_KEY . " \d+>/<" . \adminModule\HeaderPresenter::TYPE_KEY . ">", [
+            \adminModule\HeaderPresenter::TYPE_KEY => [
+                Route::PATTERN => implode("|", \adminModule\HeaderPresenter::TYPES),
+            ],
+        ]);
+
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter=Default>[/<action=default default>]");
 
