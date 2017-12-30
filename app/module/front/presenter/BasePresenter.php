@@ -194,4 +194,13 @@ abstract class BasePresenter extends Presenter {
     protected function getSignalName():?string {
         return $this->getParameter(self::SIGNAL_KEY);
     }
+
+    protected function commonTryCall(callable $action) {
+        try {
+            $action();
+        } catch (Exception $exception) {
+            \Tracy\Debugger::log($exception);
+            //$this->somethingWentWrong();
+        }
+    }
 }

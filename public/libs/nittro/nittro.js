@@ -2113,12 +2113,8 @@ _context.invoke("Utils", function (undefined) {
             return prepare && !run && (run = prepare, prepare = null), prepare && (this._.phase === Snippet.PREPARE_TEARDOWN ? prepare(this.getElement()) : this._.handlers[Snippet.PREPARE_TEARDOWN].push(prepare)), run && (this._.phase === Snippet.RUN_TEARDOWN ? run(this.getElement()) : this._.handlers[Snippet.RUN_TEARDOWN].push(run)), this
         },
         runPhase: function (phase) {
-            console.info(phase + " " + this._.phase)
-            console.trace()
-            if (phase === Snippet.INACTIVE) this._.phase = phase, console.info(this._.handlers), this._.handlers.forEach(function (queue) {
-                console.info(queue)
+            if (phase === Snippet.INACTIVE) this._.phase = phase, this._.handlers.forEach(function (queue) {
                 queue.splice(0, queue.length)
-                console.info(queue)
             }); else if (phase - 1 === this._.phase) {
                 this._.phase = phase;
                 var elm = this.getElement();
@@ -2126,7 +2122,6 @@ _context.invoke("Utils", function (undefined) {
                     handler(elm)
                 }), this._.handlers[this._.phase].splice(0, this._.handlers[this._.phase].length)
             }
-            console.info(this._.phase)
             return this
         },
         getPhase: function () {
@@ -4534,10 +4529,8 @@ _context.invoke("Utils", function (undefined) {
         this._.history.on("popstate", this._handleState.bind(this));
     }, {
         _saveSessionId: function (evt) {
-            console.info("sessId", evt);
             evt.data.sessionId = this._.sessionId;
         }, _handleState: function (evt) {
-            console.info("state", evt);
             if (evt.data.data.sessionId !== this._.sessionId) {
                 evt.preventDefault();
                 (window.history.location || window.location).href = evt.data.url;

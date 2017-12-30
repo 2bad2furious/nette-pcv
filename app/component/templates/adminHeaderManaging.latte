@@ -1,32 +1,33 @@
 <ol n:snippet="header-edit" class="snippet-container" data-dynamic-mask="{$control->getSnippetId('item-\d+')}"
                             data-dynamic-sort="sorted: li(position) asc">
     {define header}
-        {foreach $parent->getChildren() as $page}
-            <li {*data-id="item-{$page->getHeaderPageId()}"*} n:snippet="headerPage-{$page->getHeaderPageId()}"
+        {foreach $header as $page}
+            <li {*data-id="item-{$page->getId()}"*} n:snippet="headerPage-{$page->getId()}"
                     data-position="{$page->getPosition()}">
-                <div>TODO content {dump $page}{$page->getHeaderPageId()})
-                    {*<a data-id="{$page->getHeaderPageId()}" class="expand" href="#">show/hide</a>*}
-                    <a data-id="{$page->getHeaderPageId()}" class="add"
-                            href="{plink Header:add \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId(),\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE}">add</a>
-                    <a data-id="{$page->getHeaderPageId()}" class="edit"
-                            href="{plink Header:edit \adminModule\HeaderPresenter::ID_KEY=>$page->getHeaderPageId(),\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::TYPES[$page->getType()]}">edit</a>
-                    <a data-id="{$page->getHeaderPageId()}" class="moveUp"
-                            n:href="moveUp! $page->getHeaderPageId()">moveUp</a>
-                    <a data-id="{$page->getHeaderPageId()}" class="moveDown"
-                            n:href="moveDown! $page->getHeaderPageId()">moveDown</a>
-                    <a data-id="{$page->getHeaderPageId()}" class="delete-self"
-                            n:href="deleteSelf! $page->getHeaderPageId()"
-                       data-dynamic-remove="#{$control->getSnippetId('headerPage-'.$page->getHeaderPageId())}">delete</a>
-                    <a data-id="{$page->getHeaderPageId()}" class="delete-all"
-                            n:href="deleteAll! $page->getHeaderPageId()"
-                       data-dynamic-remove="#{$control->getSnippetId('headerPage-'.$page->getHeaderPageId())}">delete
+                <div>
+                    <span>{$page->getPageId()} - {$page->getTitle()}</span>
+                    {*<a data-id="{$page->getId()}" class="expand" href="#">show/hide</a>*}
+                    <a data-id="{$page->getId()}" class="add"
+                            href="{plink Header:add \adminModule\HeaderPresenter::ID_KEY=>$page->getId(),\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE}">add</a>
+                    <a data-id="{$page->getId()}" class="edit"
+                            href="{plink Header:edit \adminModule\HeaderPresenter::ID_KEY=>$page->getId(),\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::TYPES[$page->getType()]}">edit</a>
+                    <a data-id="{$page->getId()}" class="moveUp"
+                            n:href="moveUp! $page->getId()">moveUp</a>
+                    <a data-id="{$page->getId()}" class="moveDown"
+                            n:href="moveDown! $page->getId()">moveDown</a>
+                    <a data-id="{$page->getId()}" class="delete-self"
+                            n:href="deleteSelf! $page->getId()"
+                       data-dynamic-remove="#{$control->getSnippetId('headerPage-'.$page->getId())}">delete</a>
+                    <a data-id="{$page->getId()}" class="delete-all"
+                            n:href="deleteAll! $page->getId()"
+                       data-dynamic-remove="#{$control->getSnippetId('headerPage-'.$page->getId())}">delete
                         all</a>
                 </div>
                 <ol class="snippet-container" data-dynamic-mask="{$control->getSnippetId('item-\d+')}">
-                    {include header parent=>$page}
+                    {include header header=>$page->getChildren()}
                 </ol>
             </li>
         {/foreach}
     {/define}
-    {include header parent=>$parent}
+    {include header header=>$header}
 </ol>

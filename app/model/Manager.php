@@ -54,7 +54,7 @@ abstract class Manager implements IManager {
         return $this->context->getByType(IStorage::class);
     }
 
-    protected final function getPageManager(): PageManager {
+    protected final function getPageManager(): IPageManager {
         return $this->getServiceLoader()->getPageManager();
     }
 
@@ -74,11 +74,11 @@ abstract class Manager implements IManager {
         return $this->getServiceLoader()->getTranslator();
     }
 
-    protected final function getTagManager(): TagManager {
+    protected final function getTagManager(): ITagManager {
         return $this->getServiceLoader()->getTagManager();
     }
 
-    protected final function getMediaManager(): MediaManager {
+    protected final function getMediaManager(): IMediaManager {
         return $this->getServiceLoader()->getMediaManager();
     }
 
@@ -86,7 +86,7 @@ abstract class Manager implements IManager {
         return $this->getServiceLoader()->getDatabase();
     }
 
-    protected final function getUserManager(): UserManager {
+    protected final function getUserManager(): IUserManager {
         return $this->getServiceLoader()->getUserManager();
     }
 
@@ -96,5 +96,18 @@ abstract class Manager implements IManager {
 
     private function getServiceLoader(): ServiceLoader {
         return $this->context->getByType(ServiceLoader::class);
+    }
+
+    protected final function runInTransaction(callable $action){
+        $inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction();
+        if(!$inTransaction) $this->getDatabase()->beginTransaction();
+        try{
+            $result = $action();
+            if(!$inTransaction) $this->getDatabase()->commit();
+        }catch (Throwable $exception){
+            if(!$inTransaction) $this->getDatabase()->rollBack();
+            throw $exception;
+        }
+        return $result;
     }
 }

@@ -3,3 +3,11 @@ should a manager trigger other managers directly or should it trigger all listen
 tree of pages?
 
 header - floating div with form on add
+
+manager calling in presenter through one method like commonTryCall(callable $action)
+
+inTransaction use in managers - common method
+
+wrappers for all db classes - page|header|setting|Tag
+
+get rid of pageType class

@@ -215,36 +215,41 @@ class FormFactory extends Manager {
         return $form;
     }
 
-    public function createHeaderPageEditForm(Language $language, ?HeaderPage $headerPage): Form {
+    public function createHeaderPageEditForm(int $languageId, ?HeaderWrapper $headerWrapper): Form {
+        if ($headerWrapper instanceof HeaderWrapper && $headerWrapper->getLanguageId() !== $languageId) throw new InvalidArgumentException("Language {$languageId} is not the same as header's {$headerWrapper->getLanguageId()}");
         $form = $this->createNewAdminForm();
+
+        $language = $headerWrapper instanceof HeaderWrapper ?
+            $headerWrapper->getLanguage() :
+            $this->getLanguageManager()->getById($languageId);
 
         $pages = $this->getPageManager()->getAllPages($language);
         $pageSelection = $form->addSelect(self::HEADER_PAGE_NAME, "admin.header.edit.page.label", array_map(function (Page $page) {
             return $page->getTitle() . " " . $page->getGlobalId();
         }, $pages));
-        if ($headerPage instanceof HeaderPage) $pageSelection->setDefaultValue($headerPage->getPageId());
+        if ($headerWrapper instanceof HeaderWrapper) $pageSelection->setDefaultValue($headerWrapper->getPageId());
 
         $title = $form->addText(self::HEADER_TITLE_NAME, "admin.header.edit.title.optional.label");
-        if ($headerPage instanceof HeaderPage) $title->setDefaultValue((string)$headerPage->getTitle());
+        if ($headerWrapper instanceof HeaderWrapper) $title->setDefaultValue((string)$headerWrapper->getTitle());
 
-        $form->addSubmit(self::HEADER_SUBMIT_NAME, "admin.header." . ($headerPage instanceof HeaderPage ? "edit" : "add") . ".submit");
+        $form->addSubmit(self::HEADER_SUBMIT_NAME, "admin.header." . ($headerWrapper instanceof HeaderWrapper ? "edit" : "add") . ".submit");
 
         return $form;
     }
 
-    public function createHeaderCustomEditForm(?HeaderPage $headerPage) {
+    public function createHeaderCustomEditForm(?HeaderWrapper $headerWrapper) {
         $form = $this->createNewAdminForm();
+
+        $title = $form->addText(self::HEADER_TITLE_NAME, "admin.header.edit.title.required.label")
+            ->addRule(Form::REQUIRED, "admin.header.edit.title.required.required");
+        if ($headerWrapper instanceof HeaderWrapper) $title->setDefaultValue((string)$headerWrapper->getTitle());
 
         $url = $form->addText(self::HEADER_URL_NAME, "admin.header.edit.url.label")
             ->addRule(Form::URL, "admin.header.edit.url.pattern")
             ->addRule(Form::REQUIRED, "admin.header.url.required");
-        if ($headerPage instanceof HeaderPage) $url->setDefaultValue($headerPage->getUrl());
+        if ($headerWrapper instanceof HeaderWrapper) $url->setDefaultValue($headerWrapper->getUrl());
 
-        $title = $form->addText(self::HEADER_TITLE_NAME, "admin.header.edit.title.required.label")
-            ->addRule(Form::REQUIRED, "admin.header.edit.title.required.required");
-        if ($headerPage instanceof HeaderPage) $title->setDefaultValue((string)$headerPage->getTitle());
-
-        $form->addSubmit(self::HEADER_SUBMIT_NAME, "admin.header." . ($headerPage instanceof HeaderPage ? "edit" : "add") . ".submit");
+        $form->addSubmit(self::HEADER_SUBMIT_NAME, "admin.header." . ($headerWrapper instanceof HeaderPage ? "edit" : "add") . ".submit");
 
         return $form;
     }

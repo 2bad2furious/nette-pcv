@@ -2,8 +2,8 @@
 
 //TODO rename
 class AdminHeaderManagingControl extends BaseControl {
-    public function render(HeaderPage $headerPage){
-        $this->template->parent = $headerPage;
+    public function render(array $header){
+        $this->template->header = $header;
         $this->template->render();
     }
 

@@ -52,7 +52,8 @@ class PageManager extends Manager implements IPageManager {
 
         $pages = [];
         while ($row = $data->fetch()) {
-            $pages[] = $this->getByGlobalId($language, $row[self::LOCAL_MAIN_COLUMN_ID]);
+            $globalId = $row[self::LOCAL_MAIN_COLUMN_ID];
+            $pages[$globalId] = $this->getByGlobalId($language, $globalId);
         }
         return $pages;
     }
@@ -203,7 +204,7 @@ class PageManager extends Manager implements IPageManager {
             $dependencies = self::getDependencies($id, $language);
             return $this->getFromDbByGlobalId($id, $language);
         });
-
+        dump($cached);
         return $cached instanceof Page ? $this->getIfRightsAndSetMissing($cached) : null;
     }
 

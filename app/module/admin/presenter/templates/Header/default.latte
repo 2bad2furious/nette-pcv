@@ -13,7 +13,8 @@
     {dump $header}
     <div>
         <div id="sortable-controls">
-            <a n:href="add \adminModule\HeaderPresenter::ID_KEY=>0,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE" class="add">add</a>
+            <a n:href="add \adminModule\HeaderPresenter::ID_KEY=>0,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE"
+                    class="add">add</a>
         </div>
         {control adminHeaderManaging $header}
     </div>
@@ -45,10 +46,13 @@
         </div>
     </div>
     <script>
+        //TODO do document listeners instead
         _stack.push(function (di) {
             jQuery().ready(function ($) {
+
                 var preventAndShow = function (event, id, action) {
                     var tabs = $("#tabs");
+                    console.info(tabs.children().length, tabs.attr("data-id"), ("" + id), tabs.attr("data-action"), action)
                     if (tabs.children().length &&
                         tabs.attr("data-id") === ("" + id) &&
                         tabs.attr("data-action") === action) {
@@ -56,6 +60,14 @@
                         $("#header-edit-form-wrapper").addClass("active");
                     }
                 };
+
+                $(window).keyup(function (e) {
+                    if (e.keyCode === 27) /* ESC */ $("#header-edit-form-wrapper").removeClass("active");
+                })
+
+                $("#header-edit-form-wrapper.active").click(function (e) {
+                    if (e.target === this) $(this).removeClass("active");
+                })
 
                 $("a#edit-form-close").click(function (e) {
                     e.preventDefault();
@@ -66,14 +78,18 @@
                     preventAndShow(e, 0, "add")
                 });
 
-                var nsSelector = "ol#{$control->getSnippetId("header-edit")|noescape}";
+                var nsSelector = "ol#{$_tmp->getSnippetId("header-edit")|noescape}";
                 $(nsSelector).nestedSortable({
                     toleranceElement: '> div',
                     placeholder: 'placeholder',
                     items: 'li',
                     isTree: true,
                     startCollapsed: false,
-                    rootID: 0
+                    rootID: 0,
+                    stop: function (event, ui) {
+                        var el = ui.item;
+                        console.info(el.parent("li").attr("data-id"))
+                    }
                 });
 
                 var findLiParent = function (elem) {
@@ -81,41 +97,43 @@
                     return $("#menuItem_" + elem.attr("data-id"))
                 };
 
-                $(document).on("click", nsSelector + " li a.delete-self", function (e) {
+                $(nsSelector).on("click", "li a.add", function (e) {
+                    preventAndShow(e, $(this).attr("data-id"), "add")
+                });
+
+                $(nsSelector).on("click", "li a.edit", function (e) {
+                    preventAndShow(e, $(this).attr("data-id"), "edit")
+                });
+
+                $(nsSelector).on("click", "li a.expand", function (e) {
+                    findLiParent($(this)).toggleClass('mjs-nestedSortable-expanded').toggleClass('mjs-nestedSortable-collapsed')
+                });
+
+                $(nsSelector).on("click", "li a.moveUp", function (e) {
+                    e.preventDefault();
+                });
+
+                $(nsSelector).on("click", "li a.moveDown", function (e) {
+                    e.preventDefault();
+                });
+
+                $(nsSelector).on("click", "li a.moveLeft", function (e) {
+                    e.preventDefault();
+                });
+
+                $(nsSelector).on("click", "li a.moveRight", function (e) {
+                    e.preventDefault();
+                })
+
+                $(nsSelector).on("click", "li a.delete-self", function (e) {
                     e.preventDefault();
                     console.info("deleting self" + $(this))
                 });
 
-                $(nsSelector + " li a.delete-all").click(function (e) {
+                $(nsSelector).on("click", "li a.delete-all", function (e) {
                     e.preventDefault();
                     console.info("deleting all" + $(this))
                 });
-
-                $(nsSelector + " li a.expand").click(function (e) {
-                    findLiParent($(this)).toggleClass('mjs-nestedSortable-expanded').toggleClass('mjs-nestedSortable-collapsed')
-                });
-
-                $(nsSelector + " li a.add").click(function (e) {
-                    preventAndShow(e, $(this).attr("data-id"), "add")
-                });
-
-                $(nsSelector + " li a.edit").click(function (e) {
-                    preventAndShow(e, $(this).attr("data-id"), "edit")
-                });
-
-                $(nsSelector + " li a.moveUp").click(function (e) {
-                    e.preventDefault();
-                });
-
-                $(nsSelector + " li a.moveDown").click(function (e) {
-                    e.preventDefault();
-                });
-                $(nsSelector + " li a.moveLeft").click(function (e) {
-                    e.preventDefault();
-                });
-                $(nsSelector + " li a.moveRight").click(function (e) {
-                    e.preventDefault();
-                })
             })
         })
     </script>

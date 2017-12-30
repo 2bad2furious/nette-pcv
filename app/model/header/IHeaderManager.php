@@ -7,28 +7,36 @@ interface IHeaderManager {
     /**
      * @param Language $language
      * @param null|Page $currentPage
-     * @return HeaderPage
+     * @return array
      */
-    public function getRoot(Language $language, ?Page $currentPage): HeaderPage;
+    public function getHeader(Language $language,?Page $currentPage): array;
 
     /**
      * @param int $id
-     * @return HeaderPage|null
+     * @return HeaderWrapper|null
      */
-    public function getById(int $id):?HeaderPage;
+    public function getById(int $id):?HeaderWrapper;
 
-    public function addPage(HeaderPage $parent, int $pageId, string $title):int;
+    public function addPage(int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper;
 
-    public function addCustom(HeaderPage $parent, string $title, string $url):int;
+    public function addCustom(int $parentId, int $languageId, string $title, string $url): HeaderWrapper;
 
-    public function editPage(HeaderPage $headerPage, int $pageId, string $title);
+    public function editPage(int $headerId, int $pageId, string $title);
 
-    public function editCustom(HeaderPage $headerPage, string $title, string $url);
+    public function editCustom(int $headerId, string $title, string $url);
+
+    /**
+     * @param int $id
+     * @return void
+     */
+    public function delete(int $id);
 
     /**
      * @param int $id
      * @return void
      * @throws InvalidArgumentException
      */
-    public function delete(int $id);
+    public function deleteBranch(int $id);
+
+    public function exists(int $id, int $langId): bool;
 }

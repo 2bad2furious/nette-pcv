@@ -18,8 +18,8 @@ class HeaderPresenter extends AdminPresenter {
     const TYPE_PAGE = "page",
         TYPE_CUSTOM = "custom",
         DEFAULT_TYPE = self::TYPE_PAGE,
-        TYPES = [\HeaderPage::TYPE_PAGE   => self::TYPE_PAGE,
-                 \HeaderPage::TYPE_CUSTOM => self::TYPE_CUSTOM];
+        TYPES = [\Header::TYPE_PAGE   => self::TYPE_PAGE,
+                 \Header::TYPE_CUSTOM => self::TYPE_CUSTOM];
 
     /** @persistent */
     public $language;
@@ -30,10 +30,7 @@ class HeaderPresenter extends AdminPresenter {
     /** @persistent */
     public $formType;
 
-    /**
-     * @var \HeaderPage
-     */
-    private $headerPage;
+    private $headerWrapper;
 
     protected function getAllowedRoles(): array {
         return \UserManager::ROLES_PAGE_MANAGING;
@@ -50,9 +47,9 @@ class HeaderPresenter extends AdminPresenter {
         $this->template->language = $this->getCurrentLanguage();
         $this->template->languages = $this->getLanguageManager()->getAvailableLanguages(true);
         $this->template->action = in_array(($action = $this->getAction()), ["add", "edit"]) ? $action : null;
-        $this->template->header = $this->getHeaderManager()->getRoot($this->getCurrentLanguage(), null);
+        $this->template->header = $this->getHeaderManager()->getHeader($this->getCurrentLanguage());
         $this->template->formType = $this->getFormType();
-        $this->template->id = $this->getParameter("id");
+        $this->template->id = $this->getIdParam();
     }
 
     private function getCurrentLanguage(): Language {
@@ -63,11 +60,7 @@ class HeaderPresenter extends AdminPresenter {
     public function actionAdd() {
         $id = $this->getIdParam();
 
-        $this->headerPage = $id === 0 ?
-            $this->getHeaderManager()->getRoot($this->getCurrentLanguage(), null) :
-            $this->getHeaderManager()->getById($id);
-
-        if (!$this->headerPage instanceof \HeaderPage) {
+        if ($id !== 0 && !$this->getHeaderManager()->exists($id, $this->getCurrentLanguage()->getId())) {
             $this->addError("admin.header.add.not_found");
             $this->redirect(302, ":default");
         }
@@ -77,35 +70,30 @@ class HeaderPresenter extends AdminPresenter {
     }
 
     public function actionEdit() {
-        $this->headerPage = $this->getHeaderPageByIdParam();
-
-        if (!$this->headerPage instanceof \HeaderPage || $this->headerPage->getLanguageId() !== $this->getCurrentLanguage()->getId()) {
-            dump($this->headerPage, $this->getCurrentLanguage());
+        if (!$this->getHeaderManager()->exists($this->getIdParam(), $this->getCurrentLanguage()->getId())) {
+            dump($this->getIdParam(), $this->getCurrentLanguage());
             $this->addError("admin.header.edit.not_found");
             $this->redirect(302, ":default");
         }
+        $this->headerWrapper = $this->getHeaderManager()->getById($this->getIdParam());
 
         $this->setView("default");
         $this->redrawControl("edit-form");
     }
 
-    private function getHeaderPageByIdParam():?\HeaderPage {
-        $id = $this->getIdParam();
-        return $this->getHeaderManager()->getById($id);
-    }
-
     public function createComponentHeaderPageAddForm() {
-        $form = $this->getFormFactory()->createHeaderPageEditForm($this->getCurrentLanguage(), null)
+        $form = $this->getFormFactory()->createHeaderPageEditForm($this->getCurrentLanguage()->getId(), null)
             ->setAction($this->link("add", [self::TYPE_KEY => self::TYPE_PAGE]));
 
         $form->onSuccess[] = function (Form $form, array $values) {
             try {
                 $this->getHeaderManager()->addPage(
-                    $this->headerPage,
+                    $this->getIdParam(),
+                    $this->getCurrentLanguage()->getId(),
                     $values[\FormFactory::HEADER_PAGE_NAME],
                     $values[\FormFactory::HEADER_TITLE_NAME]
                 );
-                $this->redirect(302, "default");
+                $this->redirect(302, "default", [self::TYPE_KEY => null, self::ID_KEY => null]);
             } catch (\Exception $exception) {
                 Debugger::log($exception);
                 $this->somethingWentWrong();
@@ -117,7 +105,6 @@ class HeaderPresenter extends AdminPresenter {
     public function createComponentHeaderCustomAddForm() {
         $link = $this->link("add", [
             self::TYPE_KEY => self::TYPE_CUSTOM,
-            self::ID_KEY   => $this->headerPage->getHeaderPageId(),
         ]);
 
         $form = $this->getFormFactory()->createHeaderCustomEditForm(null)
@@ -126,11 +113,12 @@ class HeaderPresenter extends AdminPresenter {
         $form->onSuccess[] = function (Form $form, array $values) {
             try {
                 $this->getHeaderManager()->addCustom(
-                    $this->headerPage,
+                    $this->getIdParam(),
+                    $this->getCurrentLanguage()->getId(),
                     $values[\FormFactory::HEADER_TITLE_NAME],
                     $values[\FormFactory::HEADER_URL_NAME]
                 );
-                $this->redirect(302, "default");
+                $this->redirect(302, "default", [self::TYPE_KEY => null, self::ID_KEY => null]);
             } catch (\Exception $exception) {
                 Debugger::log($exception);
                 $this->somethingWentWrong();
@@ -141,18 +129,33 @@ class HeaderPresenter extends AdminPresenter {
     }
 
     public function createComponentHeaderPageEditForm() {
-        $headerPage = $this->headerPage;
-
-        $form = $this->getFormFactory()->createHeaderPageEditForm($this->getCurrentLanguage(), $headerPage);
+        $form = $this->getFormFactory()->createHeaderPageEditForm($this->getCurrentLanguage()->getId(), $this->headerWrapper);
         $form->setAction($this->link("edit", [self::TYPE_KEY => self::TYPE_PAGE]));
+        $form->onSuccess[] = function (Form $form, array $values) {
+            $this->commonTryCall(function () use ($values) {
+                $this->getHeaderManager()->editPage(
+                    $this->getIdParam(),
+                    $values[\FormFactory::HEADER_PAGE_NAME],
+                    $values[\FormFactory::HEADER_TITLE_NAME]
+                );
+            });
+            $this->redirect(302, "default", [self::TYPE_KEY => null, self::ID_KEY => null]);
+        };
         return $form;
     }
 
     public function createComponentHeaderCustomEditForm() {
-        $headerPage = $this->headerPage;
-
-        $form = $this->getFormFactory()->createHeaderCustomEditForm($headerPage);
+        $form = $this->getFormFactory()->createHeaderCustomEditForm($this->headerWrapper);
         $form->setAction($this->link("edit", [self::TYPE_KEY => self::TYPE_CUSTOM]));
+        $form->onSuccess[] = function (Form $form, array $values) {
+            $this->commonTryCall(function () use ($values) {
+                $this->getHeaderManager()->editCustom(
+                    $this->getIdParam(),
+                    $values[\FormFactory::HEADER_TITLE_NAME],
+                    $values[\FormFactory::HEADER_URL_NAME]
+                );
+            });
+        };
         return $form;
     }
 
@@ -160,18 +163,18 @@ class HeaderPresenter extends AdminPresenter {
         return new \AdminHeaderManagingControl($this, $name);
     }
 
-    private function getFormType(): string {
-        if ($this->headerPage instanceof \HeaderPage && $this->getAction() !== "add")
-            return self::TYPES[$this->headerPage->getType()];
+    private function getFormType(): ?string {
+        if ($this->headerWrapper instanceof \HeaderWrapper)
+            return self::TYPES[$this->headerWrapper->getType()];
 
         $type = $this->getParameter(self::TYPE_KEY);
-        if (!in_array($type, self::TYPES)) trigger_error("type $type not found");
+        /*if (!in_array($type, self::TYPES)) trigger_error("type $type not found");*/
         return $type;
     }
 
     private function getIdParam():?int {
         $id = $this->getParameter(self::ID_KEY);
-        if (is_null($id)) $this->error("Id not found");
+        //  if (is_null($id)) $this->error("Id not found");
         return (int)$id;
     }
 }
