@@ -85,7 +85,7 @@ class LanguagePresenter extends AdminPresenter {
         $form = $this->getFormFactory()->createLanguageEditForm($language);
         //$form->setAction($this->link("this", [self::ID_KEY => $language->getId()]));
         $form->onSuccess[] = function (Form $form, array $values) use ($language) {
-            try {
+            $this->commonTryCall(function () use ($values, $language) {
                 $this->getLanguageManager()->edit(
                     $language,
                     $values[\FormFactory::LANGUAGE_EDIT_CODE_NAME],
@@ -96,13 +96,8 @@ class LanguagePresenter extends AdminPresenter {
                     (int)$values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE],
                     $values[\FormFactory::LANGUAGE_EDIT_FAVICON_NAME]
                 );
-                $this->redirect(302, ":default", [self::ID_KEY => null]);
-            } catch (Exception $e) {
-                Debugger::log($e);
-                $this->somethingWentWrong();
-                throw $e;
-                $this->redirect(302, "this");
-            }
+            });
+            $this->redirect(302, ":default", [self::ID_KEY => null]);
         };
         return $form;
     }

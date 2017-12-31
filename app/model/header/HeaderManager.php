@@ -26,7 +26,7 @@ class HeaderManager extends Manager implements IHeaderManager {
      * @param null|Page $currentPage for detection of active branch
      * @return array
      */
-    public function getHeader(Language $language, ?Page $currentPage): array {
+    public function getHeader(Language $language, ?Page $currentPage = null): array {
         $this->currentPage = $currentPage;
 
         $header = $this->getRootChildren($language);
@@ -247,6 +247,8 @@ class HeaderManager extends Manager implements IHeaderManager {
         $pageId = $header->getPageId();
         $langId = $header->getLanguageId();
 
+
+        $active = false;
         return new HeaderWrapper(
             $header,
             $language = $this->getLanguageManager()->getById($langId),

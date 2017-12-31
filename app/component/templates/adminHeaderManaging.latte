@@ -2,10 +2,9 @@
                             data-dynamic-sort="sorted: li(position) asc">
     {define header}
         {foreach $header as $page}
-            <li {*data-id="item-{$page->getId()}"*} n:snippet="headerPage-{$page->getId()}"
-                    data-position="{$page->getPosition()}">
+            <li data-id="{$page->getId()}" n:snippet="headerPage-{$page->getId()}">
                 <div>
-                    <span>{$page->getPageId()} - {$page->getTitle()}</span>
+                    <span>{$page->getId()} - {$page->getTitle()}({$page->getPageId()})</span>
                     {*<a data-id="{$page->getId()}" class="expand" href="#">show/hide</a>*}
                     <a data-id="{$page->getId()}" class="add"
                             href="{plink Header:add \adminModule\HeaderPresenter::ID_KEY=>$page->getId(),\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE}">add</a>

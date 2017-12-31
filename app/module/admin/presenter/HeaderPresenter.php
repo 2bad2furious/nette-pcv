@@ -86,18 +86,15 @@ class HeaderPresenter extends AdminPresenter {
             ->setAction($this->link("add", [self::TYPE_KEY => self::TYPE_PAGE]));
 
         $form->onSuccess[] = function (Form $form, array $values) {
-            try {
+            $this->commonTryCall(function () use ($values) {
                 $this->getHeaderManager()->addPage(
                     $this->getIdParam(),
                     $this->getCurrentLanguage()->getId(),
                     $values[\FormFactory::HEADER_PAGE_NAME],
                     $values[\FormFactory::HEADER_TITLE_NAME]
                 );
-                $this->redirect(302, "default", [self::TYPE_KEY => null, self::ID_KEY => null]);
-            } catch (\Exception $exception) {
-                Debugger::log($exception);
-                $this->somethingWentWrong();
-            }
+            });
+            $this->redirect(302, "default", [self::TYPE_KEY => null, self::ID_KEY => null]);
         };
         return $form;
     }
@@ -111,19 +108,15 @@ class HeaderPresenter extends AdminPresenter {
             ->setAction($link);
 
         $form->onSuccess[] = function (Form $form, array $values) {
-            try {
+            $this->commonTryCall(function () use ($values) {
                 $this->getHeaderManager()->addCustom(
                     $this->getIdParam(),
                     $this->getCurrentLanguage()->getId(),
                     $values[\FormFactory::HEADER_TITLE_NAME],
                     $values[\FormFactory::HEADER_URL_NAME]
                 );
-                $this->redirect(302, "default", [self::TYPE_KEY => null, self::ID_KEY => null]);
-            } catch (\Exception $exception) {
-                Debugger::log($exception);
-                $this->somethingWentWrong();
-                throw $exception;
-            }
+            });
+            $this->redirect(302, "default", [self::TYPE_KEY => null, self::ID_KEY => null]);
         };
         return $form;
     }

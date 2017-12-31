@@ -32,9 +32,8 @@ class SettingsManager extends Manager implements ISettingsManager {
 
         $this->uncache($cacheKey = $this->getCacheKey($option, $language));
 
-        if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
-            $this->getDatabase()->beginTransaction();
-        try {
+        $this->runInTransaction(function () use ($language, $option, $value, $existing) {
+
 
             $langId = self::getLangId($language);
 
@@ -56,15 +55,9 @@ class SettingsManager extends Manager implements ISettingsManager {
                 $insertData = array_merge($updateData, $whereData);
                 $this->getDatabase()->table(self::TABLE)
                     ->insert($insertData);
-
-                \Tracy\Debugger::log("Added settings for $cacheKey - $value");
             }
 
-            if (!$inTransaction) $this->getDatabase()->commit();
-        } catch (Exception $exception) {
-            if (!$inTransaction) $this->getDatabase()->rollBack();
-            throw $exception;
-        }
+        });
 
         return $this->get($option, $language);
     }

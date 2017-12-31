@@ -195,12 +195,14 @@ abstract class BasePresenter extends Presenter {
         return $this->getParameter(self::SIGNAL_KEY);
     }
 
-    protected function commonTryCall(callable $action) {
+    protected function commonTryCall(callable $action, ?callable $onException = null) {
         try {
-            $action();
+            return $action();
         } catch (Exception $exception) {
-            \Tracy\Debugger::log($exception);
-            //$this->somethingWentWrong();
+            if ($onException) $onException($exception);
+            /*\Tracy\Debugger::log($exception);
+            $this->somethingWentWrong();*/
+            throw $exception;
         }
     }
 }

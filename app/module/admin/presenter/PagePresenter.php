@@ -140,56 +140,62 @@ class PagePresenter extends AdminPresenter {
     public function actionDelete() {
         $pm = $this->getPageManager();
         if ($pm->exists($deleteId = $this->getParameter(self::ID_KEY))) {
-            try {
+            $this->commonTryCall(function () use ($pm, $deleteId) {
                 $pm->delete($deleteId);
                 $this->addSuccess("admin.page.delete.success");
-            } catch (Exception $ex) {
-                Debugger::log($ex);
-                $this->somethingWentWrong();
-            }
+            });
         } else {
             $this->addWarning("admin.page.delete.not_found");
         }
+
         $this->redirect(302, "show", [self::ID_KEY => null]);
     }
 
-    private function getType(): string {
+    private
+    function getType(): string {
         return $this->getParameter(self::TYPE_KEY);
     }
 
-    private function getVisibility(): string {
+    private
+    function getVisibility(): string {
         return $this->getParameter(self::VISIBILITY_KEY);
     }
 
-    private function getLanguage(): ?string {
+    private
+    function getLanguage(): ?string {
         return $this->getParameter(self::LANGUAGE_KEY);
     }
 
-    private function hasTranslation(): ?bool {
+    private
+    function hasTranslation(): ?bool {
         return $this->getParameter(self::HAS_TRANSLATION_KEY);
     }
 
-    private function getPage(): int {
+    private
+    function getPage(): int {
         return $this->getParameter(self::PAGE_KEY, 1);
     }
 
-    private function getSearchQuery():?string {
+    private
+    function getSearchQuery():?string {
         return $this->getParameter(\FormFactory::PAGE_SHOW_SEARCH_NAME);
     }
 
-    public function actionDefault() {
+    public
+    function actionDefault() {
         $this->redirect(302, "show");
     }
 
-    public function createComponentPageEditForm() {
+    public
+    function createComponentPageEditForm() {
         $page = $this->getEditPage();
         $form = $this->getFormFactory()->createPageEditForm($page,
             function (BaseControl $url) use ($page) {
                 return $this->getPageManager()->isUrlAvailable($url->getValue(), $page->getLang(), $page->getLocalId());
             });
-        $form->onSuccess[] = function (Form $form) use ($page) {
-            $values = $form->getValues(true);
-            try {
+        $form->onSuccess[] = function (Form $form, array $values) use ($page) {
+
+            $this->commonTryCall(function () use ($page, $values) {
                 $this->getPageManager()->update(
                     $page,
                     @$values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_PARENT_NAME],
@@ -203,18 +209,17 @@ class PagePresenter extends AdminPresenter {
                 );
 
                 $this->flashMessage("admin.page.edit.success");
-                $this->redirect(302, "Language:default", [self::ID_KEY => null, self::EDIT_LANGUAGE_KEY => null]);
-                //$this->redrawDefault(true);
-            } catch (Exception $ex) {
-                Debugger::log($ex);
-                $this->somethingWentWrong();
-            }
+                $this->redirect(302, "Language:default",
+                    [self::ID_KEY => null, self::EDIT_LANGUAGE_KEY => null]);
+            });
+            //$this->redrawDefault(true);
         };
         return $form/*->setAction($this->link("edit", [self::ID_KEY => $page->getGlobalId(), self::EDIT_LANGUAGE_KEY => $this->getParameter(self::EDIT_LANGUAGE_KEY)]))*/
             ;
     }
 
-    public function createComponentAdminPageSearch() {
+    public
+    function createComponentAdminPageSearch() {
         $form = $this->getFormFactory()->createAdminPageSearch($this->getSearchQuery());
         $form->onSubmit[] = function () {
             $this->redirect(302, "this", [\FormFactory::PAGE_SHOW_SEARCH_NAME => $this->getSearchQuery()]);
@@ -223,11 +228,13 @@ class PagePresenter extends AdminPresenter {
     }
 
 
-    public function createComponentPaginator(string $name) {
+    public
+    function createComponentPaginator(string $name) {
         return new PaginatorControl($this, $name, self::PAGE_KEY, $this->getPage(), $this->numberOfPages);
     }
 
-    private function getEditPage(): \Page {
+    private
+    function getEditPage(): \Page {
         return $this->template->page;
     }
 }

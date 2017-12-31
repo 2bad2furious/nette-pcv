@@ -92,11 +92,9 @@ class LanguageManager extends Manager implements ILanguageManager {
     }
 
     public function createNew(): Language {
-        $code = $this->getUniqueCode();
+        return $this->runInTransaction(function () {
+            $code = $this->getUniqueCode();
 
-        if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
-            $this->getDatabase()->beginTransaction();
-        try {
             $id = $this->getDatabase()->table(self::TABLE)->insert([
                 self::COLUMN_CODE => $code,
             ])->getPrimary();
@@ -110,12 +108,8 @@ class LanguageManager extends Manager implements ILanguageManager {
 
             $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
 
-            if (!$inTransaction) $this->getDatabase()->commit();
-        } catch (Exception $exception) {
-            if (!$inTransaction) $this->getDatabase()->rollBack();
-            throw $exception;
-        }
-        return $language;
+            return $language;
+        });
     }
 
     public function edit(Language $language, string $code, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId) {
@@ -126,10 +120,7 @@ class LanguageManager extends Manager implements ILanguageManager {
 
             $this->uncache($language);
 
-            if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
-                $this->getDatabase()->beginTransaction();
-            try {
-
+            $this->runInTransaction(function () use ($language, $code) {
                 $this->getDatabase()->table(self::TABLE)
                     ->where([
                         self::COLUMN_ID => $language->getId(),
@@ -137,11 +128,7 @@ class LanguageManager extends Manager implements ILanguageManager {
                     ->update([
                         self::COLUMN_CODE => $code,
                     ]);
-                if (!$inTransaction) $this->getDatabase()->commit();
-            } catch (Exception $exception) {
-                if (!$inTransaction) $this->getDatabase()->rollBack();
-                throw $exception;
-            }
+            });
         }
 
         $this->setSettings($language, $logoId, $ga, $faviconId, $homePageId, $separator, $title);
@@ -157,19 +144,12 @@ class LanguageManager extends Manager implements ILanguageManager {
         if (count($this->getAvailableLanguages(false)) === 1) throw new CannotDeleteLastLanguage();
 
         $this->uncache($language);
-        if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
-            $this->getDatabase()->beginTransaction();
 
-        try {
+        $this->runInTransaction(function () use ($language) {
             $this->getDatabase()->table(self::TABLE)
                 ->where(self::COLUMN_ID, $language->getId())
                 ->delete();
-
-            if (!$inTransaction) $this->getDatabase()->commit();
-        } catch (Exception $exception) {
-            if (!$inTransaction) $this->getDatabase()->rollBack();
-            throw  $exception;
-        }
+        });
 
         $this->trigger(self::TRIGGER_LANGUAGE_DELETED, $language);
     }

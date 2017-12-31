@@ -9,7 +9,7 @@ interface IHeaderManager {
      * @param null|Page $currentPage
      * @return array
      */
-    public function getHeader(Language $language,?Page $currentPage): array;
+    public function getHeader(Language $language,?Page $currentPage = null): array;
 
     /**
      * @param int $id

@@ -277,10 +277,10 @@ class PageManager extends Manager implements IPageManager {
     public function addEmpty(int $type): int {
         if (!in_array($type, self::TYPES)) throw new InvalidArgumentException("Invalid type " . implode("|", self::TYPES) . " needed, $type got.");
 
-        if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
-            $this->getDatabase()->beginTransaction();
+        $languages = [];
+        $globalId = 0;
 
-        try {
+        $this->runInTransaction(function () use ($type, $languages, $globalId) {
             $globalId = $this->getDatabase()->table(self::MAIN_TABLE)->insert([
                 self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE      => $type,
                 self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS    => self::STATUS_DRAFT,
@@ -303,11 +303,9 @@ class PageManager extends Manager implements IPageManager {
 
                 $this->urlUncache($url, $language);
             }
-            if (!$inTransaction) $this->getDatabase()->commit();
-        } catch (Exception $exception) {
-            if (!$inTransaction) $this->getDatabase()->rollBack();
-            throw $exception;
-        }
+
+            return $languages;
+        });
 
         $localPages = [];
 
@@ -354,10 +352,7 @@ class PageManager extends Manager implements IPageManager {
         if ($imageId !== 0 && !$image instanceof Media)
             throw new InvalidArgumentException("Image not found");
 
-        if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
-            $this->getDatabase()->beginTransaction();
-        dump($inTransaction, $content);
-        try {
+        $newPage = $this->runInTransaction(function () use ($parentId, $page, $globalVisibility, $url, $title, $description, $content, $image, $localVisibility) {
             if ($parentId !== $page->getParentId() || $globalVisibility !== $page->getGlobalStatus()) {
                 $updateData = [self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS => $globalVisibility,];
                 if (is_int($parentId)) $updateData[self::MAIN_TABLE . "." . self::MAIN_COLUMN_PARENT_ID] = $parentId;
@@ -398,13 +393,12 @@ class PageManager extends Manager implements IPageManager {
                 ]);
             }
 
-            if (!$inTransaction) $this->getDatabase()->commit();
-        } catch (Exception $ex) {
-            if (!$inTransaction) $this->getDatabase()->rollBack();
+            return $newPage;
+        }, function () use ($page) {
             $this->urlUncache($page->getUrl(), $page->getLang());
             $this->globalUncache($page->getGlobalId(), $page->getLang());
-            throw $ex;
-        }
+        });
+
 
         //force header and other shit to update
         $this->trigger(self::TRIGGER_PAGE_EDITED, $newPage);
@@ -422,19 +416,12 @@ class PageManager extends Manager implements IPageManager {
         ]]);
         $this->getUrlCache()->clean($tags);
 
-        if (!($inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction()))
-            $this->getDatabase()->beginTransaction();
-        try {
+        $this->runInTransaction(function () use ($globalId) {
             $this->getDatabase()->table(self::LOCAL_TABLE)
                 ->where([self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID => $globalId])->delete();
             $this->getDatabase()->table(self::MAIN_TABLE)
                 ->where([self::MAIN_COLUMN_ID => $globalId])->delete();
-
-            if (!$inTransaction) $this->getDatabase()->commit();
-        } catch (Exception $exception) {
-            if (!$inTransaction) $this->getDatabase()->rollBack();
-            throw $exception;
-        }
+        });
     }
 
     private function getUrlCache(): Cache {

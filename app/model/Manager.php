@@ -98,14 +98,19 @@ abstract class Manager implements IManager {
         return $this->context->getByType(ServiceLoader::class);
     }
 
-    protected final function runInTransaction(callable $action){
+    protected final function runInTransaction(callable $action, ?callable $onException = null) {
         $inTransaction = $this->getDatabase()->getConnection()->getPdo()->inTransaction();
-        if(!$inTransaction) $this->getDatabase()->beginTransaction();
-        try{
+        if (!$inTransaction) $this->getDatabase()->beginTransaction();
+        try {
+
             $result = $action();
-            if(!$inTransaction) $this->getDatabase()->commit();
-        }catch (Throwable $exception){
-            if(!$inTransaction) $this->getDatabase()->rollBack();
+
+            if (!$inTransaction) $this->getDatabase()->commit();
+        } catch (Throwable $exception) {
+            if (!$inTransaction) $this->getDatabase()->rollBack();
+
+            if ($onException) $onException($exception);
+
             throw $exception;
         }
         return $result;

@@ -52,7 +52,7 @@
 
                 var preventAndShow = function (event, id, action) {
                     var tabs = $("#tabs");
-                    console.info(tabs.children().length, tabs.attr("data-id"), ("" + id), tabs.attr("data-action"), action)
+                    console.info(tabs.children().length, tabs.attr("data-id"), ("" + id), tabs.attr("data-action"), action);
                     if (tabs.children().length &&
                         tabs.attr("data-id") === ("" + id) &&
                         tabs.attr("data-action") === action) {
@@ -62,12 +62,12 @@
                 };
 
                 $(window).keyup(function (e) {
-                    if (e.keyCode === 27) /* ESC */ $("#header-edit-form-wrapper").removeClass("active");
-                })
+                    if (e.keyCode === 27/* ESC */) $("#header-edit-form-wrapper").removeClass("active");
+                });
 
                 $("#header-edit-form-wrapper.active").click(function (e) {
                     if (e.target === this) $(this).removeClass("active");
-                })
+                });
 
                 $("a#edit-form-close").click(function (e) {
                     e.preventDefault();
@@ -88,7 +88,12 @@
                     rootID: 0,
                     stop: function (event, ui) {
                         var el = ui.item;
-                        console.info(el.parent("li").attr("data-id"))
+                        var elId = el.attr("data-id");
+                        var selector = "li:not(li[data-id=" + elId + "])";
+                        var parent = el.closest(selector);
+                        var parentId = parent ? parseInt(parent.attr("data-id")) : 0
+
+                        //TODO call handleMove
                     }
                 });
 
@@ -123,7 +128,7 @@
 
                 $(nsSelector).on("click", "li a.moveRight", function (e) {
                     e.preventDefault();
-                })
+                });
 
                 $(nsSelector).on("click", "li a.delete-self", function (e) {
                     e.preventDefault();

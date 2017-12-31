@@ -21,8 +21,8 @@ class LoginPresenter extends AdminPresenter {
                 $form->addError("admin.login.failure.password");
             }
         };
-        $form->onSuccess[] = function (Form $form) {
-            try {
+        $form->onSuccess[] = function (Form $form, array $values) {
+            $this->commonTryCall(function () use ($values, $form) {
                 $values = $form->getValues();
                 $identification = $values[\FormFactory::LOGIN_IDENTIFICATION_NAME];
                 $password = $values[\FormFactory::LOGIN_PASSWORD_NAME];
@@ -31,11 +31,10 @@ class LoginPresenter extends AdminPresenter {
                     $this->getUser()->logout(true);
                     $form->addError(self::USER_NO_RIGHTS_ERROR);
                 }
-            } catch (\Exception $ex) {
+            }, function () use ($form) {
                 $this->getUser()->logout(true);
                 $form->addError(self::SOMETHING_WENT_WRONG);
-                throw $ex;
-            }
+            });
 
             if (!$form->getErrors()) {
                 $this->disallowAjax();
@@ -52,15 +51,18 @@ class LoginPresenter extends AdminPresenter {
         return $form;
     }
 
-    protected function getAllowedRoles(): array {
+    protected
+    function getAllowedRoles(): array {
         return [\UserManager::ROLE_GUEST];
     }
 
-    protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
+    protected
+    function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
         $this->redirect("Default:Default");
     }
 
-    protected function renderDefault() {
+    protected
+    function renderDefault() {
         //$this->allowAjax();
     }
 }

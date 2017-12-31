@@ -31,7 +31,7 @@ class SettingsPresenter extends AdminPresenter {
     }
 
     public function actionClean() {
-        try {
+        $this->commonTryCall(function () {
             $pm = $this->getPageManager();
             $pm->cleanCache();
             $lm = $this->getLanguageManager();
@@ -45,10 +45,7 @@ class SettingsPresenter extends AdminPresenter {
             //TODO rebuild media and tag cache
 
             $this->addSuccess("admin.settings.clean.success");
-        } catch (Exception $exception) {
-            Debugger::log($exception);
-            $this->somethingWentWrong();
-        }
+        });
         $this->redirect(":default");
     }
 
