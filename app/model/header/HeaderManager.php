@@ -3,9 +3,6 @@
 
 use Nette\Database\IRow;
 
-/**
- * @property null|Page currentPage for active branch detection
- */
 class HeaderManager extends Manager implements IHeaderManager {
 
     const TABLE = "header",
@@ -16,6 +13,8 @@ class HeaderManager extends Manager implements IHeaderManager {
         COLUMN_TITLE = "title",
         COLUMN_POSITION = "position",
         COLUMN_PARENT_ID = "parent_id";
+
+    private $currentPage;
 
     public function cleanCache() {
         $this->getCache()->clean();
@@ -65,7 +64,6 @@ class HeaderManager extends Manager implements IHeaderManager {
         }, $header->getChildrenIds());
     }
 
-    //TODO uncache parents
     public function addPage(int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper {
         if ($parentId !== 0 && !$this->exists($parentId, $languageId)) throw new InvalidArgumentException("Parent {$parentId} does not exist");
 
@@ -85,8 +83,13 @@ class HeaderManager extends Manager implements IHeaderManager {
                 ])->getPrimary();
 
             $this->uncache($headerId);
+            $this->uncache($parentId);
 
-            return $this->getById($headerId);
+            $header = $this->getById($headerId);
+
+            $this->adjustPositionsAround($header);
+
+            return $header;
         });
 
     }
@@ -109,8 +112,14 @@ class HeaderManager extends Manager implements IHeaderManager {
                 ])->getPrimary();
 
             $this->uncache($headerId);
+            $this->uncache($parentId);
 
-            return $this->getById($headerId);
+
+            $header = $this->getById($headerId);;
+
+            $this->adjustPositionsAround($header);
+
+            return $header;
         });
     }
 
@@ -156,7 +165,8 @@ class HeaderManager extends Manager implements IHeaderManager {
      * @throws InvalidArgumentException
      */
     public function delete(int $id) {
-        if ($this->exists($id)) throw new InvalidArgumentException("Header {$id} not found");
+        $headerWrapper = $this->getById($id);
+        if (!$headerWrapper instanceof HeaderWrapper) throw new InvalidArgumentException("Header {$id} not found");
 
         $this->uncache($id);
 
@@ -166,10 +176,13 @@ class HeaderManager extends Manager implements IHeaderManager {
         $this->runInTransaction(function () use ($id) {
             return $this->getDatabase()->table(self::TABLE)->wherePrimary($id)->delete();
         });
+
+        $this->adjustPositionsAround($headerWrapper);
     }
 
     public function deleteBranch(int $id) {
-        if ($this->exists($id)) throw new InvalidArgumentException("Header {$id} not found");
+        $headerWrapper = $this->getById($id);
+        if (!$headerWrapper instanceof HeaderWrapper) throw new InvalidArgumentException("Header {$id} not found");
 
         $this->uncache($id);
 
@@ -182,6 +195,8 @@ class HeaderManager extends Manager implements IHeaderManager {
 
             $this->delete($id);
         });
+
+        $this->adjustPositionsAround($headerWrapper);
     }
 
     private function getCache(): Cache {
@@ -199,16 +214,7 @@ class HeaderManager extends Manager implements IHeaderManager {
 
         if (!$data instanceof IRow) return false;
 
-        $childrenRows = $this->getDatabase()->table(self::TABLE)
-            ->where([self::COLUMN_PARENT_ID => $data[self::COLUMN_ID]])
-            ->select(self::COLUMN_ID)
-            ->fetchAll();
-
-        dump($childrenRows);
-
-        $childrenIds = array_map(function (IRow $row) {
-            return $row[self::COLUMN_ID];
-        }, $childrenRows);
+        $childrenIds = $this->getChildrenIds($data[self::COLUMN_PARENT_ID]);
 
         return new Header(
             $data[self::COLUMN_ID],
@@ -228,19 +234,23 @@ class HeaderManager extends Manager implements IHeaderManager {
      * @return HeaderWrapper[]
      */
     private function getRootChildren(Language $language) {
+        return array_map(function (int $id) {
+            return $this->getById($id);
+        }, $this->getRootChildrenIds($language->getId()));
+    }
+
+    private function getRootChildrenIds(int $langId): array {
         $data = $this->getDatabase()->table(self::TABLE)
             ->where([
                 self::COLUMN_PARENT_ID => 0,
-                self::COLUMN_LANG      => $language->getId(),
+                self::COLUMN_LANG      => $langId,
             ])->select(self::COLUMN_ID)
+            ->order(self::COLUMN_POSITION)
             ->fetchAll();
 
-        $children = [];
-        foreach ($data as $row) {
-            $id = $row[self::COLUMN_ID];
-            $children[$id] = $this->getById($id);
-        }
-        return $children;
+        return array_map(function (IRow $row) {
+            return $row[self::COLUMN_ID];
+        }, $data);
     }
 
     private function constructHeaderWrapper(Header $header): HeaderWrapper {
@@ -269,5 +279,85 @@ class HeaderManager extends Manager implements IHeaderManager {
 
     private function uncache($key) {
         $this->getCache()->remove($key);
+    }
+
+    public function changeParentOrPosition(int $headerId, int $parentHeaderId, int $position) {
+        if ($headerId === $parentHeaderId) throw new InvalidArgumentException("$headerId: Ids are the same");
+
+        $headerWrapper = $this->getById($headerId);
+        if (!$headerWrapper instanceof HeaderWrapper) throw new InvalidArgumentException("Header $headerId not found");
+
+        if ($parentHeaderId !== 0 && !$this->exists($parentHeaderId)) throw new InvalidArgumentException("Parent not found");
+
+        if ($parentHeaderId !== 0 && !$this->exists($parentHeaderId, $headerWrapper->getLanguageId())) throw new InvalidArgumentException("Parent is not of the same language");
+
+        if (!$this->canChangeParent($headerId, $parentHeaderId)) throw new InvalidArgumentException("New parent $parentHeaderId is already a descendant of $headerId");
+
+        $this->uncache($headerId);
+        $this->uncache($parentHeaderId);
+        $this->uncache($headerWrapper->getParentId());
+
+        $this->runInTransaction(function () use ($headerId, $parentHeaderId, $position) {
+            return $this->getDatabase()->table(self::TABLE)
+                ->wherePrimary($headerId)
+                ->update([
+                    self::COLUMN_PARENT_ID => $parentHeaderId,
+                    self::COLUMN_POSITION  => ($position * 2) - 1,
+                ]);
+        });
+
+        $this->adjustPositionsAround($this->getById($headerId));
+    }
+
+    private function adjustPositionsAround(HeaderWrapper $wrapper) {
+        if ($wrapper->getParentId() === 0) $this->adjustPositionsUnderLang($wrapper->getLanguageId());
+        else $this->adjustPositionsUnderId($wrapper->getParentId());
+    }
+
+    private function adjustPositionsUnderId(int $id) {
+        if (!$this->exists($id)) throw new InvalidArgumentException("Header $id does not exist");
+
+        $this->runInTransaction(function () use ($id) {
+            foreach ($this->getChildrenIds($id) as $key => $childrenId) {
+                $this->updatePosition($childrenId, $key);
+            }
+        });
+    }
+
+    private function updatePosition(int $childrenId, int $key) {
+        $this->runInTransaction(function () use ($childrenId, $key) {
+            $this->getDatabase()->table(self::TABLE)
+                ->wherePrimary($childrenId)
+                ->update([
+                    self::COLUMN_POSITION => $key * 2,
+                ]);
+        });
+    }
+
+    private function adjustPositionsUnderLang(int $langId) {
+        $this->runInTransaction(function () use ($langId) {
+            foreach ($this->getRootChildrenIds($langId) as $key => $childrenId) {
+                $this->updatePosition($childrenId, $key);
+            }
+        });
+    }
+
+    public function canChangeParent(int $headerId, int $parentHeaderId): bool {
+        if ($parentHeaderId === 0) return true;
+        if ($headerId === $parentHeaderId) return false;
+        $parentWrapper = $this->getById($parentHeaderId);
+        return $this->canChangeParent($headerId, $parentWrapper->getParentId());
+    }
+
+    private function getChildrenIds(int $parentId): array {
+        $childrenRows = $this->getDatabase()->table(self::TABLE)
+            ->where([self::COLUMN_PARENT_ID => $parentId])
+            ->select(self::COLUMN_ID)
+            ->order(self::COLUMN_POSITION)
+            ->fetchAll();
+
+        return array_map(function (IRow $row) {
+            return $row[self::COLUMN_ID];
+        }, $childrenRows);
     }
 }

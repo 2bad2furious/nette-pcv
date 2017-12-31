@@ -9,7 +9,7 @@ interface IHeaderManager {
      * @param null|Page $currentPage
      * @return array
      */
-    public function getHeader(Language $language,?Page $currentPage = null): array;
+    public function getHeader(Language $language, ?Page $currentPage = null): array;
 
     /**
      * @param int $id
@@ -39,4 +39,8 @@ interface IHeaderManager {
     public function deleteBranch(int $id);
 
     public function exists(int $id, int $langId): bool;
+
+    public function changeParentOrPosition(int $headerId, int $parentHeaderId, int $position);
+
+    public function canChangeParent(int $headerId, int $parentHeaderId): bool;
 }

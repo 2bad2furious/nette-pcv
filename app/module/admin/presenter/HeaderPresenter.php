@@ -6,6 +6,7 @@ namespace adminModule;
 
 use Language;
 use Nette\Application\UI\Form;
+use Nette\Http\IResponse;
 use Tracy\Debugger;
 
 class HeaderPresenter extends AdminPresenter {
@@ -79,6 +80,31 @@ class HeaderPresenter extends AdminPresenter {
 
         $this->setView("default");
         $this->redrawControl("edit-form");
+    }
+
+    public function handleChangeParent(string $id, string $parentId, string $position) {
+        $headerId = (int)$id;
+        $parentHeaderId = (int)$parentId;
+        $headerPosition = (int)$position;
+
+
+        $this->commonTryCall(function () use ($headerId, $parentHeaderId, $id) {
+            if (!$id) $this->error("Id $id not correct");
+
+            if ($headerId === $parentHeaderId) $this->error("Header and parent cannot be same; $id", IResponse::S400_BAD_REQUEST);
+
+            $curLang = $this->getCurrentLanguage();
+
+            if (!$this->getHeaderManager()->exists($headerId, $curLang->getId()))
+                $this->error("HeaderId $id not found", IResponse::S400_BAD_REQUEST);
+
+            if ($parentHeaderId !== 0 && !$this->getHeaderManager()->exists($parentHeaderId, $curLang->getId()))
+                $this->error("ParentHeaderId $parentHeaderId not found", IResponse::S400_BAD_REQUEST);
+
+            $this->getHeaderManager()->changeParent($headerId, $parentHeaderId);
+            $this->addSuccess("admin.header.change.parent.success");
+        });
+        $this->redirect(302, "default");
     }
 
     public function createComponentHeaderPageAddForm() {

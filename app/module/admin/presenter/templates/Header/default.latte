@@ -86,14 +86,16 @@
                     isTree: true,
                     startCollapsed: false,
                     rootID: 0,
+                    maxLevels:0,//TODO set
                     stop: function (event, ui) {
                         var el = ui.item;
                         var elId = el.attr("data-id");
                         var selector = "li:not(li[data-id=" + elId + "])";
                         var parent = el.closest(selector);
                         var parentId = parent ? parseInt(parent.attr("data-id")) : 0
-
-                        //TODO call handleMove
+                        var url = {plink "changeParent!" "ID","PARENTID","POSITION"}.replace("ID", elId).replace("PARENTID", parentId).replace("POSITION",el.index())
+                        var e = new Event("changeParent");
+                        di.getService("page").open(url, "get", {}, null);//send position as well
                     }
                 });
 
