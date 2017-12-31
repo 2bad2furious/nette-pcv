@@ -21,10 +21,10 @@ _stack.push(function () {
                         opener.removeClass(openClass);
                         body.removeClass("header-closed");
                     }
-                })
+                });
 
                 HeaderOpener.addClass(HeaderOpener.attr("class-close"));
             }
         )
     }
-)
+);
