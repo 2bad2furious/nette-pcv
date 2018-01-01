@@ -16,6 +16,23 @@ class HeaderManager extends Manager implements IHeaderManager {
 
     private $currentPage;
 
+    protected function init() {
+        LanguageManager::on(LanguageManager::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
+            $this->getCache()->remove($language->getCode());
+
+            $this->getCache()->clean([Cache::TAGS => [
+                //TODO fill
+            ]]);
+
+            $this->runInTransaction(function () use ($language) {
+                $this->getDatabase()->table(self::TABLE)->where([
+                    self::COLUMN_LANG => $language->getId(),
+                ])->delete();
+            });
+        });
+    }
+
+
     public function cleanCache() {
         $this->getCache()->clean();
     }

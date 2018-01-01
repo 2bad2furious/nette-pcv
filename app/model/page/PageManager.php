@@ -40,6 +40,18 @@ class PageManager extends Manager implements IPageManager {
 
     const RANDOM_URL_PREFIX = "generated-url-";
 
+    protected function init() {
+        LanguageManager::on(LanguageManager::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
+            $this->getUrlCache()->clean([Cache::TAGS => $this->getLanguageTag($language)]);
+            $this->getGlobalCache()->clean([Cache::TAGS => $this->getLanguageTag($language)]);
+
+            $this->getDatabase()->table(self::LOCAL_TABLE)->where([
+                self::LOCAL_COLUMN_LANG => $language->getId(),
+            ])->delete();
+        });
+    }
+
+
     public function exists(int $globalId): bool {
         return $this->getDatabase()->table(self::MAIN_TABLE)
                 ->where([self::MAIN_TABLE . "." . self::MAIN_COLUMN_ID => $globalId])
@@ -264,7 +276,7 @@ class PageManager extends Manager implements IPageManager {
             ]);
         if (is_int($localId))
             $data = $data->where([self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID . " != " => $localId]);
-        
+
         return !$data->fetch() instanceof IRow;
     }
 
