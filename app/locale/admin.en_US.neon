@@ -7,6 +7,7 @@ header:
     presentation: "Presentations"
     language: "Languages"
     setting: "Settings"
+    user: "Users"
     logout: "Log Out"
 
 global:
