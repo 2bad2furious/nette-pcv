@@ -117,16 +117,8 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUs
         });
     }
 
-    public function rebuildCache() {
-        //TODO rights
-        dump("rebuilding user");
+    public function cleanCache() {
         $this->getCache()->clean([]);
-        /** @var ActiveRow $row */
-        foreach ($this->getDatabase()->table(self::TABLE)->fetchAll() as $row) {
-            $identity = $this->createFromDbRow($row);
-            dump($identity);
-            $this->getCache()->save($identity->getId(), $identity);
-        }
     }
 
     private function getCache(): Cache {

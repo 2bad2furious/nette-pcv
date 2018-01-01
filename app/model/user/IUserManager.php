@@ -26,5 +26,5 @@ interface IUserManager {
 
     public function getUserIdentityById(int $id): ?UserIdentity;
 
-    public function rebuildCache();
+    public function cleanCache();
 }
