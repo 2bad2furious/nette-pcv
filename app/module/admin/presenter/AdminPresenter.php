@@ -21,8 +21,14 @@ abstract class AdminPresenter extends BasePresenter {
         };
     }
 
-    public function handleClearFlashes(){
+
+
+    public function redrawFlashes(){
         $this->redrawControl("flashes");
+    }
+
+    public function handleClearFlashes(){
+        $this->redrawFlashes();
     }
 
     /**

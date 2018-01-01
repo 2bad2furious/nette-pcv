@@ -139,7 +139,6 @@ class PageManager extends Manager implements IPageManager {
                                   return "%" . $item . "%";
                               }, $explosion)),];
             if ($values) {
-                dump($values);
                 $whereData[self::MAIN_TABLE . "." . self::MAIN_COLUMN_ID] = $values;
                 $whereData[self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID] = $values;
             }
@@ -204,7 +203,7 @@ class PageManager extends Manager implements IPageManager {
             $dependencies = self::getDependencies($id, $language);
             return $this->getFromDbByGlobalId($id, $language);
         });
-        dump($cached);
+
         return $cached instanceof Page ? $this->getIfRightsAndSetMissing($cached) : null;
     }
 
@@ -265,7 +264,7 @@ class PageManager extends Manager implements IPageManager {
             ]);
         if (is_int($localId))
             $data = $data->where([self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID . " != " => $localId]);
-        dump($data->getSql(), $data->fetch(), $url, $language, $localId);
+        
         return !$data->fetch() instanceof IRow;
     }
 

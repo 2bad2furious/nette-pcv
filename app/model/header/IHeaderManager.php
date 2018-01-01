@@ -38,9 +38,25 @@ interface IHeaderManager {
      */
     public function deleteBranch(int $id);
 
-    public function exists(int $id, int $langId): bool;
+    public function exists(int $id, ?int $langId = null): bool;
 
     public function changeParentOrPosition(int $headerId, int $parentHeaderId, int $position);
 
     public function canChangeParent(int $headerId, int $parentHeaderId): bool;
+
+    public function moveUp(int $headerId);
+
+    public function canBeMovedUp(int $headerId): bool;
+
+    public function moveDown(int $headerId);
+
+    public function canBeMovedDown(int $headerId): bool;
+
+    public function moveLeft(int $headerId);
+
+    public function canBeMovedLeft(int $headerId):bool;
+
+    public function moveRight(int $headerId);
+
+    public function canBeMovedRight(int $headerId):bool;
 }

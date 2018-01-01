@@ -16,7 +16,9 @@
             <a n:href="add \adminModule\HeaderPresenter::ID_KEY=>0,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE"
                     class="add">add</a>
         </div>
-        {control adminHeaderManaging $header}
+        {snippet header-area}
+            {include "header-items.latte" header=>$header}
+        {/snippet}
     </div>
     <div id="header-edit-form-wrapper" class="{if $action}active{/if}">
         <a id="edit-form-close" n:href="default \adminModule\HeaderPresenter::ID_KEY=>null,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE">close</a>
@@ -78,7 +80,17 @@
                     preventAndShow(e, 0, "add")
                 });
 
-                var nsSelector = "ol#{$_tmp->getSnippetId("header-edit")|noescape}";
+                var sendChangeParentOrPosition = function (el) {
+                    var elId = el.attr("data-id");
+                    var selector = "li:not(li[data-id=" + elId + "])";
+                    var parent = el.closest(selector);
+                    var parentId = parent ? parseInt(parent.attr("data-id")) : 0
+                    var url = {plink "changeParent!" "ID","PARENTID","POSITION"}.
+                    replace("ID", elId).replace("PARENTID", parentId).replace("POSITION", el.index())
+                    di.getService("page").open(url, "get", {}, null);
+                }
+
+                var nsSelector = "ol#{$control->getSnippetId("header-edit")|noescape}";
                 $(nsSelector).nestedSortable({
                     toleranceElement: '> div',
                     placeholder: 'placeholder',
@@ -86,16 +98,9 @@
                     isTree: true,
                     startCollapsed: false,
                     rootID: 0,
-                    maxLevels:0,//TODO set
+                    maxLevels: 0,//TODO set
                     stop: function (event, ui) {
-                        var el = ui.item;
-                        var elId = el.attr("data-id");
-                        var selector = "li:not(li[data-id=" + elId + "])";
-                        var parent = el.closest(selector);
-                        var parentId = parent ? parseInt(parent.attr("data-id")) : 0
-                        var url = {plink "changeParent!" "ID","PARENTID","POSITION"}.replace("ID", elId).replace("PARENTID", parentId).replace("POSITION",el.index())
-                        var e = new Event("changeParent");
-                        di.getService("page").open(url, "get", {}, null);//send position as well
+                        sendChangeParentOrPosition(ui.item)
                     }
                 });
 
@@ -116,30 +121,12 @@
                     findLiParent($(this)).toggleClass('mjs-nestedSortable-expanded').toggleClass('mjs-nestedSortable-collapsed')
                 });
 
-                $(nsSelector).on("click", "li a.moveUp", function (e) {
-                    e.preventDefault();
-                });
-
-                $(nsSelector).on("click", "li a.moveDown", function (e) {
-                    e.preventDefault();
-                });
-
-                $(nsSelector).on("click", "li a.moveLeft", function (e) {
-                    e.preventDefault();
-                });
-
-                $(nsSelector).on("click", "li a.moveRight", function (e) {
-                    e.preventDefault();
-                });
-
                 $(nsSelector).on("click", "li a.delete-self", function (e) {
-                    e.preventDefault();
-                    console.info("deleting self" + $(this))
+                    if (!window.confirm({_"admin.header.default.deleteSelf.confirm"})) e.preventDefault();
                 });
 
                 $(nsSelector).on("click", "li a.delete-all", function (e) {
-                    e.preventDefault();
-                    console.info("deleting all" + $(this))
+                    if (!window.confirm({_"admin.header.default.deleteAll.confirm"})) e.preventDefault();
                 });
             })
         })

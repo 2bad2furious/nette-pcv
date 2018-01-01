@@ -111,15 +111,15 @@ abstract class BasePresenter extends Presenter {
         $this->addError(self::SOMETHING_WENT_WRONG);
     }
 
-    protected function addSuccess(string $message) {
+    public function addSuccess(string $message) {
         $this->flashMessage($message, 'success');
     }
 
-    protected function addError(string $message) {
+    public function addError(string $message) {
         $this->flashMessage($message, 'error');
     }
 
-    protected function addWarning(string $message) {
+    public function addWarning(string $message) {
         $this->flashMessage($message, 'warning');
     }
 
@@ -195,7 +195,7 @@ abstract class BasePresenter extends Presenter {
         return $this->getParameter(self::SIGNAL_KEY);
     }
 
-    protected function commonTryCall(callable $action, ?callable $onException = null) {
+    public function commonTryCall(callable $action, ?callable $onException = null) {
         try {
             return $action();
         } catch (Exception $exception) {
