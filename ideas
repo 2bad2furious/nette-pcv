@@ -10,4 +10,6 @@ inTransaction use in managers - common method - ok
 
 wrappers for all db classes - page|header|setting|Tag
 
+show only options the user has rights for
+
 get rid of pageType class
