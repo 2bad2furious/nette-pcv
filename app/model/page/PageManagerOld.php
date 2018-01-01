@@ -126,7 +126,6 @@ class PageManagerOld extends Manager implements IPageManager {
 
     protected function init() {
         LanguageManagerOld::on(LanguageManagerOld::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
-            $this->throwIfNoRights(self::ACTION_MANAGE);
 
             $this->getUrlCache()->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
             $this->getGlobalCache()->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
