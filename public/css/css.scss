@@ -1,0 +1,47 @@
+@import "default";
+
+//use body to overwrite it in specific
+
+//theme - styles that aren't specific to screen size and browser and stuff
+body {
+  header {
+
+  }
+}
+
+//mobile first
+html {
+  body {
+    header {
+      input {
+        display: none;
+        &:checked ~ label > i#header-hide {
+          display: initial;
+        }
+        &:not(:checked) ~ label > i#header-show {
+          display: initial;
+        }
+        &:checked ~ nav {
+          height: initial;
+        }
+      }
+      label i#header-show, i#header-hide {
+        display: none;
+      }
+
+      nav {
+        height: 0;
+      }
+    }
+  }
+}
+
+//modern last
+/* use this instead of display:grid because of Edge - thank you, Microsoft*/
+@supports (grid-area: auto) {
+  html {
+    body {
+      //TODO style
+    }
+  }
+}
