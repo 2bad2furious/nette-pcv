@@ -4,7 +4,7 @@
 class HeaderPageControl extends BaseControl {
     private $page;
 
-    public function __construct(Page $page, BasePresenter $presenter, $name) {
+    public function __construct(PageWrapper $page, BasePresenter $presenter, $name) {
         $this->page = $page;
         parent::__construct($presenter, $name);
     }
@@ -12,7 +12,7 @@ class HeaderPageControl extends BaseControl {
 
     public function render() {
         $page = $this->page;
-        $header = $this->getHeaderManager()->getHeader($page->getLang());
+        $header = $this->getHeaderManager()->getHeader($page->getLanguageId());
         $this->template->header = $header;
         $this->template->isLoggedIn = $this->getPresenter()->getUser()->isLoggedIn();
         /** @var UserIdentity $identity */

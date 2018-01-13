@@ -148,7 +148,7 @@ class FormFactory extends Manager {
             }, $allPages));
 
             $currentHomePage = $pm->getHomePage($language);
-            if ($currentHomePage instanceof Page) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
+            if ($currentHomePage instanceof PageWrapper) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
         }
 
         $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label")

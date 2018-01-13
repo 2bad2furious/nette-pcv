@@ -102,7 +102,7 @@
                             <td>{$page->getTitle()|truncate:25}</td>
                             <td><a class="action page-edit"
                                                             href="{plink edit adminModule\PagePresenter::ID_KEY=>$globalId,
-                            adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLang()->getCode()}">{$page->getLang()->getCode()}</a>
+                            adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLanguage()->getCode()}">{$page->getLanguage()->getCode()}</a>
                             </td>
                             <td><a class="action page-delete"
                                    href="{plink delete adminModule\PagePresenter::ID_KEY=>$globalId}">{_"admin.page.show.delete.label"}</a>

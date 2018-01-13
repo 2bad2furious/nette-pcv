@@ -6,22 +6,15 @@ interface IHeaderManager {
 
     /**
      * @param int $languageId
-     * @param null|Page $currentPage
      * @return array
      */
-    public function getHeader(int $languageId, ?Page $currentPage = null): array;
+    public function getHeader(int $languageId): array;
 
     /**
      * @param int $id
      * @return HeaderWrapper|null
      */
     public function getById(int $id):?HeaderWrapper;
-
-    /**
-     * @param int $headerId
-     * @return array
-     */
-    public function getChildren(int $headerId):array;
 
     public function addPage(int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper;
 

@@ -7,7 +7,6 @@ namespace adminModule;
 use Language;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
-use Tracy\Debugger;
 
 class HeaderPresenter extends AdminPresenter {
 
@@ -48,7 +47,7 @@ class HeaderPresenter extends AdminPresenter {
         $this->template->language = $this->getCurrentLanguage();
         $this->template->languages = $this->getLanguageManager()->getAvailableLanguages(true);
         $this->template->action = in_array(($action = $this->getAction()), ["add", "edit"]) ? $action : null;
-        $this->template->header = $this->getHeaderManager()->getHeader($this->getCurrentLanguage());
+        $this->template->header = $this->getHeaderManager()->getHeader($this->getCurrentLanguage()->getId());
         $this->template->formType = $this->getFormType();
         $this->template->id = $this->getIdParam();
 
@@ -96,7 +95,7 @@ class HeaderPresenter extends AdminPresenter {
         $parentHeaderId = (int)$parentId;
         $headerPosition = (int)$position;
 
-        $this->commonTryCall(function () use ($headerId, $parentHeaderId, $id, $position) {
+        $this->commonTryCall(function () use ($headerId, $parentHeaderId, $id, $headerPosition) {
             if (!$id) $this->error("Id $id not correct");
 
             if ($headerId === $parentHeaderId) $this->error("Header and parent cannot be same; $id", IResponse::S400_BAD_REQUEST);
@@ -109,7 +108,7 @@ class HeaderPresenter extends AdminPresenter {
             if ($parentHeaderId !== 0 && !$this->getHeaderManager()->exists($parentHeaderId, $curLang->getId()))
                 $this->error("ParentHeaderId $parentHeaderId not found", IResponse::S400_BAD_REQUEST);
 
-            $this->getHeaderManager()->changeParentOrPosition($headerId, $parentHeaderId, $position);
+            $this->getHeaderManager()->changeParentOrPosition($headerId, $parentHeaderId, $headerPosition);
             $this->addSuccess("admin.header.change.parent.success");
         }, function () {
             $this->redrawControl("header-area");

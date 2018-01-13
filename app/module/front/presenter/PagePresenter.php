@@ -6,19 +6,14 @@ use ArticlePageControl;
 use BasePresenter;
 use ContentControl;
 use HeaderPageControl;
-use Language;
-use Nette\Application\BadRequestException;
-use Page;
 use PageManager;
 use SectionPageControl;
-use StdClass;
-use Tag;
 
 class PagePresenter extends BasePresenter {
     const PARAM_URL = "url",
         PARAM_ID = "page_id";
 
-    /** @var  Page|null */
+    /** @var  \PageWrapper|null */
     private $page;
 
     public function startup() {
@@ -44,7 +39,7 @@ class PagePresenter extends BasePresenter {
     protected function prepareTemplate() {
         $page = $this->page;
 
-        if (!$page instanceof Page)
+        if (!$page instanceof \PageWrapper)
             $page = $this->getPageManager()->getDefault404();
 
         $this->template->page = $page;
@@ -54,9 +49,9 @@ class PagePresenter extends BasePresenter {
 
     public function renderHome() {
         $language = $this->getLocaleLanguage();
-        $pageId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_HOMEPAGE, $language)->getValue();
+        $pageId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_HOMEPAGE, $language->getId())->getValue();
 
-        $this->page = $this->getPageManager()->getByGlobalId($language, $pageId);
+        $this->page = $this->getPageManager()->getByGlobalId($language->getId(), $pageId);
 
         $this->prepareTemplate();
     }

@@ -42,7 +42,7 @@ class SettingsManager extends Manager implements ISettingsManager {
                 self::COLUMN_VALUE => $value,
             ];
 
-            if ($existing instanceof Setting) {
+            if ($existing instanceof SettingWrapper) {
                 $this->getDatabase()->table(self::TABLE)
                     ->where($whereData)
                     ->update($updateData);
@@ -105,7 +105,7 @@ class SettingsManager extends Manager implements ISettingsManager {
         return $option . "_" . (int)$language;
     }
 
-    private function getLocalOrGlobal(string $option, int $languageId): Setting {
+    private function getLocalOrGlobal(string $option, int $languageId): SettingWrapper {
         $local = $this->get($option, $languageId);
         return ($local->getValue()) ? $local : $this->get($option, null);
     }

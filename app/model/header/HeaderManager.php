@@ -14,8 +14,6 @@ class HeaderManager extends Manager implements IHeaderManager {
         COLUMN_POSITION = "position",
         COLUMN_PARENT_ID = "parent_id";
 
-    private $currentPage;
-
     protected function init() {
         LanguageManager::on(LanguageManager::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
             $this->getCache()->remove($language->getCode());
@@ -39,17 +37,10 @@ class HeaderManager extends Manager implements IHeaderManager {
 
     /**
      * @param int $languageId
-     * @param null|Page $currentPage for detection of active branch
      * @return HeaderWrapper[]
      */
-    public function getHeader(int $languageId, ?Page $currentPage = null): array {
-        $this->currentPage = $currentPage;
-
-        $header = $this->getRootChildren($languageId);
-
-        $this->currentPage = null;
-
-        return $header;
+    public function getHeader(int $languageId): array {
+        return $this->getRootChildren($languageId);
     }
 
     /**
@@ -63,20 +54,6 @@ class HeaderManager extends Manager implements IHeaderManager {
             return $this->constructHeaderWrapper($cached);
         }
         return null;
-    }
-
-    public function getChildren(int $headerId): array {
-        $header = $this->getPlainById($headerId);
-
-        $data = $this->getDatabase()->table(self::TABLE)->where([self::COLUMN_PARENT_ID => $headerId]);
-        $children = [];
-        while ($row = $data->fetch()) {
-            $childId = $row[self::COLUMN_ID];
-            $headerWrapper = $this->getById($childId);
-            if ($headerWrapper->getLanguageId() !== $header->getLanguageId()) throw new InvalidState("Language {$headerWrapper->getLanguageId()} !== {$header->getLanguageId()}");
-            $children[$childId] = $headerWrapper;
-        }
-        return $children;
     }
 
     public function addPage(int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper {
@@ -279,7 +256,7 @@ class HeaderManager extends Manager implements IHeaderManager {
 
         return new HeaderWrapper(
             $header,
-            $this->getLanguageManager()->getById($langId),
+            $this->getLanguageManager(),
             $this->getPageManager(),
             $this
         );

@@ -106,8 +106,8 @@ class PagePresenter extends AdminPresenter {
         $langCode = $this->getParameter(self::EDIT_LANGUAGE_KEY);
         $language = $this->getLanguageManager()->getByCode($langCode);
 
-        $page = $this->getPageManager()->getByGlobalId($language, $globalId);
-        if (!$page instanceof \Page) {
+        $page = $this->getPageManager()->getByGlobalId($language->getId(), $globalId);
+        if (!$page instanceof \PageWrapper) {
             $this->addError("admin.page.edit.page_not_found");
             $this->redirect(302, "show", [self::LANGUAGE_KEY => self::LANGUAGE_ALL, self::ID_KEY => null]);
         }
@@ -125,7 +125,7 @@ class PagePresenter extends AdminPresenter {
         $this->template->results = $this->getPageManager()->getFiltered(
             self::TYPE_TABLE[$this->getType()],
             self::VISIBILITY_TABLE[$this->getVisibility()],
-            $this->getLanguageManager()->getByCode($this->getLanguage()),
+            ($language = $this->getLanguage()) !== self::LANGUAGE_ALL ? $this->getLanguageManager()->getByCode($language) : null,
             $this->hasTranslation(),
             $this->getPage(),
             15,//TODO should be an option?

@@ -24,10 +24,10 @@ class ContentControl extends BaseControl {
 
 
     /**
-     * @param Page $page
+     * @param PageWrapper $page
      * @throws Exception for testing
      */
-    public function render(Page $page): void {
+    public function render(PageWrapper $page): void {
         $content = $page->getContent();
         //dump(self::SEARCH_SYNTAX);
         /* sets $matches to array of String[$n length] of matches => [[$match1,$match2]] */

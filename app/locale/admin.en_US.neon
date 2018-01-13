@@ -66,8 +66,8 @@ page:
                 delete: "Delete"
             body:
                 type:
-                    Page: "Page"
-                    Post: "Post"
+                    page: "Page"
+                    post: "Post"
                     Section: "Section"
         create:
             label: "Create a new ..."

@@ -1,6 +1,13 @@
 <?php
 
-
+/**
+ * Class SettingWrapper
+ * @method int getId()
+ * @method string getValue()
+ * @method string getOption()
+ * @method int getLanguageId()
+ * @method bool isGlobal()
+ */
 class SettingWrapper {
     /**
      * @var Setting
@@ -26,28 +33,6 @@ class SettingWrapper {
         $this->languageManager = $languageManager;
     }
 
-
-    /**
-     * @return int
-     */
-    public function getId(): int {
-        return $this->setting->getId();
-    }
-
-    /**
-     * @return string
-     */
-    public function getOption(): string {
-        return $this->setting->getOption();
-    }
-
-    /**
-     * @return string
-     */
-    public function getValue(): string {
-        return $this->setting->getValue();
-    }
-
     public function getLanguage():?Language {
         if (!$this->language === null) {
             $this->language = $this->languageManager->getById($this->getLanguageId());
@@ -55,14 +40,11 @@ class SettingWrapper {
         return $this->language instanceof Language ? $this->language : null;
     }
 
-    /**
-     * @return int
-     */
-    public function getLanguageId(): int {
-        return $this->setting->getLanguageId();
+    public function __call(string $name,array $arguments) {
+        return call_user_func_array([$this->getSetting(),$name],$arguments);
     }
 
-    public function isGlobal(): bool {
-        return $this->getLanguageId() === 0;
+    private function getSetting() {
+        return $this->setting;
     }
 }

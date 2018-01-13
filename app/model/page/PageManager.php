@@ -124,7 +124,7 @@ class PageManager extends Manager implements IPageManager {
      * @param int $perPage
      * @param &$numOfPages
      * @param null|string $search
-     * @return Page[]
+     * @return PageWrapper[]
      * @throws InvalidArgumentException for bad type|visibilty
      */
     public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search) {
@@ -192,7 +192,7 @@ class PageManager extends Manager implements IPageManager {
 
     public function getHomePage(int $languageId): ?PageWrapper {
         $homePageSetting = $this->getSettingsManager()->get(self::SETTINGS_HOMEPAGE, $languageId);
-        if (!$homePageSetting instanceof Setting) {
+        if (!$homePageSetting instanceof SettingWrapper) {
             trigger_error("HomePage setting not found, setting to none.");
             $homePageSetting = $this->getSettingsManager()->set(self::SETTINGS_HOMEPAGE, 0, $languageId);
         }
@@ -200,7 +200,7 @@ class PageManager extends Manager implements IPageManager {
         if ($homePageId === 0) return null;
 
         $homePage = $this->getByGlobalId($languageId, $homePageId);
-        if (!$homePage instanceof Page) {
+        if (!$homePage instanceof PageWrapper) {
             trigger_error("HomePage $homePageId not found, setting to none.");
             $this->getSettingsManager()->set(self::SETTINGS_HOMEPAGE, 0, $languageId);
 
@@ -242,7 +242,13 @@ class PageManager extends Manager implements IPageManager {
 
     private function getIfRightsAndSetMissing(APage $page):?PageWrapper {
         if ($page->getStatus() >= self::STATUS_PUBLIC || $this->getUser()->isAllowed(self::ACTION_SEE_NON_PUBLIC_PAGES)) {
-            return new PageWrapper($page, $this, $this->getLanguageManager(), $this->getSettingsManager());
+            return new PageWrapper($page,
+                $this,
+                $this->getLanguageManager(),
+                $this->getSettingsManager(),
+                $this->getUserManager(),
+                $this->getMediaManager()
+            );
         }
         return null;
     }
@@ -341,7 +347,7 @@ class PageManager extends Manager implements IPageManager {
             }
 
         if (!$parentOk) {
-            if (!$this->getByGlobalId($page->getLanguageId(), $parentId) instanceof Page)
+            if (!$this->getByGlobalId($page->getLanguageId(), $parentId) instanceof PageWrapper)
                 throw new InvalidArgumentException("Parent does not exist");
 
             if (in_array($parentId, $this->getInvalidParents($page->getGlobalId())))
@@ -519,7 +525,7 @@ class PageManager extends Manager implements IPageManager {
         $className = APage::CLASS_BY_TYPE[$row[self::MAIN_COLUMN_TYPE]];
 
         return new $className(
-            $row[self::MAIN_COLUMN_ID],
+            $globalId = $row[self::MAIN_COLUMN_ID],
             $row[self::LOCAL_COLUMN_ID],
             $row[self::MAIN_COLUMN_PARENT_ID],
             $row[self::LOCAL_COLUMN_LANG],
@@ -532,7 +538,8 @@ class PageManager extends Manager implements IPageManager {
             $row[self::LOCAL_COLUMN_LAST_EDITED],
             $row[self::LOCAL_COLUMN_IMAGE],
             $row[self::MAIN_COLUMN_STATUS],
-            $row[self::LOCAL_COLUMN_STATUS]
+            $row[self::LOCAL_COLUMN_STATUS],
+            $this->getChildrenIds($globalId)
         );
     }
 
@@ -559,7 +566,7 @@ class PageManager extends Manager implements IPageManager {
 
     /**
      * @param int[] $localIds
-     * @return Page[]
+     * @return PageWrapper[]
      */
     private function getByLocalIds(array $localIds): array {
         $pages = [];
@@ -581,5 +588,21 @@ class PageManager extends Manager implements IPageManager {
 
     public static function isDefaultUrl(string $url): bool {
         return substr($url, 0, strlen(self::RANDOM_URL_PREFIX)) === self::RANDOM_URL_PREFIX;
+    }
+
+    /**
+     * @param int $globalId
+     * @return int[]
+     */
+    private function getChildrenIds(int $globalId): array {
+        $data = $this->getDatabase()->table(self::MAIN_TABLE)
+            ->where([self::MAIN_COLUMN_PARENT_ID => $globalId])
+            ->select(self::MAIN_COLUMN_ID);
+
+        $childrenIds = [];
+        while ($row = $data->fetch()) {
+            $childrenIds[] = $row[self::MAIN_COLUMN_ID];
+        }
+        return $childrenIds;
     }
 }

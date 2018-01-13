@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="{$page->getLang()->getCode()}">
+<html lang="{$page->getLanguage()->getCode()}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{$page->getWholeTitle()}</title>
+    <title>{$page->getCompleteTitle()}</title>
     <meta name="description" content="{$page->getDescription()}"/>
 
     <meta property="og:title" content="{$page->getTitle()}"/>
-    <meta property="og:type" content="{$page->getType()->getOgType()}"/>
+    <meta property="og:type" content="{$page->getOgType()}"/>
     {if !$page->is404()}
         <meta property="og:url" content="{$baseUrl}/{$page->getPermanentUrl()}"/>
         {if $image=$page->getImage()}
@@ -23,7 +23,7 @@
     {/if}
     <meta property="og:description" content="{$page->getDescription()}"/>
     <meta property="og:site_name" content="{$page->getSiteName()}"/>
-    {if $page->isArticle()}
+    {if $page->isPost()}
         <meta property="article:published_time" content="{$page->getCreated()}"/>
         <meta property="article:modified_time" content="{$page->getEdited()}"/>
         <meta property="article:tag" content="{$page->getTagValues()}"/>
@@ -63,12 +63,7 @@
 {control header}
 <main>
     {snippet content}
-        {dump $page->isArticle()}
-        {if $page->isArticle()}
-            {control articlePage $page}
-        {elseif $page->isPage()}
-            {control content $page}
-        {/if}
+        {control content $page}
     {/snippet}
 </main>
 {*{control footerPage}*}

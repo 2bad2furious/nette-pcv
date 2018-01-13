@@ -1,6 +1,14 @@
 <?php
 
-
+/**
+ * Class HeaderWrapper
+ * @method int getId()
+ * @method int getPageId()
+ * @method int getPosition()
+ * @method int getLanguageId()
+ * @method int getParentId()
+ * @method int[] getChildrenIds()
+ */
 class HeaderWrapper {
     private $header;
     private $language;
@@ -8,30 +16,26 @@ class HeaderWrapper {
     private $page;
     private $active;
     private $pageManager;
-    /**
-     * @var IHeaderManager
-     */
     private $headerManager;
+    private $languageManager;
 
     /**
      * HeaderWrapper constructor.
      * @param Header $header
-     * @param Language $language
+     * @param ILanguageManager $languageManager
      * @param IPageManager $pageManager
      * @param IHeaderManager $headerManager
      */
-    public function __construct(Header $header, Language $language, IPageManager $pageManager, IHeaderManager $headerManager) {
-        if ($header->getLanguageId() !== $language->getId())
-            throw new InvalidArgumentException("Language {$header->getLanguageId()} expected, {$language->getId()} received.");
-
+    public function __construct(Header $header, ILanguageManager $languageManager, IPageManager $pageManager, IHeaderManager $headerManager) {
         if ($header->getType() === Header::TYPE_PAGE) {
-            $pageManager->exists($header->getPageId(),true);
+            $pageManager->exists($header->getPageId(), true);
         }
 
+        if (!$header->getPageId()) $this->page = false;
         $this->header = $header;
-        $this->language = $language;
         $this->pageManager = $pageManager;
         $this->headerManager = $headerManager;
+        $this->languageManager = $languageManager;
     }
 
     /**
@@ -43,72 +47,92 @@ class HeaderWrapper {
 
     /**
      * @return Language
+     * @throws InvalidState
      */
     public function getLanguage(): Language {
+        if (!$this->language instanceof Language) {
+            $language = $this->languageManager->getById($this->getLanguageId());
+            if (!$language->getId() !== $this->getLanguageId()) throw new InvalidState("Language Ids not the same; {$language->getId()} !== {$this->getLanguageId()}");
+            $this->language = $language;
+        }
         return $this->language;
     }
 
     /**
      * @return HeaderWrapper[]
+     * @throws InvalidState
      */
     public function getChildren() {
-        if($this->children === null){
-            //TODO check for page's status
-            $this->children = $this->headerManager->getChildren($this->getHeader()->getId());
+        if ($this->children === null) {
+            $this->children = [];
+            foreach ($this->getChildrenIds() as $childrenId) {
+                $child = $this->headerManager->getById($childrenId);
+
+                if ($child->getLanguageId() !== $this->getLanguageId()) throw new InvalidState("Languages are not the same; {$child->getLanguageId()} !== {$this->getLanguageId()}");
+                if ($child->getParentId() !== $this->getId()) throw new InvalidState("Child is not actual child of this; {$child->getParentId()} !== {$this->getId()}");
+
+                $this->children[] = $child;
+            }
         }
         return $this->children;
     }
 
     /**
-     * @return Page|null
+     * @return null|PageWrapper
+     * @throws InvalidState
      */
     public function getPage() {
-        return $this->page;
+        if ($this->page !== false) {
+            $page = $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getPageId());
+
+            if ($page->getGlobalId() !== $this->getPageId())
+                throw new InvalidState("Page Ids are not the same; {$page->getGlobalId()} !== {$this->getPageId()}");
+            if ($page->getLanguageId() !== $this->getLanguageId())
+                throw new InvalidState("Language Ids are not the same; {$page->getLanguageId()} !== {$this->getLanguageId()}");
+
+            $this->page = $page;
+        }
+        return $this->page instanceof PageWrapper ? $this->page : null;
     }
 
     /**
+     * @param null|PageWrapper $page
      * @return bool
      */
-    public function isActive(): bool {
+    public function isActive(?PageWrapper $page = null): bool {
+        if (!is_bool($this->active)) {
+            if ($page === null) $this->active = false;
+            else if ($page->getGlobalId() === $this->getPageId()) $this->active = true;
+            else {
+                $active = false;
+                foreach ($this->getChildren() as $child) {
+                    if ($child->isActive($page)) $active = true;
+                }
+                $this->active = $active;
+            }
+        }
         return $this->active;
     }
 
-    //Deletegating methods
+    public function getUrl(): string {
+        if ($this->isPage())
+            return $this->getPage()->getUrl();
 
-    public function getId(): int {
-        return $this->getHeader()->getId();
+        return $this->getHeader()->getUrl();
     }
 
     public function getTitle(): string {
-        return $this->getHeader()->getTitle() ?: $this->getPage()->getTitle();
+        if ($this->isPage())
+            return $this->getHeader()->getTitle() ?: $this->getPage()->getTitle();
+
+        return $this->getHeader()->getTitle();
     }
 
-    public function getUrl(): string {
-        return $this->getHeader()->getUrl() ?: $this->getPage()->getUrl();
-    }
+    public function getCompleteUrl(bool $prependSlash = true): string {
+        if ($this->isPage())
+            return $this->getPage()->getCompleteUrl($prependSlash);
 
-    public function getCompleteUrl(): string {
-        return "";//TODO implement
-    }
-
-    public function getLanguageId(): int {
-        return $this->getHeader()->getLanguageId();
-    }
-
-    public function getPageId(): ?int {
-        return $this->getHeader()->getPageId();
-    }
-
-    public function getPosition(): int {
-        return $this->getHeader()->getPosition();
-    }
-
-    public function getParentId(): int {
-        return $this->getHeader()->getParentId();
-    }
-
-    public function getLanguageCode(): int {
-        return $this->getLanguage()->getCode();
+        return ($prependSlash ? "/" : "") . $this->getLanguage()->getCode() . "/" . $this->getUrl();
     }
 
     public function getType(): int {
@@ -121,5 +145,9 @@ class HeaderWrapper {
 
     public function isCustom(): bool {
         return $this->getType() === Header::TYPE_CUSTOM;
+    }
+
+    public function __call(string $name, array $arguments) {
+        return call_user_func_array([$this->getHeader(), $name], $arguments);
     }
 }

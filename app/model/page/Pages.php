@@ -1,13 +1,6 @@
 <?php
 
-
-class Page extends APage {
-}
-
-
-class Post extends APage {
-}
-
+use Nette\Utils\DateTime;
 
 abstract class APage {
     const CLASS_BY_TYPE = [
@@ -35,6 +28,7 @@ abstract class APage {
     private $imageId;
     private $globalStatus;
     private $localStatus;
+    private $children = [];
 
     /**
      * APage constructor.
@@ -52,8 +46,9 @@ abstract class APage {
      * @param int $imageId
      * @param int $globalStatus
      * @param int $localStatus
+     * @param int[] $childrenIds
      */
-    public function __construct(int $globalId, int $localId, int $parentId, int $langId, string $title, string $url, string $description, string $content, int $authorId, DateTime $created, DateTime $edited, int $imageId, int $globalStatus, int $localStatus) {
+    public function __construct(int $globalId, int $localId, int $parentId, int $langId, string $title, string $url, string $description, string $content, int $authorId, DateTime $created, DateTime $edited, int $imageId, int $globalStatus, int $localStatus, array $childrenIds) {
         $this->globalId = $globalId;
         $this->localId = $localId;
         $this->parentId = $parentId;
@@ -68,6 +63,10 @@ abstract class APage {
         $this->imageId = $imageId;
         $this->globalStatus = $globalStatus;
         $this->localStatus = $localStatus;
+
+        foreach($childrenIds as $childrenId){
+            $this->addChild($childrenId);
+        }
     }
 
     /**
@@ -94,7 +93,7 @@ abstract class APage {
     /**
      * @return int
      */
-    public function getLangId(): int {
+    public function getLanguageId(): int {
         return $this->langId;
     }
 
@@ -181,4 +180,47 @@ abstract class APage {
     public function isPost(): bool {
         return $this instanceof Post;
     }
+
+    public function is404(): bool {
+        return $this instanceof Page404;
+    }
+
+    private function addChild(int $childrenId) {
+        $this->children[] = $childrenId;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getChildren(): array {
+        return $this->children;
+    }
+
+    public abstract function getOgType():string;
+
+    public abstract function getType():string;
+}
+
+class Page extends APage {
+
+    public function getOgType(): string {
+        return "website";
+    }
+
+    public function getType(): string {
+        return "page";
+    }
+}
+
+class Post extends APage {
+    public function getOgType(): string {
+        return "article";
+    }
+
+    public function getType(): string {
+        return "post";
+    }
+}
+
+class Page404 extends Page {
 }
