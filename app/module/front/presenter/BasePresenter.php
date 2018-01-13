@@ -164,22 +164,44 @@ abstract class BasePresenter extends Presenter {
 
 
     private function checkRefererAndDisallowAjax() {
-        if ($this->isAjax() && $referer = $this->getReferer()) {
-            $script = ($oldScript = new \Nette\Http\UrlScript($referer, "/"));
-            $request = new \Nette\Http\Request($script);
-            $router = $this->getRouter();
-            $match = $router->match($request);
-            if ($match instanceof Request) {
-                $module = substr($presenterName = $this->getRequest()->getPresenterName(), 0, strpos($presenterName, ":"));
-                $refererModule = substr($refererPresenterName = $match->getPresenterName(), 0, strpos($refererPresenterName, ":"));
-
-                if ($module !== $refererModule) {
-                    trigger_error("MODULES are not the same $presenterName and $refererPresenterName");
-                    $this->disallowAjax();
-                }
+        if ($this->isAjax() && $this->getReferer()) {
+            $match = $this->getRefererRequest();
+            if ($match instanceof Request && $this->isComingFromDifferentModule()) {
+                dump($this->getRefererRequest(),$this->getRequest());
+                throw new InvalidState("Modules not the same");
+                $this->disallowAjax();
             }
             //dump("start", $this->getHttpRequest(), $referer, $oldScript, $script, $request, $script->getBasePath(), $match, "end");
         }
+    }
+
+    protected function isComingFromDifferentPresenter():bool{
+        $match = $this->getRefererRequest();
+        if(!$match instanceof Request) throw new InvalidState("Match not found");
+
+        return $this->getRequest()->getPresenterName() !== $match->getPresenterName();
+    }
+
+    protected function isComingFromDifferentModule(): bool {
+        $match = $this->getRefererRequest();
+        if(!$match instanceof Request) throw new InvalidState("Match not found");
+
+        $module = substr($presenterName = $this->getRequest()->getPresenterName(), 0, strpos($presenterName, ":"));
+        $refererModule = substr($refererPresenterName = $match->getPresenterName(), 0, strpos($refererPresenterName, ":"));
+        return ($module !== $refererModule);
+    }
+
+    protected function getRefererRequest():?Request {
+        static $match = null;
+        if ($match === null) {
+            $referer = $this->getReferer();
+            if (!$referer instanceof Url) throw new InvalidState("Referer not found");
+            $script = $oldScript = new \Nette\Http\UrlScript($referer, "/");
+            $request = new \Nette\Http\Request($script);
+            $router = $this->getRouter();
+            $match = $router->match($request) ?: false;
+        }
+        return $match instanceof Request ? $match : null;
     }
 
     protected function getReferer():?Url {

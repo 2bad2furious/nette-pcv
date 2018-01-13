@@ -10,6 +10,8 @@ use Tracy\Debugger;
 
 abstract class AdminPresenter extends BasePresenter {
 
+    const ADMIN_LOCALES = ["en_US"];
+
     protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
         Debugger::log($allowedRoles);
         Debugger::log($currentRole);
@@ -22,13 +24,16 @@ abstract class AdminPresenter extends BasePresenter {
         };
     }
 
+    protected function getAdminLocale(): string {
+        if (in_array($this->locale, self::ADMIN_LOCALES)) return $this->locale;
+        throw new \InvalidState("Locale {$this->locale} not found in " . implode("|", self::ADMIN_LOCALES) . "");
+    }
 
-
-    public function redrawFlashes(){
+    public function redrawFlashes() {
         $this->redrawControl("flashes");
     }
 
-    public function handleClearFlashes(){
+    public function handleClearFlashes() {
         $this->redrawFlashes();
     }
 

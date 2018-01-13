@@ -54,9 +54,7 @@ class HeaderPresenter extends AdminPresenter {
 
 
         if ($this->getSignalName() || $this->isAjax()) {
-            $this->redrawControl("header-area");
-            $this->redrawControl("edit-form");
-            $this->redrawFlashes();
+            $this->redrawDefault();
         }
 
         if ($this->getSignalName()) {

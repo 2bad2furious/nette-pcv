@@ -51,9 +51,9 @@ class Router {
 
 //        $frontRouteList[] = new Route("<presenter>/<action>");
 
-        $availableAdminLangs = implode("|", ["en_US"]);
+        $availableAdminLangs = implode("|", \adminModule\AdminPresenter::ADMIN_LOCALES);
 
-        $adminRouteList[] = new Route("admin/<locale>/<presenter page>/<action show>/<" . PagePresenter::TYPE_KEY . ">/<" . PagePresenter::VISIBILITY_KEY . ">/<" . PagePresenter::LANGUAGE_KEY . ">/<" . PagePresenter::HAS_TRANSLATION_KEY . "> ? <" . PagePresenter::PAGE_KEY . "><" . FormFactory::PAGE_SHOW_SEARCH_NAME . ">", [
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action show>/<" . PagePresenter::TYPE_KEY . ">/<" . PagePresenter::VISIBILITY_KEY . ">/<" . PagePresenter::LANGUAGE_KEY . ">/<" . PagePresenter::HAS_TRANSLATION_KEY . "> ? <" . PagePresenter::PAGE_KEY . "><" . FormFactory::PAGE_SHOW_SEARCH_NAME . ">", [
             "locale"                           => [
                 Route::PATTERN => $availableAdminLangs,
             ],
