@@ -23,8 +23,4 @@ class DefaultPresenter extends BasePresenter {
     protected function getAllowedRoles(): array {
         return \UserManager::ROLES;
     }
-
-    protected function setPageTitle(): string {
-        return "";
-    }
 }
