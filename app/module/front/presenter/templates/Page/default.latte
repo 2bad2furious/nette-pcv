@@ -27,7 +27,6 @@
         <meta property="article:published_time" content="{$page->getCreated()}"/>
         <meta property="article:modified_time" content="{$page->getEdited()}"/>
         <meta property="article:tag" content="{$page->getTagValues()}"/>
-        <meta property="article:section" content="{_"page_no_section"}"/>
     {/if}
     <link rel="canonical" href="{$baseUrl}/{$page->getPermanentUrl()}"/>
 
@@ -73,10 +72,9 @@
     {/snippet}
 </main>
 {*{control footerPage}*}
-<div>
-    {foreach $flashes as $flash}
-        <div class="flash {$flash->type}">{$flash->message}</div>
-    {/foreach}
+<div n:snippet="flashes">
+    {if $flashes}<a n:href="clearFlashes!">close flashes</a>{/if}
+    <ul n:flashes></ul>
 </div>
 </body>
 </html>
