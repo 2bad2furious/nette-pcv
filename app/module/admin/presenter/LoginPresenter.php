@@ -51,18 +51,15 @@ class LoginPresenter extends AdminPresenter {
         return $form;
     }
 
-    protected
-    function getAllowedRoles(): array {
+    protected function getAllowedRoles(): array {
         return [\UserManager::ROLE_GUEST];
     }
 
-    protected
-    function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
+    protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
         $this->redirect("Default:Default");
     }
 
-    protected
-    function renderDefault() {
-        //$this->allowAjax();
+    protected function actionDefault() {
+        $this->disallowAjax();
     }
 }
