@@ -19,21 +19,20 @@ interface IPageManager extends IManager {
 
     const ACTION_SEE_NON_PUBLIC_PAGES = "page.non_public";
 
-    public function exists(int $globalId): bool;
+    public function exists(int $globalId, bool $throw = false): bool;
 
     /**
-     * @param Language $language
-     * @return Page[]
+     * @param int $langId
+     * @return array
      */
-    public function getAllPages(Language $language): array;
+    public function getAllPages(int $langId): array;
 
     /**
      * @param int $globalId
-     * @param Language $language
-     * @return Page[]
-     * @throws InvalidArgumentException if invalid type
+     * @param int $langId
+     * @return PageWrapper[]
      */
-    public function getViableParents(int $globalId, Language $language): array;
+    public function getViableParents(int $globalId, int $langId): array;
 
     /**
      * @param int|null $type
@@ -44,38 +43,39 @@ interface IPageManager extends IManager {
      * @param int $perPage
      * @param &$numOfPages
      * @param null|string $search
-     * @return Page[]
+     * @return PageWrapper[]
      * @throws InvalidArgumentException for bad type|visibilty
      */
     public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search);
 
     public function cleanCache();
 
-    public function getHomePage(Language $language): ?Page;
+    public function getHomePage(int $languageId): ?PageWrapper;
 
     /**
-     * @param Language $language
+     * @param int $languageId
      * @param int $id PageId
-     * @return null|Page
+     * @param bool $throw
+     * @return null|PageWrapper
      */
-    public function getByGlobalId(Language $language, int $id): ?Page;
+    public function getByGlobalId(int $languageId, int $id, bool $throw = true): ?PageWrapper;
 
     /**
-     * @param Language $language
+     * @param int $languageId
      * @param string $url
-     * @return null|Page
+     * @return null|PageWrapper
      */
-    public function getByUrl(Language $language, string $url): ?Page;
+    public function getByUrl(int $languageId, string $url): ?PageWrapper;
 
-    public function getDefault404(): Page;
+    public function getDefault404(): PageWrapper;
 
     /**
      * @param string $url
-     * @param Language $language
+     * @param int $languageId
      * @param int|null $localId
      * @return bool
      */
-    public function isUrlAvailable(string $url, Language $language, ?int $localId): bool;
+    public function isUrlAvailable(string $url, int $languageId, ?int $localId): bool;
 
     /**
      * @param int $type (page|post)
@@ -84,7 +84,7 @@ interface IPageManager extends IManager {
      */
     public function addEmpty(int $type): int;
 
-    public function update(Page $page, int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId);
+    public function update(int $pageId,int $langId, int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId);
 
     public function delete(int $globalId);
 

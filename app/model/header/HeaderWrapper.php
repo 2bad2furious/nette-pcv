@@ -4,53 +4,34 @@
 class HeaderWrapper {
     private $header;
     private $language;
-    private $children = [];
+    private $children;
     private $page;
     private $active;
+    private $pageManager;
+    /**
+     * @var IHeaderManager
+     */
+    private $headerManager;
 
     /**
      * HeaderWrapper constructor.
      * @param Header $header
      * @param Language $language
-     * @param null|Page $page
-     * @param array $children
-     * @param bool $active
+     * @param IPageManager $pageManager
+     * @param IHeaderManager $headerManager
      */
-    public function __construct(Header $header, Language $language, ?Page $page, array $children, bool $active) {
+    public function __construct(Header $header, Language $language, IPageManager $pageManager, IHeaderManager $headerManager) {
         if ($header->getLanguageId() !== $language->getId())
             throw new InvalidArgumentException("Language {$header->getLanguageId()} expected, {$language->getId()} received.");
 
         if ($header->getType() === Header::TYPE_PAGE) {
-            if (!$page instanceof Page)
-                throw new InvalidArgumentException("Page {$header->getPageId()} expected, none received");
-
-            if ($header->getPageId() !== $page->getGlobalId())
-                throw new InvalidArgumentException("Page {$header->getPageId()} expected, {$page->getGlobalId()} received");
-
-            if ($page->getLanguageId() !== $header->getLanguageId())
-                throw new InvalidArgumentException("Language ");
-        } else {
-            if ($page instanceof Page)
-                throw new InvalidArgumentException("No page expected");
+            $pageManager->exists($header->getPageId(),true);
         }
 
         $this->header = $header;
         $this->language = $language;
-        $this->page = $page;
-        $this->active = $active;
-
-        foreach ($children as $child) {
-            $this->addChild($child);
-        }
-    }
-
-    private function addChild(HeaderWrapper $child) {
-        if ($child->getHeader()->getParentId() !== $this->getHeader()->getId())
-            throw new InvalidArgumentException("Header {$child->getHeader()->getId()} is not a child of {$this->getHeader()->getId()}; real parent = {$child->getHeader()->getParentId()}");
-        if ($child->getHeader()->getLanguageId() !== $this->getHeader()->getLanguageId())
-            throw new InvalidState("Languages of child and parent are not the same - expected:{$this->getHeader()->getLanguageId()}, received: {$child->getHeader()->getLanguageId()} ");
-
-        $this->children[] = $child;
+        $this->pageManager = $pageManager;
+        $this->headerManager = $headerManager;
     }
 
     /**
@@ -71,6 +52,10 @@ class HeaderWrapper {
      * @return HeaderWrapper[]
      */
     public function getChildren() {
+        if($this->children === null){
+            //TODO check for page's status
+            $this->children = $this->headerManager->getChildren($this->getHeader()->getId());
+        }
         return $this->children;
     }
 

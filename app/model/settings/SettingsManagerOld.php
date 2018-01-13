@@ -30,13 +30,13 @@ class SettingsManagerOld extends Manager implements ISettingsManager {
         return $setting;
     }
 
-    public function set(string $option, string $value, ?Language $language = null, bool $createIfNotFound = false) {
+    public function set(string $option, string $value, ?Language $languageId = null, bool $createIfNotFound = false) {
         $this->throwIfNoRights(self::ACTION_MANAGE_SETTINGS);
         if (strlen($option) > self::COLUMN_OPTION_LENGTH) throw new Exception(sprintf("Option must be at most %s characters long", self::COLUMN_OPTION_LENGTH));
 
-        $exists = $this->get($option, $language);
+        $exists = $this->get($option, $languageId);
 
-        $langId = $language instanceof Language ? $language->getId() : 0;
+        $langId = $languageId instanceof Language ? $languageId->getId() : 0;
 
         $data = [
             self::COLUMN_OPTION => $option,

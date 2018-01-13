@@ -28,16 +28,16 @@ class PagePresenter extends BasePresenter {
 
     public function renderDefault() {
         $url = $this->getParameter(self::PARAM_URL);
-        $language = $this->getLocaleLanguage();
+        $language = $this->getLocaleLanguage()->getId();
 
         $this->page = $this->getPageManager()->getByUrl($language, (string)$url);
-
+        if($this->page->isHomePage()) $this->redirect(301,"Home",[self::PARAM_URL=>null]);
         $this->prepareTemplate();
     }
 
     public function actionPermanent() {
         $id = $this->getParameter(self::PARAM_ID);
-        $this->page = $this->getPageManager()->getByGlobalId($this->getLocaleLanguage(), $id);
+        $this->page = $this->getPageManager()->getByGlobalId($this->getLocaleLanguage()->getId(), $id);
         $this->prepareTemplate();
     }
 

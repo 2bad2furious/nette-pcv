@@ -11,10 +11,6 @@ class Setting {
     /** @var string */
     private $value;
     /**
-     * @var Language|null
-     */
-    private $language;
-    /**
      * @var int
      */
     private $languageId;
@@ -52,25 +48,6 @@ class Setting {
      */
     public function getValue(): string {
         return $this->value;
-    }
-
-    /**
-     * @return Language|null
-     */
-    public function getLanguage(): ?Language {
-        return $this->language;
-    }
-
-    /**
-     * @param Language $language
-     * @return Setting
-     * @throws Exception
-     */
-    public function setLanguage(Language $language): self {
-        if ($this->language instanceof Language) throw new InvalidState("Language already set");
-        if ($this->languageId !== $language->getId()) throw new InvalidArgumentException("Ids are not the same");
-        $this->language = $language;
-        return $this;
     }
 
     /**

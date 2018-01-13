@@ -38,14 +38,14 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     /**
-     * @param Language $language
+     * @param int $languageId
      * @param null|Page $currentPage for detection of active branch
-     * @return array
+     * @return HeaderWrapper[]
      */
-    public function getHeader(Language $language, ?Page $currentPage = null): array {
+    public function getHeader(int $languageId, ?Page $currentPage = null): array {
         $this->currentPage = $currentPage;
 
-        $header = $this->getRootChildren($language);
+        $header = $this->getRootChildren($languageId);
 
         $this->currentPage = null;
 
@@ -57,7 +57,7 @@ class HeaderManager extends Manager implements IHeaderManager {
      * @return HeaderWrapper|null
      */
     public function getById(int $id):?HeaderWrapper {
-        $cached = $this->getPlainById($id);
+        $cached = $this->getPlainById($id, false);
 
         if ($cached instanceof Header) {
             return $this->constructHeaderWrapper($cached);
@@ -65,29 +65,31 @@ class HeaderManager extends Manager implements IHeaderManager {
         return null;
     }
 
-    private function getChildren(Header $header, bool &$active): array {
-        \Tracy\Debugger::log("children of {$header->getId()}");
-        \Tracy\Debugger::log($header->getChildrenIds());
-        return array_map(function (int $headerId) use ($active) {
-            $child = $this->getById($headerId);
-            if ($child->isActive() ||
-                ($this->currentPage instanceof Page &&
-                    $this->currentPage->getGlobalId() == $child->getPageId()
-                )
-            ) $active = true;
+    public function getChildren(int $headerId): array {
+        $header = $this->getPlainById($headerId);
 
-            return $child;
-        }, $header->getChildrenIds());
+        $data = $this->getDatabase()->table(self::TABLE)->where([self::COLUMN_PARENT_ID => $headerId]);
+        $children = [];
+        while ($row = $data->fetch()) {
+            $childId = $row[self::COLUMN_ID];
+            $headerWrapper = $this->getById($childId);
+            if ($headerWrapper->getLanguageId() !== $header->getLanguageId()) throw new InvalidState("Language {$headerWrapper->getLanguageId()} !== {$header->getLanguageId()}");
+            $children[$childId] = $headerWrapper;
+        }
+        return $children;
     }
 
     public function addPage(int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper {
-        if ($parentId !== 0 && !$this->exists($parentId, $languageId)) throw new InvalidArgumentException("Parent {$parentId} does not exist");
+        if ($parentId !== 0) {
+            $header = $this->getPlainById($parentId);
+            if ($header->getLanguageId() !== $languageId) throw new InvalidArgumentException("Languages are not the same; $languageId != {$header->getLanguageId()}");
+        }
 
-        $language = $this->getLanguageManager()->getById($languageId);
-        if (!$language instanceof Language) throw new InvalidArgumentException("Language {$languageId} does not exist");
+        /* throws exceptions if they dont exist */
+        $this->getLanguageManager()->getById($languageId);
 
-        $page = $this->getPageManager()->getByGlobalId($language, $pageId);
-        if (!$page instanceof Page) throw new InvalidArgumentException("Page {$pageId} does not exist");
+        $this->getPageManager()->getByGlobalId($languageId, $pageId);
+        /* end of exception throwing */
 
         return $this->runInTransaction(function () use ($title, $pageId, $languageId, $parentId) {
             $headerId = $this->getDatabase()->table(self::TABLE)
@@ -111,10 +113,12 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     public function addCustom(int $parentId, int $languageId, string $title, string $url): HeaderWrapper {
-        if ($parentId !== 0 && !$this->exists($parentId, $languageId)) throw new InvalidArgumentException("Parent {$parentId} does not exist");
+        if ($parentId !== 0) {
+            $header = $this->getPlainById($parentId);
+            if ($header->getLanguageId() !== $languageId) throw new InvalidArgumentException("Languages are not the same; $languageId != {$header->getLanguageId()}");
+        }
 
-        $language = $this->getLanguageManager()->getById($languageId);
-        if (!$language instanceof Language) throw new InvalidArgumentException("Language {$languageId} does not exist");
+        $this->getLanguageManager()->getById($languageId);
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) throw new InvalidArgumentException("Url {$url} is not valid");
 
@@ -140,11 +144,9 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     public function editPage(int $headerId, int $pageId, string $title) {
-        $header = $this->getById($headerId);
-        if (!$header instanceof HeaderWrapper) throw new InvalidArgumentException("Header {$headerId} does not exist");
+        $header = $this->getPlainById($headerId);
 
-        if (!$this->getPageManager()->getByGlobalId($header->getLanguage(), $pageId))
-            throw new InvalidArgumentException("Page {$pageId} does not exist");
+        $this->getPageManager()->getByGlobalId($header->getLanguageId(), $pageId);
 
         $this->uncache($headerId);
 
@@ -182,7 +184,6 @@ class HeaderManager extends Manager implements IHeaderManager {
      */
     public function delete(int $id) {
         $header = $this->getPlainById($id);
-        if (!$header instanceof Header) throw new InvalidArgumentException("Header {$id} not found");
 
         $this->uncache($id);
 
@@ -202,7 +203,6 @@ class HeaderManager extends Manager implements IHeaderManager {
 
     public function deleteBranch(int $id) {
         $header = $this->getPlainById($id);
-        if (!$header instanceof Header) throw new InvalidArgumentException("Header {$id} not found");
 
         $this->uncache($id);
 
@@ -251,15 +251,13 @@ class HeaderManager extends Manager implements IHeaderManager {
 
 
     /**
-     * @param Language $language
+     * @param int $languageId
      * @return HeaderWrapper[]
      */
-    private function getRootChildren(Language $language) {
-        \Tracy\Debugger::log("root - {$language->getId()}");
-        \Tracy\Debugger::log($this->getRootChildrenIds($language->getId()));
+    private function getRootChildren(int $languageId) {
         return array_map(function (int $id) {
             return $this->getById($id);
-        }, $this->getRootChildrenIds($language->getId()));
+        }, $this->getRootChildrenIds($languageId));
     }
 
     private function getRootChildrenIds(int $langId): array {
@@ -277,17 +275,13 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     private function constructHeaderWrapper(Header $header): HeaderWrapper {
-        $pageId = $header->getPageId();
         $langId = $header->getLanguageId();
 
-
-        $active = false;
         return new HeaderWrapper(
             $header,
-            $language = $this->getLanguageManager()->getById($langId),
-            is_int($pageId) ? $this->getPageManager()->getByGlobalId($language, $pageId) : null,
-            $this->getChildren($header, $active),
-            $active
+            $this->getLanguageManager()->getById($langId),
+            $this->getPageManager(),
+            $this
         );
     }
 
@@ -307,18 +301,18 @@ class HeaderManager extends Manager implements IHeaderManager {
     public function changeParentOrPosition(int $headerId, int $parentHeaderId, int $position) {
         if ($headerId === $parentHeaderId) throw new InvalidArgumentException("$headerId: Ids are the same");
 
-        $headerWrapper = $this->getPlainById($headerId);
-        if (!$headerWrapper instanceof Header) throw new InvalidArgumentException("Header $headerId not found");
+        $header = $this->getPlainById($headerId);
 
-        if ($parentHeaderId !== 0 && !$this->exists($parentHeaderId)) throw new InvalidArgumentException("Parent $parentHeaderId not found");
+        if ($parentHeaderId !== 0) {
+            $parent = $this->getPlainById($parentHeaderId);
 
-        if ($parentHeaderId !== 0 && !$this->exists($parentHeaderId, $headerWrapper->getLanguageId())) throw new InvalidArgumentException("Parent is not of the same language");
-
+            if ($parent->getLanguageId() !== $header->getLanguageId()) throw new InvalidArgumentException("Parent is not of the same language; {$parent->getLanguageId()} !== {$header->getLanguageId()}");
+        }
         if (!$this->canChangeParent($headerId, $parentHeaderId)) throw new InvalidArgumentException("New parent $parentHeaderId is already a descendant of $headerId");
 
         $this->uncache($headerId);
         $this->uncache($parentHeaderId);
-        $this->uncache($headerWrapper->getParentId());
+        $this->uncache($header->getParentId());
 
         $this->runInTransaction(function () use ($headerId, $parentHeaderId, $position) {
             $affected = $this->getDatabase()->table(self::TABLE)
@@ -411,7 +405,6 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     public function canBeMovedUp(int $headerId): bool {
-        if (!$this->exists($headerId)) throw new InvalidArgumentException("Header $headerId does not exist");
         return $this->getPlainById($headerId)->getPosition() !== 0;
     }
 
@@ -430,7 +423,6 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     public function canBeMovedDown(int $headerId): bool {
-        if (!$this->exists($headerId)) throw new InvalidArgumentException("Header $headerId not found");
         $header = $this->getPlainById($headerId);
 
         if ($header->getParentId() !== 0) $where = [self::COLUMN_PARENT_ID => $header->getParentId()];
@@ -469,13 +461,11 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     public function canBeMovedLeft(int $headerId): bool {
-        if (!$this->exists($headerId)) throw new InvalidArgumentException("Header $headerId does not exist");
-        $header = $this->getPlainById($headerId);
-        return $header->getParentId() !== 0;
+        return $this->getPlainById($headerId)->getParentId() !== 0;
     }
 
     public function moveRight(int $headerId) {
-        if (!$this->canBeMovedRight($headerId)) throw new InvalidArgumentException("Header $headerId does not exist");
+        if (!$this->canBeMovedRight($headerId)) throw new InvalidArgumentException("Header $headerId cannot be moved right");
 
         $header = $this->getPlainById($headerId);
         $upperSibling = $this->getUpperSibling($headerId);
@@ -504,18 +494,21 @@ class HeaderManager extends Manager implements IHeaderManager {
 
     /**
      * @param int $id
-     * @return Header|false
+     * @param bool $throw
+     * @return false|Header
      */
-    private function getPlainById(int $id) {
-        return $this->getCache()->load($id, function (&$dependencies) use ($id) {
+    private function getPlainById(int $id, bool $throw = true) {
+        $cached = $this->getCache()->load($id, function (&$dependencies) use ($id) {
             //TODO set TAGS such as lang, page_id
             return $this->getFromDb($id);
         });
+
+        if (!$cached && $throw) throw new InvalidArgumentException("Header $id not found");
+        return $cached;
     }
 
     private function getUpperSibling(int $headerId):?Header {
         $header = $this->getPlainById($headerId);
-        if (!$header instanceof Header) throw new InvalidArgumentException("Header $headerId does not exist.");
 
         $siblingId = $this->getDatabase()->table(self::TABLE)
             ->where([

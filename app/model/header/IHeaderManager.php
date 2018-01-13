@@ -5,17 +5,23 @@ interface IHeaderManager {
     public function cleanCache();
 
     /**
-     * @param Language $language
+     * @param int $languageId
      * @param null|Page $currentPage
      * @return array
      */
-    public function getHeader(Language $language, ?Page $currentPage = null): array;
+    public function getHeader(int $languageId, ?Page $currentPage = null): array;
 
     /**
      * @param int $id
      * @return HeaderWrapper|null
      */
     public function getById(int $id):?HeaderWrapper;
+
+    /**
+     * @param int $headerId
+     * @return array
+     */
+    public function getChildren(int $headerId):array;
 
     public function addPage(int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper;
 
@@ -59,4 +65,5 @@ interface IHeaderManager {
     public function moveRight(int $headerId);
 
     public function canBeMovedRight(int $headerId):bool;
+
 }

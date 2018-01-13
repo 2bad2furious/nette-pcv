@@ -14,7 +14,7 @@ class LanguageManager extends Manager implements ILanguageManager {
     const ACTION_CACHE = "language.cache",
         ACTION_MANAGE = "language.manage";
 
-    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated) {
+    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated):array {
         $selection = $this->getDatabase()
             ->table(self::TABLE)
             ->order(self::COLUMN_ID);
@@ -41,8 +41,9 @@ class LanguageManager extends Manager implements ILanguageManager {
     /**
      * @param bool $check whether to include languages that are not finished (=code is generated)
      * @return Language[]
+     * TODO cache?
      */
-    public function getAvailableLanguages($check = true): array {
+    public function getAvailableLanguages(bool $check = true): array {
         $data = $this->getDatabase()
             ->table(self::TABLE)
             ->order(self::COLUMN_ID);
@@ -58,19 +59,23 @@ class LanguageManager extends Manager implements ILanguageManager {
         return $langs;
     }
 
-    public function getByCode(string $langCode): ?Language {
+    public function getByCode(string $langCode, bool $throw = true): ?Language {
         $cached = $this->getCodeCache()->load($langCode,
             function () use ($langCode) {
                 return $this->getFromDbByCode($langCode);
             });
+        if(!$cached && $throw) throw new InvalidArgumentException("Language $langCode not exists");
+
         return $cached instanceof Language ? $cached : null;
     }
 
-    public function getById(int $id): ?Language {
+    public function getById(int $id,bool $throw = true): ?Language {
         $cached = $this->getIdCache()->load($id,
             function () use ($id) {
                 return $this->getFromDbById($id);
             });
+        if(!$cached && $throw) throw new InvalidArgumentException("Language $id not exists");
+
         return $cached instanceof Language ? $cached : null;
     }
 
@@ -83,8 +88,7 @@ class LanguageManager extends Manager implements ILanguageManager {
      * @throws InvalidState
      */
     public function getDefaultLanguage(): Language {
-        $setting = $this->getSettingsManager()->get(self::SETTINGS_DEFAULT_LANGUAGE);
-        if (!$setting instanceof Setting) throw new InvalidState("Default lang setting not found");
+        $setting = $this->getSettingsManager()->get(self::SETTINGS_DEFAULT_LANGUAGE,null);
         $languageId = (int)$setting->getValue();
         $language = $this->getById($languageId);
         if (!$language instanceof Language) throw new InvalidState("Default lang $languageId not found");
@@ -104,7 +108,7 @@ class LanguageManager extends Manager implements ILanguageManager {
 
             $language = $this->getById($id);
 
-            $this->setSettings($language, 0, "", 0, 0, "", "");
+            $this->setSettings($id, 0, "", 0, 0, "", "");
 
             $this->trigger(self::TRIGGER_LANGUAGE_ADDED, $language);
 
@@ -112,7 +116,8 @@ class LanguageManager extends Manager implements ILanguageManager {
         });
     }
 
-    public function edit(Language $language, string $code, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId) {
+    public function edit(int $languageId, string $code, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId) {
+        $language = $this->getById($languageId);
         if ($code !== $language->getCode()) {
             if (!self::isCodeGenerated($language->getCode())) throw new Exception("Cannot edit non-generated language codes");
 
@@ -131,7 +136,7 @@ class LanguageManager extends Manager implements ILanguageManager {
             });
         }
 
-        $this->setSettings($language, $logoId, $ga, $faviconId, $homePageId, $separator, $title);
+        $this->setSettings($languageId, $logoId, $ga, $faviconId, $homePageId, $separator, $title);
 
         $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
     }
@@ -215,7 +220,7 @@ class LanguageManager extends Manager implements ILanguageManager {
         return $unique;
     }
 
-    private function setSettings(Language $language, int $logoId, string $ga, int $faviconId, int $homePageId, string $titleSeparator, string $siteName) {
+    private function setSettings(int $languageId, int $logoId, string $ga, int $faviconId, int $homePageId, string $titleSeparator, string $siteName) {
         $sm = $this->getSettingsManager();
         $mm = $this->getMediaManager();
         if ($logoId !== 0 &&
@@ -223,24 +228,24 @@ class LanguageManager extends Manager implements ILanguageManager {
             trigger_error("Logo $logoId not found, not using it.");
             $logoId = 0;
         }
-        $sm->set(PageManager::SETTINGS_LOGO, $logoId, $language);
+        $sm->set(PageManager::SETTINGS_LOGO, $logoId, $languageId);
 
-        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, $ga, $language);
+        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, $ga, $languageId);
 
         if ($faviconId !== 0 && (!($media = $mm->getById($faviconId, MediaManager::TYPE_IMAGE)) instanceof Media)) {
             trigger_error("Favicon $faviconId not found, not using it.");
             $faviconId = 0;
         }
-        $sm->set(PageManager::SETTINGS_FAVICON, $faviconId, $language);
+        $sm->set(PageManager::SETTINGS_FAVICON, $faviconId, $languageId);
 
         if ($homePageId !== 0 && !$this->getPageManager()->exists($homePageId)) {
             trigger_error("Page $homePageId not found, not using it.");
             $homePageId = 0;
         }
-        $sm->set(PageManager::SETTINGS_HOMEPAGE, $homePageId, $language);
+        $sm->set(PageManager::SETTINGS_HOMEPAGE, $homePageId, $languageId);
 
-        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, $titleSeparator, $language);
-        $sm->set(PageManager::SETTINGS_SITE_NAME, $siteName, $language);
+        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, $titleSeparator, $languageId);
+        $sm->set(PageManager::SETTINGS_SITE_NAME, $siteName, $languageId);
     }
 
     private function uncache(Language $language) {
