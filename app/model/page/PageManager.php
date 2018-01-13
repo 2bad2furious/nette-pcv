@@ -93,7 +93,7 @@ class PageManager extends Manager implements IPageManager {
 
         $parents = [];
         while ($parent = $pages->fetch()) {
-            $parents[$parent[self::LOCAL_MAIN_COLUMN_ID]] = $parent[self::LOCAL_COLUMN_TITLE];
+            $parents[$parent[self::LOCAL_MAIN_COLUMN_ID]] = $this->getByGlobalId($language,$parent[self::LOCAL_MAIN_COLUMN_ID]);
         }
         return $parents;
     }
