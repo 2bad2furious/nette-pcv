@@ -361,8 +361,22 @@ class PageManager extends Manager implements IPageManager {
         if ($imageId !== 0 && !$image instanceof Media)
             throw new InvalidArgumentException("Image not found");
 
+        //uncache
+        $this->urlUncache($page->getUrl(), $page->getLanguageId());
+        $this->globalUncache($page->getGlobalId(), $page->getLanguageId());
+
         $newPage = $this->runInTransaction(function () use ($parentId, $page, $globalVisibility, $url, $title, $description, $content, $image, $localVisibility) {
             if ($parentId !== $page->getParentId() || $globalVisibility !== $page->getGlobalStatus()) {
+
+                //uncache parent
+                $parent = $this->getPlainById($parentId, $page->getLanguageId());
+                $this->globalUncache($page->getParentId(), $page->getLanguageId());
+                if ($parent instanceof APage) $this->urlUncache($parent->getUrl(), $page->getParentId());
+
+                //uncache future? parent
+                $futureParent = $this->getPlainById($parentId, $page->getLanguageId());
+                $this->globalUncache($parentId, $page->getLanguageId());
+                if ($futureParent instanceof APage) $this->urlUncache($futureParent, $page->getLanguageId());
                 $updateData = [self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS => $globalVisibility,];
                 if (is_int($parentId)) $updateData[self::MAIN_TABLE . "." . self::MAIN_COLUMN_PARENT_ID] = $parentId;
                 $this->getDatabase()
@@ -389,8 +403,6 @@ class PageManager extends Manager implements IPageManager {
                 ]);
 
 
-            $this->urlUncache($page->getUrl(), $page->getLanguageId());
-            $this->globalUncache($page->getGlobalId(), $page->getLanguageId());
             /** @var APage $newPage */
             $newPage = $this->getPlainById($page->getGlobalId(), $page->getLanguageId());
 
@@ -421,10 +433,14 @@ class PageManager extends Manager implements IPageManager {
     public function delete(int $globalId) {
         if (!$this->exists($globalId)) throw new InvalidArgumentException("Page not found");
 
+        $parentId = $this->getParentOf($globalId);
+
         $this->getGlobalCache()->clean($tags = [Cache::TAGS => [
             self::getGlobalTag($globalId),
+            self::getGlobalTag($parentId)
         ]]);
         $this->getUrlCache()->clean($tags);
+
 
         $this->runInTransaction(function () use ($globalId) {
             $this->getDatabase()->table(self::LOCAL_TABLE)
@@ -604,5 +620,9 @@ class PageManager extends Manager implements IPageManager {
             $childrenIds[] = $row[self::MAIN_COLUMN_ID];
         }
         return $childrenIds;
+    }
+
+    private function getParentOf(int $globalId): int {
+        return $this->getDatabase()->table(self::MAIN_TABLE)->wherePrimary($globalId)->fetchField(self::MAIN_COLUMN_PARENT_ID);
     }
 }
