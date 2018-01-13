@@ -44,19 +44,26 @@ body * {
     top: 50%;
     transform: translate(-50%, -50%); }
 
-html body header input {
-  display: none; }
-  html body header input:checked ~ label > i#header-hide {
-    display: initial; }
-  html body header input:not(:checked) ~ label > i#header-show {
-    display: initial; }
-  html body header input:checked ~ nav {
-    height: initial; }
-html body header label i#header-show, html body header i#header-hide {
-  display: none; }
-html body header nav {
-  height: 0; }
-
-/* use this instead of display:grid because of Edge - thank you, Microsoft*/
+html {
+  /* inheritance */
+  transition: 0.3s all linear;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  overflow-y: scroll;
+  /* use this instead of display:grid because of Edge - thank you, Microsoft*/ }
+  html body header input {
+    display: none; }
+    html body header input:checked ~ label > i#header-hide {
+      display: initial; }
+    html body header input:not(:checked) ~ label > i#header-show {
+      display: initial; }
+    html body header input:checked ~ nav {
+      height: initial; }
+  html body header label i#header-show, html body header i#header-hide {
+    display: none; }
+  html body header nav {
+    overflow: hidden;
+    height: 0; }
 
 /*# sourceMappingURL=css.css.map */

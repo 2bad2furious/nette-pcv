@@ -9,8 +9,16 @@ body {
   }
 }
 
-//mobile first
 html {
+
+  /* inheritance */
+  transition: 0.3s all linear;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  overflow-y: scroll;
+
+  //mobile first
   body {
     header {
       input {
@@ -30,18 +38,15 @@ html {
       }
 
       nav {
+        overflow:hidden;
         height: 0;
       }
     }
   }
-}
 
-//modern last
-/* use this instead of display:grid because of Edge - thank you, Microsoft*/
-@supports (grid-area: auto) {
-  html {
-    body {
-      //TODO style
-    }
+  //modern last
+  /* use this instead of display:grid because of Edge - thank you, Microsoft*/
+  @supports (grid-area: auto) {
+
   }
 }
