@@ -13,7 +13,7 @@
                 {label FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}{input FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}
                 {label FormFactory::PAGE_EDIT_TITLE_NAME}{input \FormFactory::PAGE_EDIT_TITLE_NAME}
                 {label \FormFactory::PAGE_EDIT_URL_NAME}{input FormFactory::PAGE_EDIT_URL_NAME}
-                <span id="url-content-wrapper">{_"admin.page.edit.local.url.prelabel"}: '/{$page->getLang()->getCode()}/<span
+                <span id="url-content-wrapper">{_"admin.page.edit.local.url.prelabel"}: '/{$page->getLanguage()->getCode()}/<span
                             id="url-content" n:class="$page->isUrlGenerated() ? failure">{if $page->isUrlGenerated()}{_"admin.page.edit.local.url.check.isnt_checked"}{else}{$page->getCheckedUrl()}{/if}</span>'</span>
                 {label FormFactory::PAGE_EDIT_DESCRIPTION_NAME}{input FormFactory::PAGE_EDIT_DESCRIPTION_NAME}
                 {label FormFactory::PAGE_EDIT_CONTENT_NAME}{input FormFactory::PAGE_EDIT_CONTENT_NAME}
@@ -27,7 +27,7 @@
             <a id="page-delete"
                href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">{_"admin.page.edit.action.delete.label"}</a>
             <a id="page-visit" data-ajax="false"
-               href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLang()->getCode()}">{_"admin.page.edit.action.visit"}</a>
+               href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLanguage()->getCode()}">{_"admin.page.edit.action.visit"}</a>
         </div>
     {/form}
     <script type="text/javascript">
@@ -55,9 +55,9 @@
                     urlContent.removeClass('failure');
                     urlContent.removeClass('success');
                     $.ajax({
-                        url: {plink Availability: \adminModule\AvailabilityPresenter::KEY=>\adminModule\AvailabilityPresenter::URL_KEY,\adminModule\AvailabilityPresenter::LANGUAGE=>$page->getLang()->getCode()},
+                        url: {plink Availability: \adminModule\AvailabilityPresenter::KEY=>\adminModule\AvailabilityPresenter::URL_KEY,\adminModule\AvailabilityPresenter::LANGUAGE=>$page->getLanguage()->getCode()},
                         data: {l}{\adminModule\AvailabilityPresenter::VALUE}:
-                    val,{\adminModule\AvailabilityPresenter::ID}:{$page->getLocalId()},{\adminModule\AvailabilityPresenter::LANGUAGE}:{$page->getLang()->getCode()}{r},
+                    val,{\adminModule\AvailabilityPresenter::ID}:{$page->getLocalId()},{\adminModule\AvailabilityPresenter::LANGUAGE}:{$page->getLanguage()->getCode()}{r},
                     success: function (r) {
                         urlContent.removeClass('loading');
                         if (r === false) {

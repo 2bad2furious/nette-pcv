@@ -80,7 +80,7 @@ class PageManager extends Manager implements IPageManager {
      * @return array
      */
     public function getViableParents(int $globalId, int $languageId): array {
-        $page = $this->getPlainById($languageId, $globalId);
+        $page = $this->getPlainById($globalId, $languageId);
         if ($page->isPage()) {
             $allowedTypes = [self::TYPE_PAGE];
         } else throw new InvalidArgumentException("Invalid Type");
@@ -437,7 +437,7 @@ class PageManager extends Manager implements IPageManager {
 
         $this->getGlobalCache()->clean($tags = [Cache::TAGS => [
             self::getGlobalTag($globalId),
-            self::getGlobalTag($parentId)
+            self::getGlobalTag($parentId),
         ]]);
         $this->getUrlCache()->clean($tags);
 
@@ -493,10 +493,11 @@ class PageManager extends Manager implements IPageManager {
     }
 
     private function getPlainById(int $pageId, int $languageId):?APage {
-        return $this->getGlobalCache()->load($this->getGlobalCacheKey($pageId, $languageId), function (&$dependencies) use ($languageId, $pageId) {
+        $cached = $this->getGlobalCache()->load($this->getGlobalCacheKey($pageId, $languageId), function (&$dependencies) use ($languageId, $pageId) {
             $dependencies = self::getDependencies($pageId, $languageId);
             return $this->getPlainFromDbByGlobalId($pageId, $languageId);
         });
+        return $cached instanceof APage ? $cached : null;
     }
 
     /**

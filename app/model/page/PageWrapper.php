@@ -18,6 +18,9 @@
  * @method int getAuthorId()
  * @method int getParentId()
  * @method string getOgType()
+ * @method bool isPost()
+ * @method bool isPage()
+ * @method bool is404()
  */
 class PageWrapper {
     private $page;
@@ -131,5 +134,18 @@ class PageWrapper {
 
     public function getGA(): string {
         return $this->getPageSettings()->getGoogleAnalytics();
+    }
+
+    public function isTitleDefault():bool {
+        return $this->getTitle() === PageManager::DEFAULT_TITLE;
+    }
+
+    public function getCheckedUrl() {
+        if ($this->isUrlGenerated()) return "";
+        return $this->getUrl();
+    }
+
+    public function isUrlGenerated():bool {
+        return PageManager::isDefaultUrl($this->getUrl());
     }
 }

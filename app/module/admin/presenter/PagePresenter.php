@@ -191,13 +191,14 @@ class PagePresenter extends AdminPresenter {
         $page = $this->getEditPage();
         $form = $this->getFormFactory()->createPageEditForm($page,
             function (BaseControl $url) use ($page) {
-                return $this->getPageManager()->isUrlAvailable($url->getValue(), $page->getLang(), $page->getLocalId());
+                return $this->getPageManager()->isUrlAvailable($url->getValue(), $page->getLanguageId(), $page->getLocalId());
             });
         $form->onSuccess[] = function (Form $form, array $values) use ($page) {
 
             $this->commonTryCall(function () use ($page, $values) {
                 $this->getPageManager()->update(
-                    $page,
+                    $page->getGlobalId(),
+                    $page->getLanguageId(),
                     @$values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_PARENT_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_TITLE_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_DESCRIPTION_NAME],
@@ -234,7 +235,7 @@ class PagePresenter extends AdminPresenter {
     }
 
     private
-    function getEditPage(): \Page {
+    function getEditPage(): \PageWrapper {
         return $this->template->page;
     }
 }

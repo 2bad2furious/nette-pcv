@@ -42,7 +42,7 @@ class FormFactory extends Manager {
     const HEADER_URL_NAME = "url";
     const HEADER_SUBMIT_NAME = "submit";
 
-    public function createPageEditForm(Page $page, callable $urlValidator) {
+    public function createPageEditForm(PageWrapper $page, callable $urlValidator) {
 
         $form = $this->createNewAdminForm();
         /*$form->getRenderer()->wrappers["group"]["container"] = "div";
@@ -54,9 +54,9 @@ class FormFactory extends Manager {
         )->setDefaultValue($page->getGlobalStatus());
 
         if ($page->isPage()) {
-            $parents = array_merge([0 => "admin.page.edit.global.parent.no"], array_map(function (Page $page) {
+            $parents = array_merge([0 => "admin.page.edit.global.parent.no"], array_map(function (PageWrapper $page) {
                 return $page->getTitle();
-            }, $this->getPageManager()->getViableParents($page->getGlobalId(), $page->getLang())));
+            }, $this->getPageManager()->getViableParents($page->getGlobalId(), $page->getLanguageId())));
 
             $container->addSelect(self::PAGE_EDIT_PARENT_NAME, "admin.page.edit.global.parent.label", $parents)
                 ->setDefaultValue($page->getParentId());
@@ -142,33 +142,33 @@ class FormFactory extends Manager {
 
         if (!LanguageManager::isCodeGenerated($language->getCode())) {
             $pm = $this->getPageManager();
-            $allPages = $pm->getAllPages($language);
-            $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", array_map(function (Page $page) {
+            $allPages = $pm->getAllPages($language->getId());
+            $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", array_map(function (PageWrapper $page) {
                 return $page->getTitle();
             }, $allPages));
 
-            $currentHomePage = $pm->getHomePage($language);
+            $currentHomePage = $pm->getHomePage($language->getId());
             if ($currentHomePage instanceof PageWrapper) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
         }
 
         $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label")
-            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language)->getValue());
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language->getId())->getValue());
 
         $form->addTextArea(self::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME, "admin.language.edit.separator.label")
-            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language)->getValue())
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language->getId())->getValue())
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
         $sm = $this->getSettingsManager();
 
         $images = $this->getMediaManager()->getAvailableImages();
         $images[0] = "admin.language.edit.logo.no";
-        $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME, "admin.language.edit.logo.label", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_LOGO, $language)->getValue());
+        $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME, "admin.language.edit.logo.label", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_LOGO, $language->getId())->getValue());
 
         $images[0] = "admin.language.edit.favicon.no";
-        $form->addSelect(self::LANGUAGE_EDIT_FAVICON_NAME, "admin.settings.edit.favicon", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_FAVICON, $language)->getValue());
+        $form->addSelect(self::LANGUAGE_EDIT_FAVICON_NAME, "admin.settings.edit.favicon", $images)->setDefaultValue((int)$this->getSettingsManager()->get(PageManager::SETTINGS_FAVICON, $language->getId())->getValue());
 
         $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label")
-            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language)->getValue());
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language->getId())->getValue());
 
         $form->addSubmit("submit", "admin.language.edit.submit");
         return $form;
@@ -180,10 +180,10 @@ class FormFactory extends Manager {
         $form = $this->createNewAdminForm();
 
         $form->addText(self::SETTINGS_EDIT_DEFAULT_SITE_TITLE, "admin.settings.edit.title.label")
-            ->setDefaultValue($sm->get(PageManager::SETTINGS_SITE_NAME)->getValue());
+            ->setDefaultValue($sm->get(PageManager::SETTINGS_SITE_NAME,null)->getValue());
 
         $form->addTextArea(self::SETTINGS_EDIT_TITLE_SEPARATOR, "admin.settings.edit.separator.label")
-            ->setDefaultValue($sm->get(PageManager::SETTINGS_TITLE_SEPARATOR)->getValue())
+            ->setDefaultValue($sm->get(PageManager::SETTINGS_TITLE_SEPARATOR,null)->getValue())
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
         $availableLanguages = array_map(function (Language $language) {
@@ -195,12 +195,12 @@ class FormFactory extends Manager {
         $images = $this->getMediaManager()->getAvailableImages();
         $images[0] = "admin.settings.edit.image.no";
         $logo = $form->addSelect(self::SETTINGS_EDIT_LOGO, "admin.settings.edit.logo.label", $images);
-        if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO)->getValue()))
+        if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO,null)->getValue()))
             $logo->setDefaultValue($logoId);
 
 
         $form->addText(self::SETTINGS_EDIT_DEFAULT_GOOGLE_ANALYTICS, "admin.settings.edit.ga.label")
-            ->setDefaultValue($sm->get(PageManager::SETTINGS_GOOGLE_ANALYTICS)->getValue());
+            ->setDefaultValue($sm->get(PageManager::SETTINGS_GOOGLE_ANALYTICS,null)->getValue());
 
         $form->addSubmit("submit", "admin.settings.edit.save");
         return $form;
@@ -223,8 +223,8 @@ class FormFactory extends Manager {
             $headerWrapper->getLanguage() :
             $this->getLanguageManager()->getById($languageId);
 
-        $pages = $this->getPageManager()->getAllPages($language);
-        $pageSelection = $form->addSelect(self::HEADER_PAGE_NAME, "admin.header.edit.page.label", array_map(function (Page $page) {
+        $pages = $this->getPageManager()->getAllPages($language->getId());
+        $pageSelection = $form->addSelect(self::HEADER_PAGE_NAME, "admin.header.edit.page.label", array_map(function (PageWrapper $page) {
             return $page->getTitle() . " " . $page->getGlobalId();
         }, $pages));
         if ($headerWrapper instanceof HeaderWrapper) $pageSelection->setDefaultValue($headerWrapper->getPageId());
