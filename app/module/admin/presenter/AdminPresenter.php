@@ -25,8 +25,13 @@ abstract class AdminPresenter extends BasePresenter {
     }
 
     protected function getAdminLocale(): string {
-        if (in_array($this->locale, self::ADMIN_LOCALES)) return $this->locale;
-        throw new \InvalidState("Locale {$this->locale} not found in " . implode("|", self::ADMIN_LOCALES) . "");
+        $locale = $this->locale;
+        if (!$locale) $locale = $this->translator->getLocale();
+
+        if (!in_array($locale, self::ADMIN_LOCALES))
+            $locale = self::ADMIN_LOCALES[0];
+
+        return $locale;
     }
 
     public function redrawFlashes() {
