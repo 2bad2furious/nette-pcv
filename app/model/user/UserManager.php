@@ -107,7 +107,7 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUs
     }
 
     private function createFromDbRow(ActiveRow $data): UserIdentity {
-        return new UserIdentity($data[self::COLUMN_ID], $data[self::COLUMN_EMAIL], $this->getLanguageManager()->getById($data[self::COLUMN_CURRENT_LANGUAGE]), $data[self::COLUMN_ROLE]);
+        return new UserIdentity($data[self::COLUMN_ID], $data[self::COLUMN_EMAIL], $data[self::COLUMN_ROLE]);
     }
 
     private function get(int $id):?UserIdentity {

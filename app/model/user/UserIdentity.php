@@ -5,7 +5,6 @@ class UserIdentity implements \Nette\Security\IIdentity {
     private $id;
     private $email;
     private $role;
-    private $currentLanguage;
 
     /**
      * UserIdentity constructor.
@@ -14,11 +13,10 @@ class UserIdentity implements \Nette\Security\IIdentity {
      * @param Language $currentLanguage
      * @param int $role
      */
-    public function __construct(int $id, string $email, Language $currentLanguage, int $role) {
+    public function __construct(int $id, string $email, int $role) {
         $this->id = $id;
         $this->email = $email;
         $this->role = $role;
-        $this->currentLanguage = $currentLanguage;
     }
 
     /**
@@ -46,12 +44,5 @@ class UserIdentity implements \Nette\Security\IIdentity {
 
     function getRole(): int {
         return $this->role;
-    }
-
-    /**
-     * @return Language
-     */
-    public function getCurrentLanguage(): Language {
-        return $this->currentLanguage;
     }
 }
