@@ -74,14 +74,6 @@ abstract class BasePresenter extends Presenter {
         return parent::flashMessage($this->translator->translate($message), $type);
     }
 
-    public function createComponentHeader(string $name) {
-        return new \HeaderPageControl($this, $name);
-    }
-
-    public function createComponentFooter(string $name) {
-        return new \FooterPageControl($this, $name);
-    }
-
     protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
         return function () {
             throw new Exception("Bad rights xd");

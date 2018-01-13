@@ -1,6 +1,10 @@
 {if $isLoggedIn}
     <div id="admin-header-bar">
-        //admin content
+        {if !$page->is404()}<a data-ajax="false" href="{plink :admin:Page:edit \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLang()->getCode()}"><i class="fa fa-pencil-square-o"></i></a>{/if}
+        <span>{$username}</span>
+        <a href="{plink :admin:Logout:}">
+            <i class="fa fa-power-off"></i>
+        </a>
     </div>
 {/if}
 <header>
@@ -12,11 +16,11 @@
     <nav>
         {define header-children}
             <ul>
-                {foreach $header as $page}
+                {foreach $header as $h}
                     <li>
-                        <a href="{$page->getUrl()}">{$page->getTitle()}</a>
-                        {if $page->getChildren()}
-                            {include header-children header=>$page->getChildren()}
+                        <a href="{$h->getUrl()}">{$h->getTitle()}</a>
+                        {if $h->getChildren()}
+                            {include header-children header=>$h->getChildren()}
                         {/if}
                     </li>
                 {/foreach}
