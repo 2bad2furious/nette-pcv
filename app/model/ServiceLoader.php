@@ -8,7 +8,6 @@ use Nette\Security\User;
 
 class ServiceLoader {
     private const CLASS_NAMES = [ITagManager::class, IPageManager::class, ILanguageManager::class, IUserManager::class, ISettingsManager::class, IHeaderManager::class, IMediaManager::class];
-
     /** @var  Container */
     private $context;
 
@@ -19,16 +18,18 @@ class ServiceLoader {
      */
     public function __construct(Container $context) {
         $this->context = $context;
-
-        //INITING for listener-registration, TODO better - maybe do static listener registration
+/*
+        //INITING for listener-registration
         $reflection = $this->getReflection();
         //dump(Manager::getInitingClass());
         foreach (self::CLASS_NAMES as $k => $v) {
+        dump($context->findByType($v));
             if (!$reflection instanceof ReflectionClass) $reflection = $this->getReflection();
 
+            dump($v, $reflection, ($reflection instanceof ReflectionClass && $reflection->implementsInterface($v)));
             if (!$reflection instanceof ReflectionClass || !$reflection->implementsInterface($v))
                 $this->context->getByType($v);
-        }
+        }*/
     }
 
     private function getReflection():?ReflectionClass {

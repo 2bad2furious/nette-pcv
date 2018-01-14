@@ -82,7 +82,7 @@ abstract class BasePresenter extends Presenter {
 
     protected function getLocaleLanguage(): Language {
         if (!$this->localeLang instanceof Language)
-            $this->localeLang = $this->getLanguageManager()->getByCode($this->translator->getLocale());
+            $this->localeLang = $this->getLanguageManager()->getByCode($this->translator->getLocale(),false);
         if (!$this->localeLang instanceof Language)
             $this->localeLang = $this->getLanguageManager()->getDefaultLanguage();
         return $this->localeLang;

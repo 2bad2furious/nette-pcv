@@ -1,6 +1,14 @@
 {if $isLoggedIn}
     <div id="admin-header-bar">
-        {if !$page->is404()}<a data-ajax="false" href="{plink :admin:Page:edit \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLanguage()->getCode()}"><i class="fa fa-pencil-square-o"></i></a>{/if}
+        {if !$page->is404()}
+            <a data-ajax="false"
+               href="{plink :admin:Page:edit \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLanguage()->getCode()}">
+                <i class="fa fa-pencil-square-o"></i>
+            </a>
+        {else}
+            {* flexbox reasons *}
+            <span></span>
+        {/if}
         <span>{$username}</span>
         <a href="{plink :admin:Logout:}">
             <i class="fa fa-power-off"></i>

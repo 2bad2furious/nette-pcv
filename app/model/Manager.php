@@ -9,7 +9,7 @@ use Nette\Security\User;
 
 abstract class Manager implements IManager {
 
-    private static $initingClasses = null;
+    private static $initingClass = null;
 
     /** @var  Container */
     private $context;
@@ -20,15 +20,17 @@ abstract class Manager implements IManager {
     public final function __construct(Container $container) {
         $this->context = $container;
         $className = get_class($this);
-        if (!self::$initingClasses) {
-            self::$initingClasses = $className;
+        dump("initing " . $className);
+        if (!self::$initingClass) {
+            self::$initingClass = $className;
+            dump("initing serviceloader");
             $this->getServiceLoader();
         }
         $this->init();
     }
 
-    public static function getInitingClass():?string {
-        return self::$initingClasses;
+    public static function getInitingClass(): ?string {
+        return self::$initingClass;
     }
 
     protected function init() {

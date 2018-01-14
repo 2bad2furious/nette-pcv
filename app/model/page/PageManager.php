@@ -41,7 +41,7 @@ class PageManager extends Manager implements IPageManager {
     const RANDOM_URL_PREFIX = "generated-url-";
 
     protected function init() {
-        LanguageManager::on(LanguageManager::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
+        $this->getLanguageManager()->on(ILanguageManager::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
             $this->getUrlCache()->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
             $this->getGlobalCache()->clean([Cache::TAGS => $this->getLanguageTag($language->getId())]);
 
@@ -432,6 +432,13 @@ class PageManager extends Manager implements IPageManager {
      */
     public function delete(int $globalId) {
         if (!$this->exists($globalId)) throw new InvalidArgumentException("Page not found");
+
+        foreach ($this->getLanguageManager()->getAvailableLanguages() as $language) {
+            $homePage = $this->getHomePage($language->getId());
+            if ($homePage instanceof PageWrapper && $homePage->getGlobalId() === $globalId) {
+                throw new InvalidArgumentException("Is at least one homepage");
+            }
+        }
 
         $parentId = $this->getParentOf($globalId);
 

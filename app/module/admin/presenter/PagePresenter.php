@@ -138,15 +138,17 @@ class PagePresenter extends AdminPresenter {
     }
 
     public function actionDelete() {
-        $pm = $this->getPageManager();
-        if ($pm->exists($deleteId = $this->getParameter(self::ID_KEY))) {
-            $this->commonTryCall(function () use ($pm, $deleteId) {
+
+        $this->commonTryCall(function () {
+            $pm = $this->getPageManager();
+            if ($pm->exists($deleteId = $this->getParameter(self::ID_KEY))) {
+                //TODO check if homepage and prevent
                 $pm->delete($deleteId);
                 $this->addSuccess("admin.page.delete.success");
-            });
-        } else {
-            $this->addWarning("admin.page.delete.not_found");
-        }
+            } else {
+                $this->addWarning("admin.page.delete.not_found");
+            }
+        });
 
         $this->redirect(302, "show", [self::ID_KEY => null]);
     }

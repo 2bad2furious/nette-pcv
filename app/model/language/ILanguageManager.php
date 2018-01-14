@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Interface ILanguageManager
+ *
+ * Language has 3 phases
+ * 1. Created
+ * 2. Code set - creates localization for this language
+ * 3. Pages set (404 and home)
+ */
 interface ILanguageManager extends IManager {
 
     const TRIGGER_LANGUAGE_DELETED = "trigger.language.deleted";
@@ -28,7 +36,7 @@ interface ILanguageManager extends IManager {
 
     public function createNew(): Language;
 
-    public function edit(int $langId, string $code, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId);
+    public function edit(int $langId, string $code, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page);
 
     /**
      * @param int $id

@@ -38,12 +38,12 @@ class AvailabilityPresenter extends AdminPresenter {
         $language = $this->getLanguageManager()->getByCode($this->getLanguageParam());
         $url = $this->getValue();
         $id = $this->getId();
-        $result = $this->getPageManager()->isUrlAvailable($url, $language, $id);
+        $result = $this->getPageManager()->isUrlAvailable($url, $language->getId(), $id);
         $this->sendJson($result);
     }
 
     private function checkLangCode() {
-        $this->sendJson(!$this->getLanguageManager()->getByCode($this->getValue()) instanceof \Language);
+        $this->sendJson(!$this->getLanguageManager()->getByCode($this->getValue(),false) instanceof \Language);
     }
 
     private function getLanguageParam() {

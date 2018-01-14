@@ -87,14 +87,15 @@ class LanguagePresenter extends AdminPresenter {
         $form->onSuccess[] = function (Form $form, array $values) use ($language) {
             $this->commonTryCall(function () use ($values, $language) {
                 $this->getLanguageManager()->edit(
-                    $language,
+                    $language->getId(),
                     $values[\FormFactory::LANGUAGE_EDIT_CODE_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_SITE_TITLE_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_LOGO_NAME],
-                    (int)$values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE],
-                    $values[\FormFactory::LANGUAGE_EDIT_FAVICON_NAME]
+                    (int)@$values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE],
+                    $values[\FormFactory::LANGUAGE_EDIT_FAVICON_NAME],
+                    (int)@$values[\FormFactory::LANGUAGE_EDIT_404]
                 );
             });
             $this->redirect(302, ":default", [self::ID_KEY => null]);

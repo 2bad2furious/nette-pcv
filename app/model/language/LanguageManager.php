@@ -116,10 +116,10 @@ class LanguageManager extends Manager implements ILanguageManager {
         });
     }
 
-    public function edit(int $languageId, string $code, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId) {
+    public function edit(int $languageId, string $code, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page) {
         $language = $this->getById($languageId);
         if ($code !== $language->getCode()) {
-            if (!self::isCodeGenerated($language->getCode())) throw new Exception("Cannot edit non-generated language codes");
+            if (!self::isCodeGenerated($language->getCode())) throw new InvalidArgumentException("Cannot edit non-generated language codes");
 
             if (!preg_match("#" . self::COLUMN_CODE_PATTERN . "#", $code)) throw new InvalidArgumentException("Code pattern not correct");
 
@@ -259,5 +259,9 @@ class LanguageManager extends Manager implements ILanguageManager {
 
     private function uncacheCode(string $code) {
         $this->getCodeCache()->remove($code);
+    }
+
+    public function test(){
+        $this->trigger(1,null);
     }
 }

@@ -15,7 +15,8 @@ interface IPageManager extends IManager {
         SETTINGS_GOOGLE_ANALYTICS = "site.ga",
         SETTINGS_TITLE_SEPARATOR = "site.title_separator",
         SETTINGS_LOGO = "site.logo",
-        SETTINGS_HOMEPAGE = "site.homepage_id";
+        SETTINGS_HOMEPAGE = "site.homepage_id",
+        SETTING_404 = "site.404_id";
 
     const ACTION_SEE_NON_PUBLIC_PAGES = "page.non_public";
 

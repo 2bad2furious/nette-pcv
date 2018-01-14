@@ -34,4 +34,6 @@ try {
     /** @var \Nette\Application\Application $app */
     $app = $container->getByType(Nette\Application\Application::class);
     $app->run();
-} catch (Throwable $ex) {throw $ex;}
+} catch (Throwable $ex) {
+    throw $ex;
+}
