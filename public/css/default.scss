@@ -1,10 +1,21 @@
-/*if just * was used, you could see the title and scripts xd lmao*/
-body * {
-  box-sizing: inherit;
-  text-decoration: inherit;
-  color: inherit;
-  font-family: "Open Sans", "sans-serif";
+$color1: white;
+$color2: black;
 
+/*if just * was used, you could see the title and scripts xd lmao*/
+body {
+  &, * {
+    box-sizing: inherit;
+    text-decoration: inherit;
+    color: inherit;
+    font-family: inherit;
+    -webkit-transition: inherit;
+    -moz-transition: inherit;
+    -ms-transition: inherit;
+    -o-transition: inherit;
+    transition: inherit;
+    padding: 0;
+    margin: 0;
+  }
   &:not(p, span, a) {
     display: block;
   }
@@ -70,5 +81,13 @@ body * {
 
     transform: translate(-50%, -50%);
   }
+  .link {
+    padding: 1px;
 
+    &:hover {
+      color: $color1;
+      background-color: $color2;
+      cursor: pointer;
+    }
+  }
 }

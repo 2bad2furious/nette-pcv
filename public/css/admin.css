@@ -1,48 +1,61 @@
 /*if just * was used, you could see the title and scripts xd lmao*/
-body * {
+body, body * {
   box-sizing: inherit;
   text-decoration: inherit;
   color: inherit;
-  font-family: "Open Sans", "sans-serif"; }
-  body *:not(p, span, a) {
-    display: block; }
-  body *:not(textarea) {
-    transition: inherit; }
-  body * textarea.oneline {
-    resize: none; }
-  body * #tabs {
-    position: relative;
-    min-height: 180px;
-    display: block; }
-  body * .tab {
-    float: left; }
-    body * .tab label.tab-label {
-      cursor: pointer;
-      font-size: 1.2em;
-      border-radius: 5px 5px 0 0;
-      padding: .5em 1em; }
-    body * .tab input[type=radio][name=tabgroup] {
-      position: absolute;
-      clip: rect(0, 0, 0, 0); }
-      body * .tab input[type=radio][name=tabgroup]:checked ~ label {
-        /*background: #c99;*/ }
-      body * .tab input[type=radio][name=tabgroup]:checked ~ label ~ .tab-content {
-        display: initial; }
-    body * .tab .tab-content {
-      display: none;
-      border-radius: 0 5px 5px;
-      padding: .5em 2em;
-      position: absolute;
-      width: 100%;
-      top: 2em;
-      left: 0;
-      right: 0;
-      bottom: 0; }
-  body * .center-all, html body * main div#header-edit-form-wrapper.active > div, html body main * div#header-edit-form-wrapper.active > div {
+  font-family: inherit;
+  -webkit-transition: inherit;
+  -moz-transition: inherit;
+  -ms-transition: inherit;
+  -o-transition: inherit;
+  transition: inherit;
+  padding: 0;
+  margin: 0; }
+body:not(p, span, a) {
+  display: block; }
+body:not(textarea) {
+  transition: inherit; }
+body textarea.oneline {
+  resize: none; }
+body #tabs {
+  position: relative;
+  min-height: 180px;
+  display: block; }
+body .tab {
+  float: left; }
+  body .tab label.tab-label {
+    cursor: pointer;
+    font-size: 1.2em;
+    border-radius: 5px 5px 0 0;
+    padding: .5em 1em; }
+  body .tab input[type=radio][name=tabgroup] {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%); }
+    clip: rect(0, 0, 0, 0); }
+    body .tab input[type=radio][name=tabgroup]:checked ~ label {
+      /*background: #c99;*/ }
+    body .tab input[type=radio][name=tabgroup]:checked ~ label ~ .tab-content {
+      display: initial; }
+  body .tab .tab-content {
+    display: none;
+    border-radius: 0 5px 5px;
+    padding: .5em 2em;
+    position: absolute;
+    width: 100%;
+    top: 2em;
+    left: 0;
+    right: 0;
+    bottom: 0; }
+body .center-all, html body main div#header-edit-form-wrapper.active > div {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); }
+body .link {
+  padding: 1px; }
+  body .link:hover {
+    color: white;
+    background-color: black;
+    cursor: pointer; }
 
 div.ck-editor__editable {
   background-color: white; }
@@ -67,86 +80,88 @@ ul {
   .clearfix:after {
     clear: both; }
 
-html body {
-  /* inheritance */
-  transition: 0.3s all linear;
-  box-sizing: border-box;
-  background-color: #ddd;
-  padding: 0;
-  margin: 0;
-  overflow-y: scroll; }
-  html body header {
-    padding: 10px;
-    background: #000;
-    color: white;
-    height: 100vh;
-    width: 200px;
-    left: 0;
-    top: 0;
-    position: fixed;
-    z-index: 2; }
-    html body header #header-opener {
-      content: "close";
+html {
+  font-family: "Open Sans", sans-serif; }
+  html body {
+    /* inheritance */
+    transition: 0.3s all linear;
+    box-sizing: border-box;
+    background-color: #ddd;
+    padding: 0;
+    margin: 0;
+    overflow-y: scroll; }
+    html body header {
+      padding: 10px;
+      background: #000;
       color: white;
-      cursor: pointer;
-      text-align: right;
+      height: 100vh;
+      width: 200px;
+      left: 0;
+      top: 0;
+      position: fixed;
+      z-index: 2; }
+      html body header #header-opener {
+        content: "close";
+        color: white;
+        cursor: pointer;
+        text-align: right;
+        width: 100%;
+        display: none; }
+      html body header nav ul {
+        list-style-type: disc;
+        padding-left: 20px; }
+    html body main {
       width: 100%;
-      display: none; }
-    html body header nav ul {
-      list-style-type: disc;
-      padding-left: 20px; }
-  html body main {
-    width: 100%;
-    padding: 10px 10px 10px 250px;
-    /* 200 + normal padding */
-    overflow-x: hidden; }
-    html body main a.create_new {
-      padding: 6px;
-      border-radius: 1em;
-      border: solid 2px black;
-      color: black;
-      font-weight: 600;
-      display: inline-block; }
-      html body main a.create_new:hover, html body main a.create_new:active, html body main a.create_new:focus {
-        background: #000;
-        color: white; }
-    html body main.no-header {
-      padding-left: 0; }
-    html body main div#page-show ul li {
-      display: inline-block; }
-      html body main div#page-show ul li > * {
-        border-radius: 1em;
-        background-color: #fff;
+      padding: 10px 10px 10px 250px;
+      /* 200 + normal padding */
+      overflow-x: hidden; }
+      html body main a.create_new {
         padding: 6px;
-        text-decoration: none; }
-        html body main div#page-show ul li > *.active, html body main div#page-show ul li > *:hover {
-          background-color: #eee; }
-      html body main div#page-show ul li div {
+        border-radius: 1em;
+        border: solid 2px black;
+        color: black;
+        font-weight: 600;
         display: inline-block; }
-        html body main div#page-show ul li div a {
-          display: inline-block;
-          padding: 3px;
+        html body main a.create_new:hover, html body main a.create_new:active, html body main a.create_new:focus {
+          background: #000;
+          color: white; }
+      html body main.no-header {
+        padding-left: 0; }
+      html body main div#page-show ul li {
+        display: inline-block; }
+        html body main div#page-show ul li > * {
+          border-radius: 1em;
           background-color: #fff;
-          border-radius: 1em; }
-          html body main div#page-show ul li div a:hover, html body main div#page-show ul li div a.active {
-            background-color: #ddd; }
-    html body main div#header-edit-form-wrapper {
-      display: none; }
-      html body main div#header-edit-form-wrapper.active {
-        display: initial;
-        position: fixed;
-        background-color: rgba(51, 51, 51, 0.9);
-        height: 100vh;
-        width: 100vw;
-        top: 0;
-        left: 0; }
-        html body main div#header-edit-form-wrapper.active #edit-form-close {
-          color: white;
-          position: absolute;
-          font-size: 2em;
-          top: 30px;
-          right: 30px; }
-        html body main div#header-edit-form-wrapper.active > div {
-          background-color: white; }
+          padding: 6px;
+          text-decoration: none; }
+          html body main div#page-show ul li > *.active, html body main div#page-show ul li > *:hover {
+            background-color: #eee; }
+        html body main div#page-show ul li div {
+          display: inline-block; }
+          html body main div#page-show ul li div a {
+            display: inline-block;
+            padding: 3px;
+            background-color: #fff;
+            border-radius: 1em; }
+            html body main div#page-show ul li div a:hover, html body main div#page-show ul li div a.active {
+              background-color: #ddd; }
+      html body main div#header-edit-form-wrapper {
+        display: none; }
+        html body main div#header-edit-form-wrapper.active {
+          display: initial;
+          position: fixed;
+          background-color: rgba(51, 51, 51, 0.9);
+          height: 100vh;
+          width: 100vw;
+          top: 0;
+          left: 0; }
+          html body main div#header-edit-form-wrapper.active #edit-form-close {
+            color: white;
+            position: absolute;
+            font-size: 2em;
+            top: 30px;
+            right: 30px; }
+          html body main div#header-edit-form-wrapper.active > div {
+            background-color: white; }
 
 /*# sourceMappingURL=admin.css.map */

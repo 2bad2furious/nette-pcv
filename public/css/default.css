@@ -1,47 +1,60 @@
 /*if just * was used, you could see the title and scripts xd lmao*/
-body * {
+body, body * {
   box-sizing: inherit;
   text-decoration: inherit;
   color: inherit;
-  font-family: "Open Sans", "sans-serif"; }
-  body *:not(p, span, a) {
-    display: block; }
-  body *:not(textarea) {
-    transition: inherit; }
-  body * textarea.oneline {
-    resize: none; }
-  body * #tabs {
-    position: relative;
-    min-height: 180px;
-    display: block; }
-  body * .tab {
-    float: left; }
-    body * .tab label.tab-label {
-      cursor: pointer;
-      font-size: 1.2em;
-      border-radius: 5px 5px 0 0;
-      padding: .5em 1em; }
-    body * .tab input[type=radio][name=tabgroup] {
-      position: absolute;
-      clip: rect(0, 0, 0, 0); }
-      body * .tab input[type=radio][name=tabgroup]:checked ~ label {
-        /*background: #c99;*/ }
-      body * .tab input[type=radio][name=tabgroup]:checked ~ label ~ .tab-content {
-        display: initial; }
-    body * .tab .tab-content {
-      display: none;
-      border-radius: 0 5px 5px;
-      padding: .5em 2em;
-      position: absolute;
-      width: 100%;
-      top: 2em;
-      left: 0;
-      right: 0;
-      bottom: 0; }
-  body * .center-all {
+  font-family: inherit;
+  -webkit-transition: inherit;
+  -moz-transition: inherit;
+  -ms-transition: inherit;
+  -o-transition: inherit;
+  transition: inherit;
+  padding: 0;
+  margin: 0; }
+body:not(p, span, a) {
+  display: block; }
+body:not(textarea) {
+  transition: inherit; }
+body textarea.oneline {
+  resize: none; }
+body #tabs {
+  position: relative;
+  min-height: 180px;
+  display: block; }
+body .tab {
+  float: left; }
+  body .tab label.tab-label {
+    cursor: pointer;
+    font-size: 1.2em;
+    border-radius: 5px 5px 0 0;
+    padding: .5em 1em; }
+  body .tab input[type=radio][name=tabgroup] {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%); }
+    clip: rect(0, 0, 0, 0); }
+    body .tab input[type=radio][name=tabgroup]:checked ~ label {
+      /*background: #c99;*/ }
+    body .tab input[type=radio][name=tabgroup]:checked ~ label ~ .tab-content {
+      display: initial; }
+  body .tab .tab-content {
+    display: none;
+    border-radius: 0 5px 5px;
+    padding: .5em 2em;
+    position: absolute;
+    width: 100%;
+    top: 2em;
+    left: 0;
+    right: 0;
+    bottom: 0; }
+body .center-all {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); }
+body .link {
+  padding: 1px; }
+  body .link:hover {
+    color: white;
+    background-color: black;
+    cursor: pointer; }
 
 /*# sourceMappingURL=default.css.map */
