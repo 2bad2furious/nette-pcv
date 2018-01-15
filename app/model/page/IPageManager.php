@@ -1,6 +1,7 @@
 <?php
 
 interface IPageManager extends IManager {
+    const TYPE_PAGE = 1, TYPE_POST = 0, TYPE_ALL = null;//all is just for Filtered
     const DEFAULT_TITLE = "admin.global.page.no_title";
 
     const TRIGGER_PAGE_ADDED = "trigger.page.added",
@@ -24,9 +25,10 @@ interface IPageManager extends IManager {
 
     /**
      * @param int $langId
+     * @param int|null $type
      * @return array
      */
-    public function getAllPages(int $langId): array;
+    public function getAllPages(int $langId, ?int $type = self::TYPE_ALL): array;
 
     /**
      * @param int $globalId

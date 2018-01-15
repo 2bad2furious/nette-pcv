@@ -64,7 +64,7 @@ abstract class APage {
         $this->globalStatus = $globalStatus;
         $this->localStatus = $localStatus;
 
-        foreach($childrenIds as $childrenId){
+        foreach ($childrenIds as $childrenId) {
             $this->addChild($childrenId);
         }
     }
@@ -168,9 +168,7 @@ abstract class APage {
     }
 
     public function getStatus(): int {
-        return $this->getGlobalStatus() < $this->getLocalStatus() ?
-            $this->getGlobalStatus() :
-            $this->getLocalStatus();
+        return min($this->getGlobalStatus(), $this->getLocalStatus());
     }
 
     public function isPage(): bool {
@@ -196,9 +194,9 @@ abstract class APage {
         return $this->children;
     }
 
-    public abstract function getOgType():string;
+    public abstract function getOgType(): string;
 
-    public abstract function getType():string;
+    public abstract function getType(): string;
 }
 
 class Page extends APage {
