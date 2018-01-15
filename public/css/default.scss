@@ -3,6 +3,8 @@ $color2: black;
 
 /*if just * was used, you could see the title and scripts xd lmao*/
 body {
+  padding: 0;
+  margin: 0;
   &, * {
     box-sizing: inherit;
     text-decoration: inherit;
@@ -13,8 +15,6 @@ body {
     -ms-transition: inherit;
     -o-transition: inherit;
     transition: inherit;
-    padding: 0;
-    margin: 0;
   }
   &:not(p, span, a) {
     display: block;
@@ -85,8 +85,7 @@ body {
     padding: 1px;
 
     &:hover {
-      color: $color1;
-      background-color: $color2;
+      transform: scale(1.03);
       cursor: pointer;
     }
   }

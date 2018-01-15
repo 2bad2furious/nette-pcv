@@ -19,6 +19,7 @@ class HeaderPageControl extends BaseControl {
         $identity = $this->getPresenter()->getUser()->getIdentity();
         $this->template->username = $identity->getUsername();
         $this->template->page = $page;
+        $this->template->admin_locale = $this->getPresenter()->getCurrentAdminLocale();
         $this->template->render();
     }
 }

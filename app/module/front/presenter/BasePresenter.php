@@ -82,11 +82,26 @@ abstract class BasePresenter extends Presenter {
 
     protected function getLocaleLanguage(): Language {
         if (!$this->localeLang instanceof Language)
-            $this->localeLang = $this->getLanguageManager()->getByCode($this->translator->getLocale(),false);
+            $this->localeLang = $this->getLanguageManager()->getByCode($this->translator->getLocale(), false);
         if (!$this->localeLang instanceof Language)
             $this->localeLang = $this->getLanguageManager()->getDefaultLanguage();
         return $this->localeLang;
     }
+
+    public function getCurrentAdminLocale(): string {
+        $identity = $this->getUserIdentity();
+
+        if ($identity instanceof UserIdentity && in_array($language = $identity->getCurrentLanguage(), \adminModule\AdminPresenter::ADMIN_LOCALES)) return $language;
+
+        return \adminModule\AdminPresenter::getDefaultLocale();
+    }
+
+    protected function getUserIdentity():?UserIdentity {
+        $identity = $this->getUser()->getIdentity();
+        if ($identity && !$identity instanceof UserIdentity) throw new InvalidState("UserIdentity not instanceof UserIdentity");
+        return $identity instanceof UserIdentity ? $identity : null;
+    }
+
 
     protected abstract function getAllowedRoles(): array;
 
@@ -159,7 +174,7 @@ abstract class BasePresenter extends Presenter {
         if ($this->isAjax() && $this->getReferer()) {
             $match = $this->getRefererRequest();
             if ($match instanceof Request && $this->isComingFromDifferentModule()) {
-                dump($this->getRefererRequest(),$this->getRequest());
+                dump($this->getRefererRequest(), $this->getRequest());
                 throw new InvalidState("Modules not the same");
                 $this->disallowAjax();
             }
@@ -167,16 +182,16 @@ abstract class BasePresenter extends Presenter {
         }
     }
 
-    protected function isComingFromDifferentPresenter():bool{
+    protected function isComingFromDifferentPresenter(): bool {
         $match = $this->getRefererRequest();
-        if(!$match instanceof Request) throw new InvalidState("Match not found");
+        if (!$match instanceof Request) throw new InvalidState("Match not found");
 
         return $this->getRequest()->getPresenterName() !== $match->getPresenterName();
     }
 
     protected function isComingFromDifferentModule(): bool {
         $match = $this->getRefererRequest();
-        if(!$match instanceof Request) throw new InvalidState("Match not found");
+        if (!$match instanceof Request) throw new InvalidState("Match not found");
 
         $module = substr($presenterName = $this->getRequest()->getPresenterName(), 0, strpos($presenterName, ":"));
         $refererModule = substr($refererPresenterName = $match->getPresenterName(), 0, strpos($refererPresenterName, ":"));

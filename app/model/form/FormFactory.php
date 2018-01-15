@@ -138,7 +138,7 @@ class FormFactory extends Manager {
             }, $message = "admin.language.edit.code.not_available", $message);
 
         if (!LanguageManager::isCodeGenerated($language->getCode())) {
-            $code->setDisabled(true)->setEmptyValue($language->getCode())
+            $code->setDisabled(true)->setDefaultValue($language->getCode())->setEmptyValue($language->getCode())
                 ->setOmitted(false);
         }
 

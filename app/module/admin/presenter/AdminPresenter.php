@@ -12,6 +12,10 @@ abstract class AdminPresenter extends BasePresenter {
 
     const ADMIN_LOCALES = ["en_US"];
 
+    public static function getDefaultLocale(): string {
+        return self::ADMIN_LOCALES[0];
+    }
+
     protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
         Debugger::log($allowedRoles);
         Debugger::log($currentRole);
@@ -29,7 +33,7 @@ abstract class AdminPresenter extends BasePresenter {
         if (!$locale) $locale = $this->translator->getLocale();
 
         if (!in_array($locale, self::ADMIN_LOCALES))
-            $locale = self::ADMIN_LOCALES[0];
+            $locale = self::getDefaultLocale();
 
         return $locale;
     }

@@ -2,20 +2,24 @@
     <div id="admin-header-bar">
         {if !$page->is404()}
             <a data-ajax="false"
-               href="{plink :admin:Page:edit \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLanguage()->getCode()}">
+               href="{plink :admin:Page:edit \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLanguage()->getCode(),locale=>$admin_locale}" class="link">
                 <i class="fa fa-pencil-square-o"></i>
+                {_"admin.front.page.edit.label"}
             </a>
         {else}
             {* flexbox reasons *}
             <span></span>
         {/if}
+        <span>
         <span>{$username}</span>
-        <a href="{plink :admin:Logout:}">
+        <a href="{plink :admin:Logout: locale=>$admin_locale}" class="link">
             <i class="fa fa-power-off"></i>
         </a>
+            </span>
     </div>
 {/if}
 <header>
+    {if $header}
     <input id="header-toggle" type="checkbox">
     <label for="header-toggle">
         <i id="header-show" class="fa fa-bars"></i>
@@ -28,6 +32,7 @@
                     <li>
                         <a href="{$h->getUrl()}">{$h->getTitle()}</a>
                         {if $h->getChildren()}
+                            <input type="checkbox" name="checkbox-{$h->getId()}">
                             {include header-children header=>$h->getChildren()}
                         {/if}
                     </li>
@@ -36,4 +41,5 @@
         {/define}
         {include header-children}
     </nav>
+    {/if}
 </header>
