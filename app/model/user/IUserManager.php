@@ -27,4 +27,6 @@ interface IUserManager {
     public function getUserIdentityById(int $id): ?UserIdentity;
 
     public function cleanCache();
+
+    public function saveCurrentLanguage(int $userId,string $language);
 }

@@ -46,7 +46,7 @@ abstract class BasePresenter extends Presenter {
             $newIdentity = $this->getUserManager()->getUserIdentityById($id);
 
             /* return if the sessioned identity is the same as the one in the db, logging in and out caused some regenerate_session_id issues */
-            if ($newIdentity == $this->getUser()->getIdentity()) return;
+            if ($newIdentity == $this->getUserIdentity()) return;
 
             if ($newIdentity instanceof UserIdentity) {
                 $this->getUser()->login($newIdentity);
@@ -175,7 +175,7 @@ abstract class BasePresenter extends Presenter {
             $match = $this->getRefererRequest();
             if ($match instanceof Request && $this->isComingFromDifferentModule()) {
                 dump($this->getRefererRequest(), $this->getRequest());
-                throw new InvalidState("Modules not the same");
+                trigger_error("Modules not the same");
                 $this->disallowAjax();
             }
             //dump("start", $this->getHttpRequest(), $referer, $oldScript, $script, $request, $script->getBasePath(), $match, "end");

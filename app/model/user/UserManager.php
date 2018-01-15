@@ -2,6 +2,7 @@
 
 
 use Nette\Database\Context;
+use Nette\Database\IRow;
 use Nette\Database\Table\ActiveRow;
 use Nette\Security\Passwords;
 use Nette\Security\User;
@@ -17,7 +18,7 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUs
         COLUMN_CREATED = "created",
         COLUMN_VERIFIED = "verified",
         COLUMN_ROLE = "role",
-        COLUMN_CURRENT_LANGUAGE = "cur_lang",
+        COLUMN_CURRENT_LANGUAGE = "current_language", COLUMN_CURRENT_LANGUAGE_LENGTH = 5,
 
         //non-logged users
         ROLE_GUEST = 0,
@@ -84,36 +85,43 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUs
 
     }
 
+
     public function loginCheck(string $identification, string $password): bool {
         return $this->getUserIdentityByIdentificationPassword($identification, $password) instanceof UserIdentity;
     }
 
-    public function getUserIdentityById(int $id):?UserIdentity {
+    public function getUserIdentityById(int $id): ?UserIdentity {
         return $this->get($id);
     }
 
-    private function getUserIdentityByIdentificationPassword(string $identification, string $password):?UserIdentity {
+    private function getUserIdentityByIdentificationPassword(string $identification, string $password): ?UserIdentity {
         $data = $this->getDatabase()->table(self::TABLE)->whereOr([
             self::COLUMN_USERNAME => $identification,
-            self::COLUMN_EMAIL    => $identification,
+            self::COLUMN_EMAIL => $identification,
         ])->select(self::COLUMN_PASSWORD)->select(self::COLUMN_ID)->fetch();
         if ($data instanceof ActiveRow && Passwords::verify($password, $data[self::COLUMN_PASSWORD])) {
             $identity = $this->get($data[self::COLUMN_ID]);
-            if (!$identity instanceof UserIdentity)
-                throw new InvalidState("User in db but not in cache");
+
             return $identity;
         }
         return null;
     }
 
     private function createFromDbRow(ActiveRow $data): UserIdentity {
-        return new UserIdentity($data[self::COLUMN_ID],$data[self::COLUMN_USERNAME], $data[self::COLUMN_EMAIL], $data[self::COLUMN_ROLE]);
+        return new UserIdentity(
+            $data[self::COLUMN_ID],
+            $data[self::COLUMN_USERNAME],
+            $data[self::COLUMN_EMAIL],
+            $data[self::COLUMN_CURRENT_LANGUAGE],
+            $data[self::COLUMN_ROLE]
+        );
     }
 
-    private function get(int $id):?UserIdentity {
+    private function get(int $id): ?UserIdentity {
         return $this->getCache()->load($id, function () use ($id) {
             $user = $this->getDatabase()->table(self::TABLE)->where([self::COLUMN_ID => $id])->fetch();
-            return $user instanceof \Nette\Database\IRow ? $this->createFromDbRow($user) : null;
+
+            return $user instanceof IRow ? $this->createFromDbRow($user) : null;
         });
     }
 
@@ -124,5 +132,25 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUs
     private function getCache(): Cache {
         static $cache = null;
         return $cache instanceof Cache ? $cache : $cache = new Cache($this->getDefaultStorage(), "user");
+    }
+
+    public function saveCurrentLanguage(int $userId, string $language): UserIdentity {
+        if (mb_strlen($language) > self::COLUMN_CURRENT_LANGUAGE_LENGTH) throw new InvalidArgumentException("Language must be at most " . self::COLUMN_CURRENT_LANGUAGE_LENGTH . " characters long. " . mb_strlen($language));
+
+        $this->uncache($userId);
+
+        $changed = $this->runInTransaction(function () use ($userId, $language) {
+            return $this->getDatabase()->table(self::TABLE)
+                ->wherePrimary($userId)
+                ->update([
+                    self::COLUMN_CURRENT_LANGUAGE => $language
+                ]);
+        });//TODO check whether something was changed? throw exception?
+
+        return $this->getUserIdentityById($userId);
+    }
+
+    private function uncache(int $userId) {
+        $this->getCache()->remove($userId);
     }
 }

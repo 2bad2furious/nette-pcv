@@ -217,7 +217,7 @@ class PageManager extends Manager implements IPageManager {
      * @return null|PageWrapper
      */
     public function getByGlobalId(int $languageId, int $id, bool $throw = true): ?PageWrapper {
-        $cached = $this->getPlainById($id, $languageId);
+        $cached = $this->getPlainById($id, $languageId,false);
         dump($cached);
         $result = $cached instanceof APage ? $this->getIfRightsAndSetMissing($cached) : null;
         if (!$result && $throw) {
@@ -328,7 +328,6 @@ class PageManager extends Manager implements IPageManager {
     public function update(int $pageId, int $langId, ?int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId) {
 
         $page = $this->getPlainById($pageId, $langId);
-        if (!$page instanceof Header) throw new InvalidArgumentException("Header $pageId not exists");
 
         $identity = $this->getUser()->getIdentity();
         if (!$identity instanceof UserIdentity) throw new InvalidState("User not logged in");
@@ -371,14 +370,18 @@ class PageManager extends Manager implements IPageManager {
             if ($parentId !== $page->getParentId() || $globalVisibility !== $page->getGlobalStatus()) {
 
                 //uncache parent
-                $parent = $this->getPlainById($parentId, $page->getLanguageId());
+                if($page->getParentId())
+                $parent = $this->getPlainById($page->getParentId(), $page->getLanguageId(),true);
                 $this->globalUncache($page->getParentId(), $page->getLanguageId());
                 if ($parent instanceof APage) $this->urlUncache($parent->getUrl(), $page->getParentId());
 
                 //uncache future? parent
-                $futureParent = $this->getPlainById($parentId, $page->getLanguageId());
-                $this->globalUncache($parentId, $page->getLanguageId());
-                if ($futureParent instanceof APage) $this->urlUncache($futureParent, $page->getLanguageId());
+                if($parentId !== 0) {
+                    $futureParent = $this->getPlainById($parentId, $page->getLanguageId(), true);
+                    $this->globalUncache($parentId, $page->getLanguageId());
+                    if ($futureParent instanceof APage) $this->urlUncache($futureParent, $page->getLanguageId());
+                }
+
                 $updateData = [self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS => $globalVisibility,];
                 if (is_int($parentId)) $updateData[self::MAIN_TABLE . "." . self::MAIN_COLUMN_PARENT_ID] = $parentId;
                 $this->getDatabase()
@@ -431,6 +434,7 @@ class PageManager extends Manager implements IPageManager {
     /**
      * @param int $globalId
      * @throws InvalidArgumentException|Exception
+     * @throws Throwable
      */
     public function delete(int $globalId) {
         if (!$this->exists($globalId)) throw new InvalidArgumentException("Page not found");
@@ -501,7 +505,7 @@ class PageManager extends Manager implements IPageManager {
         return "language_" . $languageId;
     }
 
-    private function getPlainById(int $pageId, int $languageId): ?APage {
+    private function getPlainById(int $pageId, int $languageId, bool $throw = true): ?APage {
         $cached = $this->getGlobalCache()->load($this->getGlobalCacheKey($pageId, $languageId), function (&$dependencies) use ($languageId, $pageId) {
             $dependencies = self::getDependencies($pageId, $languageId);
             return $this->getPlainFromDbByGlobalId($pageId, $languageId);

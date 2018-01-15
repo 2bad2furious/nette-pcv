@@ -16,6 +16,15 @@ abstract class AdminPresenter extends BasePresenter {
         return self::ADMIN_LOCALES[0];
     }
 
+    protected function checkCurrentIdentity() {
+        $identity = $this->getUserIdentity();
+        if ($identity instanceof \UserIdentity && $identity->getCurrentLanguage() !== $currentLocale = $this->getAdminLocale()) {
+            $this->getUser()->login($this->getUserManager()->saveCurrentLanguage($identity->getId(), $currentLocale));
+        }
+        return parent::checkCurrentIdentity();
+    }
+
+
     protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
         Debugger::log($allowedRoles);
         Debugger::log($currentRole);

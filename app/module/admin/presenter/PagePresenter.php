@@ -212,8 +212,7 @@ class PagePresenter extends AdminPresenter {
                 );
 
                 $this->flashMessage("admin.page.edit.success");
-                $this->redirect(302, "Language:default",
-                    [self::ID_KEY => null, self::EDIT_LANGUAGE_KEY => null]);
+                $this->postGet("this");
             });
             //$this->redrawDefault(true);
         };
