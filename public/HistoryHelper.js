@@ -30,3 +30,4 @@ var HistoryHelper = _context.extend(function (history, page) {
 });
 
 _context.register(HistoryHelper, 'App.HistoryHelper');
+/* end of custom helper*/
