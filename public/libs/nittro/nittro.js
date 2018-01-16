@@ -9,7 +9,7 @@ window.Nette = {noInit: !0}, function () {
         function thennable(ref, cb, ec, cn) {
             if (2 == state) return cn();
             if ("object" != typeof val && "function" != typeof val || "function" != typeof ref) cn(); else try {
-                var cnt = 0;
+                var cnt = 0;;
                 ref.call(val, function (v) {
                     cnt++ || (val = v, cb())
                 }, function (v) {
