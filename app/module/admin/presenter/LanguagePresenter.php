@@ -59,7 +59,7 @@ class LanguagePresenter extends AdminPresenter {
         $language = $this->getLanguageManager()->getById($this->getParameter(self::ID_KEY));
         if (!$language instanceof \Language) {
             $this->addWarning("admin.language.edit.not_exist");
-            $this->redirect(302, "Language:default", [self::ID_KEY => null]);
+            $this->postGet("this");
         }
         $this->template->id = $language->getId();
     }
@@ -98,7 +98,7 @@ class LanguagePresenter extends AdminPresenter {
                     (int)@$values[\FormFactory::LANGUAGE_EDIT_404]
                 );
             });
-            $this->redirect(302, ":default", [self::ID_KEY => null]);
+            $this->postGet("this");
         };
         return $form;
     }

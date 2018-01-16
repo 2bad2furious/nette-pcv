@@ -82,7 +82,13 @@ body {
     transform: translate(-50%, -50%);
   }
   .link {
-    padding: 1px;
+    padding: 2px;
+
+    &.big{
+      &:hover{
+        transform: scale(1.1);
+      }
+    }
 
     &:hover {
       transform: scale(1.03);
