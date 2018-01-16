@@ -1,0 +1,32 @@
+{
+    "vendor": {
+        "js": [
+            "vendor\/js\/HistoryHelper.js"
+        ],
+        "css": []
+    },
+    "base": {
+        "core": true,
+        "datetime": true,
+        "neon": true,
+        "di": true,
+        "ajax": true,
+        "forms": true,
+        "page": true,
+        "flashes": true
+    },
+    "extras": [],
+    "libraries": {
+        "js": [],
+        "css": []
+    },
+    "bootstrap": {
+        "params": null,
+        "extensions": null,
+        "services": {
+            "historyHelper": "App.HistoryHelper()!"
+        },
+        "factories": null
+    },
+    "stack": true
+}

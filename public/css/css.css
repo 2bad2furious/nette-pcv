@@ -52,7 +52,9 @@ body {
     top: 50%;
     transform: translate(-50%, -50%); }
   body .link, html body header label i#header-show, html body header label i#header-hide {
-    padding: 1px; }
+    padding: 2px; }
+    body .link.big:hover, html body header label i.big#header-show:hover, html body header label i.big#header-hide:hover {
+      transform: scale(1.1); }
     body .link:hover, html body header label i#header-show:hover, html body header label i#header-hide:hover {
       transform: scale(1.03);
       cursor: pointer; }
@@ -81,6 +83,9 @@ html {
       padding: 10px; }
       html body #admin-header-bar * {
         color: white; }
+      html body #admin-header-bar #logout:hover {
+        color: red;
+        transform: scale(1.5); }
     html body header {
       text-align: center;
       padding-top: 10px; }

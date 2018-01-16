@@ -52,7 +52,9 @@ body {
     top: 50%;
     transform: translate(-50%, -50%); }
   body .link {
-    padding: 1px; }
+    padding: 2px; }
+    body .link.big:hover {
+      transform: scale(1.1); }
     body .link:hover {
       transform: scale(1.03);
       cursor: pointer; }
