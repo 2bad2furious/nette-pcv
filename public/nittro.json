@@ -1,7 +1,7 @@
 {
     "vendor": {
         "js": [
-            "vendor\/js\/HistoryHelper.js"
+            "./HistoryHelper.js"
         ],
         "css": []
     },
