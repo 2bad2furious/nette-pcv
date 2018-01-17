@@ -1,7 +1,7 @@
 _stack.push(function () {
         jQuery(document).ready(function ($) {
 
-                var HeaderOpener = $("#header-opener");
+                var HeaderOpener = $("#header-opener");;
 
                 //style purposes
                 $("body").addClass("js");

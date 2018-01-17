@@ -39,7 +39,7 @@ html {
       * {
         color: $color1;
       }
-      
+
       #logout {
         &:hover {
           color: red;
@@ -51,20 +51,27 @@ html {
     header {
       text-align: center;
       padding-top: 10px;
-      input {
+
+      input.header-toggler {
         display: none;
-        &:checked ~ label > i#header-hide {
+        &:checked ~ label > i.collapse {
           display: initial;
         }
-        &:not(:checked) ~ label > i#header-show {
+        &:not(:checked) ~ label > i.expand {
           display: initial;
         }
-        &:checked ~ nav {
+        &:checked ~ nav, &:checked ~ ul {
           height: initial;
         }
+
       }
       label {
-        i#header-show, i#header-hide {
+        &.small{
+          i.expand, i.collapse {
+            font-size: 1em;
+          }
+        }
+        i.expand, i.collapse {
           font-size: 2em;
           @extend .link;
           cursor: pointer;
@@ -75,9 +82,14 @@ html {
         overflow: hidden;
         height: 0;
 
+        & > ul {
+          height: initial!important;
+        }
+
         ul {
           list-style-type: none;
-
+          height: 0;;
+          overflow: hidden;
         }
       }
     }

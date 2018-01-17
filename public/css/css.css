@@ -51,11 +51,11 @@ body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%); }
-  body .link, html body header label i#header-show, html body header label i#header-hide {
+  body .link, html body header label i.expand, html body header label i.collapse {
     padding: 2px; }
-    body .link.big:hover, html body header label i.big#header-show:hover, html body header label i.big#header-hide:hover {
+    body .link.big:hover, html body header label i.big.expand:hover, html body header label i.big.collapse:hover {
       transform: scale(1.1); }
-    body .link:hover, html body header label i#header-show:hover, html body header label i#header-hide:hover {
+    body .link:hover, html body header label i.expand:hover, html body header label i.collapse:hover {
       transform: scale(1.03);
       cursor: pointer; }
 
@@ -89,22 +89,28 @@ html {
     html body header {
       text-align: center;
       padding-top: 10px; }
-      html body header input {
+      html body header input.header-toggler {
         display: none; }
-        html body header input:checked ~ label > i#header-hide {
+        html body header input.header-toggler:checked ~ label > i.collapse {
           display: initial; }
-        html body header input:not(:checked) ~ label > i#header-show {
+        html body header input.header-toggler:not(:checked) ~ label > i.expand {
           display: initial; }
-        html body header input:checked ~ nav {
+        html body header input.header-toggler:checked ~ nav, html body header input.header-toggler:checked ~ ul {
           height: initial; }
-      html body header label i#header-show, html body header label i#header-hide {
+      html body header label.small i.expand, html body header label.small i.collapse {
+        font-size: 1em; }
+      html body header label i.expand, html body header label i.collapse {
         font-size: 2em;
         cursor: pointer;
         display: none; }
       html body header nav {
         overflow: hidden;
         height: 0; }
+        html body header nav > ul {
+          height: initial !important; }
         html body header nav ul {
-          list-style-type: none; }
+          list-style-type: none;
+          height: 0;
+          overflow: hidden; }
 
 /*# sourceMappingURL=css.css.map */
