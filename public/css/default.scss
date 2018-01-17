@@ -83,16 +83,16 @@ body {
   }
   .link {
     padding: 2px;
+    cursor: pointer;
 
-    &.big{
-      &:hover{
-        transform: scale(1.1);
+    &.big {
+      &:hover {
+        transform: scale(1.3);
       }
     }
 
-    &:hover {
-      transform: scale(1.03);
-      cursor: pointer;
+    &:hover, &:hover * {
+      transform: scale(1.1);
     }
   }
 }

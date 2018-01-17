@@ -39,11 +39,10 @@ html {
       * {
         color: $color1;
       }
-
       #logout {
-        &:hover {
+        @extend .link.big;
+        &:hover > i {
           color: red;
-          transform: scale(1.5);
         }
       }
     }
@@ -61,17 +60,25 @@ html {
           display: initial;
         }
         &:checked ~ nav, &:checked ~ ul {
-          height: initial;
+          height: initial !important;
+        }
+
+        &:checked ~ ul {
+          border-top: 1px solid black;
         }
 
       }
       label {
-        &.small{
+        &.small {
           i.expand, i.collapse {
             font-size: 1em;
           }
         }
         i.expand, i.collapse {
+          &:not(.no-scale):hover {
+            transform: scale(1.5);
+            color: red;//TODO remove xd
+          }
           font-size: 2em;
           @extend .link;
           cursor: pointer;
@@ -83,13 +90,22 @@ html {
         height: 0;
 
         & > ul {
-          height: initial!important;
+          height: initial !important;
         }
 
         ul {
           list-style-type: none;
-          height: 0;;
+          height: 0;
+          padding: 0;
+          margin: 0;
           overflow: hidden;
+
+          li {
+            text-align: center;
+            margin: 0 auto;
+            max-width: 40%;
+            min-width: 320px;
+          }
         }
       }
     }
