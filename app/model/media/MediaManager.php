@@ -41,7 +41,7 @@ class MediaManager extends Manager implements IMediaManager {
         );
     }
 
-    public function getById(int $id, ?int $desiredType = null):?Media {
+    public function getById(int $id, ?int $desiredType = null, bool $throw = true):?Media {
         return $this->getCache()->load($id);
     }
 

@@ -39,7 +39,7 @@ class PagePresenter extends BasePresenter {
         $page = $this->page;
 
         if (!$page instanceof \PageWrapper)
-            $page = $this->getPageManager()->getDefault404();
+            $page = $this->getPageManager()->get404($this->getLocaleLanguage()->getId());
 
         $this->template->page = $page;
         $this->payload->title = $page->getTitle();

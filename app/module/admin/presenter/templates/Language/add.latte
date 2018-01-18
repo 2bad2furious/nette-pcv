@@ -1,0 +1,23 @@
+{block content}
+    {control languageAddForm}
+    <script>
+        _stack.push(function (di) {
+            window.Nette.validators.{\FormFactory::LANGUAGE_EDIT_CODE_NAME|noescape}_rule3 = function (elem, args, val) {
+                $.ajax({
+                    url: {plink Availability: \adminModule\AvailabilityPresenter::KEY=>\adminModule\AvailabilityPresenter::LANGUAGE_CODE_KEY},
+                    data: {l}{\adminModule\AvailabilityPresenter::VALUE}:val{r},
+                    success: function (r) {
+                    if (r === false) {
+                        di.getService('formLocator').getForm('frm-languageAddForm').trigger('error', {
+                            element: elem,
+                            message: args
+                        });
+                    }
+                }
+            });
+
+                return true;
+            }
+        })
+    </script>
+{/block}

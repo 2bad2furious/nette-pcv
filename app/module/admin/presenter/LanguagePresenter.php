@@ -35,7 +35,7 @@ class LanguagePresenter extends AdminPresenter {
                 return \UserManager::ROLES_PAGE_DRAFTING;
             case "default":
                 return \UserManager::ROLES_PAGE_DRAFTING;
-            case "create":
+            case "add":
                 return \UserManager::ROLES_ADMIN_ADMINISTRATION;
             case "delete":
                 return \UserManager::ROLES_ADMIN_ADMINISTRATION;
@@ -55,6 +55,10 @@ class LanguagePresenter extends AdminPresenter {
         return new PaginatorControl($this, $name, self::PAGE_KEY, $this->getCurrentPage(), $this->numOfPages);
     }
 
+    public function actionAdd(){
+        $this->redrawDefault( );
+    }
+
     public function actionEdit() {
         $language = $this->getLanguageManager()->getById($this->getParameter(self::ID_KEY));
         if (!$language instanceof \Language) {
@@ -62,11 +66,6 @@ class LanguagePresenter extends AdminPresenter {
             $this->postGet("this");
         }
         $this->template->id = $language->getId();
-    }
-
-    public function actionCreate() {
-        $language = $this->getLanguageManager()->createNew();
-        $this->redirect(302, "edit", [self::ID_KEY => $language->getId()]);
     }
 
     public function actionDelete() {
@@ -88,17 +87,33 @@ class LanguagePresenter extends AdminPresenter {
             $this->commonTryCall(function () use ($values, $language) {
                 $this->getLanguageManager()->edit(
                     $language->getId(),
-                    $values[\FormFactory::LANGUAGE_EDIT_CODE_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_SITE_TITLE_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_LOGO_NAME],
-                    (int)@$values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE],
+                    $values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE],
                     $values[\FormFactory::LANGUAGE_EDIT_FAVICON_NAME],
-                    (int)@$values[\FormFactory::LANGUAGE_EDIT_404]
+                    $values[\FormFactory::LANGUAGE_EDIT_404]
                 );
             });
             $this->postGet("this");
+        };
+        return $form;
+    }
+
+    public function createComponentLanguageAddForm(): Form {
+        $form = $this->getFormFactory()->createLanguageAddForm();
+        $form->onSuccess[] = function (Form $form, array $values) {
+            /** @var Language $language */
+            $language = $this->commonTryCall(function () use ($values) {
+                return $this->getLanguageManager()->add(
+                    $values[\FormFactory::LANGUAGE_EDIT_CODE_NAME],
+                    $values[\FormFactory::LANGUAGE_EDIT_SITE_TITLE_NAME]
+                );
+            }, function () {
+                $this->redirect(302, "default");
+            });
+            $this->redirect(302, "edit", [self::ID_KEY => $language->getId()]);
         };
         return $form;
     }

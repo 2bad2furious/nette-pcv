@@ -9,23 +9,6 @@
                     if (!confirm({_"admin.language.edit.action.delete.confirm"}))
                         e.preventDefault();
                 })
-
-                    window.Nette.validators.{\FormFactory::LANGUAGE_EDIT_CODE_NAME|noescape}_rule3 = function (elem, args, val) {
-                        $.ajax({
-                            url: {plink Availability: \adminModule\AvailabilityPresenter::KEY=>\adminModule\AvailabilityPresenter::LANGUAGE_CODE_KEY},
-                            data: {l}{\adminModule\AvailabilityPresenter::VALUE}:val{r},
-                        success: function (r) {
-                            if (r === false) {
-                                di.getService('formLocator').getForm('frm-languageEditForm').trigger('error', {
-                                    element: elem,
-                                    message: args
-                                });
-                            }
-                        }
-                    })
-
-                        return true;
-                    }
             })
         })
     </script>

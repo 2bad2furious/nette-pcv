@@ -28,7 +28,7 @@ class HeaderWrapper {
      */
     public function __construct(Header $header, ILanguageManager $languageManager, IPageManager $pageManager, IHeaderManager $headerManager) {
         if ($header->getType() === Header::TYPE_PAGE) {
-            $pageManager->exists($header->getPageId(), true);
+            $pageManager->exists($header->getPageId(), $header->getLanguageId());
         }
 
         if (!$header->getPageId()) $this->page = false;
@@ -45,15 +45,10 @@ class HeaderWrapper {
         return $this->header;
     }
 
-    /**
-     * @return Language
-     * @throws InvalidState
-     */
+
     public function getLanguage(): Language {
         if (!$this->language instanceof Language) {
-            $language = $this->languageManager->getById($this->getLanguageId());
-            if (!$language->getId() !== $this->getLanguageId()) throw new InvalidState("Language Ids not the same; {$language->getId()} !== {$this->getLanguageId()}");
-            $this->language = $language;
+            $this->language = $this->languageManager->getById($this->getLanguageId());
         }
         return $this->language;
     }
@@ -64,15 +59,9 @@ class HeaderWrapper {
      */
     public function getChildren() {
         if ($this->children === null) {
-            $this->children = [];
-            foreach ($this->getChildrenIds() as $childrenId) {
-                $child = $this->headerManager->getById($childrenId);
-
-                if ($child->getLanguageId() !== $this->getLanguageId()) throw new InvalidState("Languages are not the same; {$child->getLanguageId()} !== {$this->getLanguageId()}");
-                if ($child->getParentId() !== $this->getId()) throw new InvalidState("Child is not actual child of this; {$child->getParentId()} !== {$this->getId()}");
-
-                $this->children[] = $child;
-            }
+            $this->children = array_map(function (int $childId) {
+                return $this->headerManager->getById($childId);
+            }, $this->getChildrenIds());
         }
         return $this->children;
     }
@@ -83,14 +72,7 @@ class HeaderWrapper {
      */
     public function getPage() {
         if ($this->page !== false) {
-            $page = $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getPageId());
-
-            if ($page->getGlobalId() !== $this->getPageId())
-                throw new InvalidState("Page Ids are not the same; {$page->getGlobalId()} !== {$this->getPageId()}");
-            if ($page->getLanguageId() !== $this->getLanguageId())
-                throw new InvalidState("Language Ids are not the same; {$page->getLanguageId()} !== {$this->getLanguageId()}");
-
-            $this->page = $page;
+            $this->page = $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getPageId());
         }
         return $this->page instanceof PageWrapper ? $this->page : null;
     }

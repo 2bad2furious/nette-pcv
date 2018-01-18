@@ -228,10 +228,11 @@ abstract class BasePresenter extends Presenter {
         try {
             return $action();
         } catch (Exception $exception) {
-            if ($onException) $onException($exception);
             /*\Tracy\Debugger::log($exception);
             $this->somethingWentWrong();*/
-            throw $exception;
+
+            if ($onException) $onException($exception);
+            if ($exception) throw $exception;
         }
     }
 }

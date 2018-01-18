@@ -40,7 +40,6 @@ html {
         color: $color1;
       }
       #logout {
-        @extend .link.big;
         &:hover > i {
           color: red;
         }
@@ -75,12 +74,10 @@ html {
           }
         }
         i.expand, i.collapse {
-          &:not(.no-scale):hover {
-            transform: scale(1.5);
-            color: red;//TODO remove xd
-          }
           font-size: 2em;
           @extend .link;
+          @extend .big;
+          @extend .scale;
           cursor: pointer;
           display: none;
         }

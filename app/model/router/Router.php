@@ -31,7 +31,7 @@ class Router {
             $router[] = new Route("Console:");
             return $router;
         }*/
-        $availableLanguages = $this->languageManager->getAvailableLanguages(true);
+        $availableLanguages = $this->languageManager->getAvailableLanguages();
         $languages = implode("|", array_map(function (Language $language) {
             return $language->getCode();
         }, $availableLanguages));
@@ -125,7 +125,7 @@ class Router {
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter settings>/<action clean>");
 
-        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action create>");
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action add>");
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/[<" . \adminModule\LanguagePresenter::GENERATED_KEY . " 1|0>]?<" . \adminModule\LanguagePresenter::SEARCH_KEY . "><" . \adminModule\LanguagePresenter::PAGE_KEY . "=1 \d+>", [
             "action" => [

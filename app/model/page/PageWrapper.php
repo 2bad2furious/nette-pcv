@@ -64,11 +64,7 @@ class PageWrapper {
      */
     public function getLanguage(): Language {
         if (!$this->language instanceof Language) {
-            $language = $this->languageManager->getById($this->getLanguageId());
-
-            if ($language->getId() !== $this->getLanguageId()) throw new InvalidState("Language Ids not the same; {$language->getId()} !== {$this->getLanguageId()}");
-
-            $this->language = $language;
+            $this->language = $this->languageManager->getById($this->getLanguageId());
         }
         return $this->language;
     }
@@ -136,7 +132,7 @@ class PageWrapper {
         return $this->getPageSettings()->getGoogleAnalytics();
     }
 
-    public function isTitleDefault():bool {
+    public function isTitleDefault(): bool {
         return $this->getTitle() === PageManager::DEFAULT_TITLE;
     }
 
@@ -145,7 +141,7 @@ class PageWrapper {
         return $this->getUrl();
     }
 
-    public function isUrlGenerated():bool {
+    public function isUrlGenerated(): bool {
         return PageManager::isDefaultUrl($this->getUrl());
     }
 }

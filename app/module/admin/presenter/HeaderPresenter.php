@@ -45,7 +45,7 @@ class HeaderPresenter extends AdminPresenter {
 
     public function renderDefault() {
         $this->template->language = $this->getCurrentLanguage();
-        $this->template->languages = $this->getLanguageManager()->getAvailableLanguages(true);
+        $this->template->languages = $this->getLanguageManager()->getAvailableLanguages();
         $this->template->action = in_array(($action = $this->getAction()), ["add", "edit"]) ? $action : null;
         $this->template->header = $this->getHeaderManager()->getHeader($this->getCurrentLanguage()->getId());
         $this->template->formType = $this->getFormType();

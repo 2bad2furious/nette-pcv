@@ -21,7 +21,7 @@ interface IPageManager extends IManager {
 
     const ACTION_SEE_NON_PUBLIC_PAGES = "page.non_public";
 
-    public function exists(int $globalId, bool $throw = false): bool;
+    public function exists(int $globalId, ?int $languageId = null, bool $throw = false): bool;
 
     /**
      * @param int $langId
@@ -70,7 +70,7 @@ interface IPageManager extends IManager {
      */
     public function getByUrl(int $languageId, string $url): ?PageWrapper;
 
-    public function getDefault404(): PageWrapper;
+    public function get404(int $languageId): ?PageWrapper;
 
     /**
      * @param string $url
@@ -87,7 +87,7 @@ interface IPageManager extends IManager {
      */
     public function addEmpty(int $type): int;
 
-    public function update(int $pageId,int $langId, int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId);
+    public function update(int $pageId, int $langId, int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId);
 
     public function delete(int $globalId);
 

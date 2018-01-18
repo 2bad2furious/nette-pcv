@@ -120,7 +120,7 @@ class PagePresenter extends AdminPresenter {
         $this->template->language = $this->getVisibility();
         $this->template->has_translation = $this->hasTranslation();
         $this->template->action = $this->getAction();
-        $this->template->languages = $this->getLanguageManager()->getAvailableLanguages(true);
+        $this->template->languages = $this->getLanguageManager()->getAvailableLanguages();
         $this->template->language = $this->getLanguage();
         $this->template->results = $this->getPageManager()->getFiltered(
             self::TYPE_TABLE[$this->getType()],

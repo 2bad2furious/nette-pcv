@@ -20,10 +20,9 @@ abstract class Manager implements IManager {
     public final function __construct(Container $container) {
         $this->context = $container;
         $className = get_class($this);
-        dump("initing " . $className);
+
         if (!self::$initingClass) {
             self::$initingClass = $className;
-            dump("initing serviceloader");
             $this->getServiceLoader();
         }
         $this->init();

@@ -45,14 +45,15 @@ class HeaderManager extends Manager implements IHeaderManager {
 
     /**
      * @param int $id
+     * @param bool $throw
      * @return HeaderWrapper|null
      */
-    public function getById(int $id):?HeaderWrapper {
+    public function getById(int $id, bool $throw = true):?HeaderWrapper {
         $cached = $this->getPlainById($id, false);
 
         if ($cached instanceof Header) {
             return $this->constructHeaderWrapper($cached);
-        }
+        }else if($throw) throw new HeaderNotFound($id);
         return null;
     }
 

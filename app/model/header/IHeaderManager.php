@@ -12,9 +12,10 @@ interface IHeaderManager {
 
     /**
      * @param int $id
+     * @param bool $throw
      * @return HeaderWrapper|null
      */
-    public function getById(int $id):?HeaderWrapper;
+    public function getById(int $id, bool $throw = true):?HeaderWrapper;
 
     public function addPage(int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper;
 

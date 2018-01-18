@@ -1,6 +1,14 @@
 $color1: white;
 $color2: black;
 
+@mixin transform_scale($scale) {
+  -webkit-transform: scale($scale);
+  -moz-transform: scale($scale);
+  -ms-transform: scale($scale);
+  -o-transform: scale($scale);
+  transform: scale($scale);
+}
+
 /*if just * was used, you could see the title and scripts xd lmao*/
 body {
   padding: 0;
@@ -81,18 +89,23 @@ body {
 
     transform: translate(-50%, -50%);
   }
+  .scale {
+    display: inline-block;
+
+    &.big:hover {
+      &, * {
+      @include transform_scale(1.3);
+      }
+    }
+    &:not(.big):hover {
+      &, * {
+      @include transform_scale(1.1);
+      }
+    }
+  }
+
   .link {
     padding: 2px;
     cursor: pointer;
-
-    &.big {
-      &:hover {
-        transform: scale(1.3);
-      }
-    }
-
-    &:hover, &:hover * {
-      transform: scale(1.1);
-    }
   }
 }

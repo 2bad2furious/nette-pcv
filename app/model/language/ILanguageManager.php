@@ -4,9 +4,8 @@
  * Interface ILanguageManager
  *
  * Language has 3 phases
- * 1. Created
- * 2. Code set - creates localization for this language
- * 3. Pages set (404 and home)
+ * 1. Created - creates localization for this language
+ * 2. Pages set (404 and home)
  */
 interface ILanguageManager extends IManager {
 
@@ -14,29 +13,39 @@ interface ILanguageManager extends IManager {
     const TRIGGER_LANGUAGE_ADDED = "trigger.language.added";
     const TRIGGER_LANGUAGE_EDITED = "trigger.language.edited";
 
-    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated):array;
+    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated): array;
 
     /**
-     * @param bool $check whether to include languages that are not finished (=code is generated)
      * @return Language[]
      */
-    public function getAvailableLanguages(bool $check = true): array;
+    public function getAvailableLanguages(): array;
 
+    /**
+     * @param string $langCode of the language
+     * @param bool $throw if not found
+     * @return Language|null
+     */
     public function getByCode(string $langCode, bool $throw = true): ?Language;
 
+    /**
+     * @param int $id
+     * @param bool $throw
+     * @return Language|null
+     * @throws LanguageByIdNotFound
+     */
     public function getById(int $id, bool $throw = true): ?Language;
+
 
     public function cleanCache();
 
     /**
      * @return Language
-     * @throws InvalidState
      */
     public function getDefaultLanguage(): Language;
 
-    public function createNew(): Language;
+    public function add(string $code, string $title): Language;
 
-    public function edit(int $langId, string $code, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page);
+    public function edit(int $langId, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page);
 
     /**
      * @param int $id

@@ -126,45 +126,49 @@ class FormFactory extends Manager {
         return $form;
     }
 
-    public function createLanguageEditForm(Language $language): Form {
+    public function createLanguageAddForm(): Form {
         $form = $this->createNewAdminForm();
-
-        $code = $form->addText(self::LANGUAGE_EDIT_CODE_NAME, "admin.language.code.label")
+        $form->addText(self::LANGUAGE_EDIT_CODE_NAME, "admin.language.code.label")
             ->addRule(Form::REQUIRED, "admin.language.edit.code.required")
             ->addRule(Form::MAX_LENGTH, "admin.language.edit.code.length", 5)
             ->addRule(Form::PATTERN, "admin.language.edit.code.pattern", LanguageManager::COLUMN_CODE_PATTERN)
-            ->addRule(function (TextInput $item) {
-                return !$this->getLanguageManager()->getByCode($item->getValue(),false) instanceof Language;
+            ->addRule(function (TextInput $item): bool {
+                return !$this->getLanguageManager()->getByCode($item->getValue(), false) instanceof Language;
             }, $message = "admin.language.edit.code.not_available", $message);
 
-        if (!LanguageManager::isCodeGenerated($language->getCode())) {
-            $code->setDisabled(true)->setDefaultValue($language->getCode())->setEmptyValue($language->getCode())
-                ->setOmitted(false);
-        }
+        $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label")
+            ->addRule(Form::REQUIRED, "admin.language.edit.site_title.required");
 
-        if (!LanguageManager::isCodeGenerated($language->getCode())) {
-            $pm = $this->getPageManager();
-            $allPages = $pm->getAllPages($language->getId());
-            $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", array_map(function (PageWrapper $page) {
-                return $page->getGlobalId() . " - " . $page->getTitle();
-            }, $allPages));
+        $form->addSubmit("submit","admin.language.add.submit");
 
-            $currentHomePage = $pm->getHomePage($language->getId());
-            if ($currentHomePage instanceof PageWrapper) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
 
-            $form->addSelect(self::LANGUAGE_EDIT_404, "admin.language.edit.404.label", array_map(function (PageWrapper $pageWrapper) {
-                return $pageWrapper->getGlobalId() . " - " . $pageWrapper->getTitle();
-            }, $allPages));
-        }
+        return $form;
+    }
+
+    public function createLanguageEditForm(Language $language): Form {
+        $form = $this->createNewAdminForm();
+
+        $pm = $this->getPageManager();
+        $allPages = $pm->getAllPages($language->getId());
+        $homePageSelection = $form->addSelect(self::LANGUAGE_EDIT_HOMEPAGE, "admin.language.edit.homepage.label", array_map(function (PageWrapper $page) {
+            return $page->getGlobalId() . " - " . $page->getTitle();
+        }, $allPages));
+
+        $currentHomePage = $pm->getHomePage($language->getId());
+        if ($currentHomePage instanceof PageWrapper) $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
+
+        $form->addSelect(self::LANGUAGE_EDIT_404, "admin.language.edit.404.label", array_map(function (PageWrapper $pageWrapper) {
+            return $pageWrapper->getGlobalId() . " - " . $pageWrapper->getTitle();
+        }, $allPages));
+
 
         $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label")
-            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language->getId())->getValue());
+            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language->getId())->getValue())
+            ->addRule(Form::REQUIRED, "admin.language.edit.site_title.required");
 
         $form->addTextArea(self::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME, "admin.language.edit.separator.label")
             ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language->getId())->getValue())
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
-
-        $sm = $this->getSettingsManager();
 
         $images = $this->getMediaManager()->getAvailableImages();
         $images[0] = "admin.language.edit.logo.no";

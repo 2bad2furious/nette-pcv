@@ -7,5 +7,5 @@ interface IMediaManager {
      */
     public function getAvailableImages($asObjects = false);
 
-    public function getById(int $id, ?int $desiredType = null): ?Media;
+    public function getById(int $id, ?int $desiredType = null, bool $throw = true): ?Media;
 }
