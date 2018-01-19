@@ -96,7 +96,7 @@ class LanguagePresenter extends AdminPresenter {
             $this->getLanguageManager()->delete($id);
             $this->addSuccess("admin.language.delete.success");
         }
-        $this->redirect(302, ":default");
+        $this->redirect(302, "default", ["id" => null]);
     }
 
     /**
