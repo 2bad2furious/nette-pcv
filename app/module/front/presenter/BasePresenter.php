@@ -220,6 +220,10 @@ abstract class BasePresenter extends Presenter {
         return $this->context->getByType(IRouter::class);
     }
 
+    protected function redrawContent() {
+        $this->redrawControl("content");
+    }
+
     protected function getSignalName():?string {
         return $this->getParameter(self::SIGNAL_KEY);
     }
@@ -228,8 +232,8 @@ abstract class BasePresenter extends Presenter {
         try {
             return $action();
         } catch (Exception $exception) {
-            /*\Tracy\Debugger::log($exception);
-            $this->somethingWentWrong();*/
+            \Tracy\Debugger::log($exception);
+            $this->somethingWentWrong();
 
             if ($onException) $onException($exception);
             if ($exception) throw $exception;

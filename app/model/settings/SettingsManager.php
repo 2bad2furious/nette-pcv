@@ -18,15 +18,14 @@ class SettingsManager extends Manager implements ISettingsManager {
             });
 
         if ($cached instanceof Setting) {
-            return new SettingWrapper($cached,$this->getLanguageManager());
-        }
-        else if($throw) throw new InvalidArgumentException("Setting $option with langId: $language not found.");
+            return new SettingWrapper($cached, $this->getLanguageManager());
+        } else if ($throw) throw new SettingNotFound($option, $language instanceof Language ? $language->getId() : 0);
 
         return null;
     }
 
     public function set(string $option, string $value, ?int $languageId = null): SettingWrapper {
-        $existing = $this->get($option, $languageId);
+        $existing = $this->get($option, $languageId, false);
 
         $this->uncache($cacheKey = $this->getCacheKey($option, $languageId));
 

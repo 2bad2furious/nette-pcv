@@ -55,10 +55,6 @@ class LanguagePresenter extends AdminPresenter {
         return new PaginatorControl($this, $name, self::PAGE_KEY, $this->getCurrentPage(), $this->numOfPages);
     }
 
-    public function actionAdd(){
-        $this->redrawDefault( );
-    }
-
     public function actionEdit() {
         $language = $this->getLanguageManager()->getById($this->getParameter(self::ID_KEY));
         if (!$language instanceof \Language) {
@@ -103,15 +99,15 @@ class LanguagePresenter extends AdminPresenter {
 
     public function createComponentLanguageAddForm(): Form {
         $form = $this->getFormFactory()->createLanguageAddForm();
+
         $form->onSuccess[] = function (Form $form, array $values) {
+            dump("success");
             /** @var Language $language */
             $language = $this->commonTryCall(function () use ($values) {
                 return $this->getLanguageManager()->add(
                     $values[\FormFactory::LANGUAGE_EDIT_CODE_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_SITE_TITLE_NAME]
                 );
-            }, function () {
-                $this->redirect(302, "default");
             });
             $this->redirect(302, "edit", [self::ID_KEY => $language->getId()]);
         };
