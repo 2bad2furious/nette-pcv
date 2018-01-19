@@ -28,6 +28,9 @@ abstract class BasePresenter extends Presenter {
         parent::checkRequirements($element);
     }
 
+    /**
+     * @throws InvalidState
+     */
     public function startup() {
         $this->invalidLinkMode = self::INVALID_LINK_EXCEPTION;
         $this->checkRefererAndDisallowAjax();
@@ -40,6 +43,10 @@ abstract class BasePresenter extends Presenter {
         else if ($currentPage > $maxPage) $this->redirect(302, "this", [$page_key => $maxPage]);
     }
 
+    /**
+     * @throws InvalidState
+     * @throws \Nette\Security\AuthenticationException
+     */
     protected function checkCurrentIdentity() {
         $id = $this->getUser()->getId();
         if (is_int($id)) {
@@ -80,6 +87,11 @@ abstract class BasePresenter extends Presenter {
         };
     }
 
+    /**
+     * @return Language
+     * @throws LanguageByCodeNotFound
+     * @throws LanguageByIdNotFound
+     */
     protected function getLocaleLanguage(): Language {
         if (!$this->localeLang instanceof Language)
             $this->localeLang = $this->getLanguageManager()->getByCode($this->translator->getLocale(), false);
@@ -88,6 +100,10 @@ abstract class BasePresenter extends Presenter {
         return $this->localeLang;
     }
 
+    /**
+     * @return string
+     * @throws InvalidState
+     */
     public function getCurrentAdminLocale(): string {
         $identity = $this->getUserIdentity();
 
@@ -96,6 +112,10 @@ abstract class BasePresenter extends Presenter {
         return \adminModule\AdminPresenter::getDefaultLocale();
     }
 
+    /**
+     * @return null|UserIdentity
+     * @throws InvalidState
+     */
     protected function getUserIdentity():?UserIdentity {
         $identity = $this->getUser()->getIdentity();
         if ($identity && !$identity instanceof UserIdentity) throw new InvalidState("UserIdentity not instanceof UserIdentity");
@@ -165,11 +185,15 @@ abstract class BasePresenter extends Presenter {
         return $this->getServiceLoader()->getMediaManager();
     }
 
+
     protected final function getFormFactory(): FormFactory {
         return $this->context->getByType(FormFactory::class);
     }
 
 
+    /**
+     * @throws InvalidState
+     */
     private function checkRefererAndDisallowAjax() {
         if ($this->isAjax() && $this->getReferer()) {
             $match = $this->getRefererRequest();
@@ -182,6 +206,21 @@ abstract class BasePresenter extends Presenter {
         }
     }
 
+    /**
+     * @return bool
+     * @throws InvalidState
+     */
+    protected function isComingFromThis():bool{
+        $match = $this->getRefererRequest();
+        dump($match);
+        dump($this->getRequest());
+        return $match === $this->getRequest();
+    }
+
+    /**
+     * @return bool
+     * @throws InvalidState
+     */
     protected function isComingFromDifferentPresenter(): bool {
         $match = $this->getRefererRequest();
         if (!$match instanceof Request) throw new InvalidState("Match not found");
@@ -189,6 +228,10 @@ abstract class BasePresenter extends Presenter {
         return $this->getRequest()->getPresenterName() !== $match->getPresenterName();
     }
 
+    /**
+     * @return bool
+     * @throws InvalidState
+     */
     protected function isComingFromDifferentModule(): bool {
         $match = $this->getRefererRequest();
         if (!$match instanceof Request) throw new InvalidState("Match not found");
@@ -198,6 +241,10 @@ abstract class BasePresenter extends Presenter {
         return ($module !== $refererModule);
     }
 
+    /**
+     * @return Request|null
+     * @throws InvalidState
+     */
     protected function getRefererRequest():?Request {
         static $match = null;
         if ($match === null) {
@@ -224,10 +271,20 @@ abstract class BasePresenter extends Presenter {
         $this->redrawControl("content");
     }
 
+    protected function redrawHeader(){
+        $this->redrawControl("header");
+    }
+
     protected function getSignalName():?string {
         return $this->getParameter(self::SIGNAL_KEY);
     }
 
+    /**
+     * @param callable $action
+     * @param callable|null $onException
+     * @return mixed
+     * @throws Exception
+     */
     public function commonTryCall(callable $action, ?callable $onException = null) {
         try {
             return $action();

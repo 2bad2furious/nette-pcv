@@ -73,6 +73,17 @@ abstract class AdminPresenter extends BasePresenter {
         $this->template->title = $title;
         $this->payload->title = $this->template->page_title;
 
+        if($this->getReferer() && $this->isAjax()){
+            try{
+                if($this->isComingFromDifferentPresenter()) {
+                    $this->redrawContent();
+                    $this->redrawHeader();
+                }
+            }catch (\InvalidState $exception){
+                Debugger::log($exception);
+            }
+        }
+
         parent::beforeRender();
     }
 

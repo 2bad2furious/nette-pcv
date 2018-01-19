@@ -42,6 +42,7 @@ class FormFactory extends Manager {
     const HEADER_URL_NAME = "url";
     const HEADER_SUBMIT_NAME = "submit";
     const LANGUAGE_EDIT_404 = "page404_id";
+    const LANGUAGE_EDIT_FRIENDLY_NAME = "friendly";
 
     public function createPageEditForm(PageWrapper $page, callable $urlValidator) {
 
@@ -195,8 +196,23 @@ class FormFactory extends Manager {
                 $message);
 
         $form->addText(
+            self::LANGUAGE_EDIT_FRIENDLY_NAME,
+            "admin.language.edit.friendly.label")
+            ->addRule(
+                Form::MAX_LENGTH,
+                "admin.language.edit.friendly.length",
+                LanguageManager::COLUMN_FRIENDLY_LENGTH)
+            ->addRule(
+                Form::REQUIRED,
+                "admin.language.edit.friendly.required");
+
+        $form->addText(
             self::LANGUAGE_EDIT_SITE_TITLE_NAME,
             "admin.language.edit.site_title.label")
+            ->addRule(
+                Form::MAX_LENGTH,
+                "admin.language.edit.site_title.length",
+                LanguageManager::COLUMN_SITE_NAME_LENGTH)
             ->addRule(
                 Form::REQUIRED,
                 "admin.language.edit.site_title.required");
@@ -213,6 +229,57 @@ class FormFactory extends Manager {
         $form = $this->createNewAdminForm();
 
         $pm = $this->getPageManager();
+
+        $form->addText(
+            self::LANGUAGE_EDIT_FRIENDLY_NAME,
+            "admin.language.edit.friendly.label")
+            ->setDefaultValue($language->getFriendly())
+            ->addRule(
+                Form::MAX_LENGTH,
+                "admin.language.edit.friendly.length",
+                LanguageManager::COLUMN_FRIENDLY_LENGTH)
+            ->addRule(
+                Form::REQUIRED,
+                "admin.language.edit.friendly.required");
+
+        $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME,
+            "admin.language.edit.site_title.label")
+            ->setDefaultValue($language->getSiteName())
+            ->addRule(Form::MAX_LENGTH,
+                "admin.language.edit.site_title.length",
+                LanguageManager::COLUMN_SITE_NAME_LENGTH)
+            ->addRule(Form::REQUIRED,
+                "admin.language.edit.site_title.required");
+
+
+        $form->addTextArea(
+            self::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME,
+            "admin.language.edit.separator.label")
+            ->addRule(Form::MAX_LENGTH, "admin.language.edit.separator.length", LanguageManager::COLUMN_TITLE_SEPARATOR_LENGTH)
+            ->setDefaultValue($language->getTitleSeparator())
+            ->setRequired(false)
+            ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
+
+        $images = $this->getMediaManager()->getAvailableImages();
+
+
+        $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME,
+            "admin.language.edit.logo.label",
+            $images + [0 => "admin.language.edit.logo.no"])
+            ->setDefaultValue($language->getLogoId());
+
+
+        $form->addSelect(
+            self::LANGUAGE_EDIT_FAVICON_NAME,
+            "admin.settings.edit.favicon",
+            $images + [0 => "admin.language.edit.favicon.no"])
+            ->setDefaultValue($language->getFaviconId());
+
+        $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label")
+            ->addRule(Form::MAX_LENGTH, "admin.language.edit.ga.length")
+            ->setRequired(false)
+            ->setDefaultValue($language->getGa());
+
         $allPages = $pm->getAllPages($language->getId());
         $homePageSelection = $form->addSelect(
             self::LANGUAGE_EDIT_HOMEPAGE,
@@ -222,9 +289,8 @@ class FormFactory extends Manager {
             }, $allPages)
         );
 
-        $currentHomePage = $pm->getHomePage($language->getId());
-        if ($currentHomePage instanceof PageWrapper)
-            $homePageSelection->setDefaultValue($currentHomePage->getGlobalId());
+
+        $homePageSelection->setDefaultValue($language->getHomepageId());
 
         $form->addSelect(
             self::LANGUAGE_EDIT_404,
@@ -235,40 +301,14 @@ class FormFactory extends Manager {
         );
 
 
-        $form->addText(self::LANGUAGE_EDIT_SITE_TITLE_NAME, "admin.language.edit.site_title.label")
-            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_SITE_NAME, $language->getId())->getValue())
-            ->addRule(Form::REQUIRED, "admin.language.edit.site_title.required");
-
-
-        $titleSeparator = $this->getSettingsManager()->get(PageManager::SETTINGS_TITLE_SEPARATOR, $language->getId())->getValue();
-        $form->addTextArea(
-            self::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME,
-            "admin.language.edit.separator.label")
-            ->setDefaultValue($titleSeparator)
-            ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
-
-        $images = $this->getMediaManager()->getAvailableImages();
-
-        $logoId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_LOGO, $language->getId())->getValue();
-        $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME,
-            "admin.language.edit.logo.label",
-            $images + [0 => "admin.language.edit.logo.no"])
-            ->setDefaultValue($logoId);
-
-        $faviconId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_FAVICON, $language->getId())->getValue();
-        $form->addSelect(
-            self::LANGUAGE_EDIT_FAVICON_NAME,
-            "admin.settings.edit.favicon",
-            $images + [0 => "admin.language.edit.favicon.no"])
-            ->setDefaultValue($faviconId);
-
-        $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label")
-            ->setDefaultValue($this->getSettingsManager()->get(PageManager::SETTINGS_GOOGLE_ANALYTICS, $language->getId())->getValue());
-
         $form->addSubmit("submit", "admin.language.edit.submit");
         return $form;
     }
 
+    /**
+     * @return Form
+     * @throws LanguageByIdNotFound
+     */
     public function createSettingsEditForm(): Form {
         $sm = $this->getSettingsManager();
         $lm = $this->getLanguageManager();
@@ -285,6 +325,7 @@ class FormFactory extends Manager {
             self::SETTINGS_EDIT_TITLE_SEPARATOR,
             "admin.settings.edit.separator.label")
             ->setDefaultValue($titleSeparator)
+            ->setRequired(false)
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
         $availableLanguages = array_map(function (Language $language) {

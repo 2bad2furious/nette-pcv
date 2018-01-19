@@ -53,8 +53,6 @@ interface IPageManager extends IManager {
 
     public function cleanCache();
 
-    public function getHomePage(int $languageId): ?PageWrapper;
-
     /**
      * @param int $languageId
      * @param int $id PageId

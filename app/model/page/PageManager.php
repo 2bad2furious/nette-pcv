@@ -198,30 +198,12 @@ class PageManager extends Manager implements IPageManager {
         $this->getCache()->clean(); //TODO check if cleaning separately needed
     }
 
-    public function getHomePage(int $languageId): ?PageWrapper {
-        $homePageSetting = $this->getSettingsManager()->get(self::SETTINGS_HOMEPAGE, $languageId);
-        if (!$homePageSetting instanceof SettingWrapper) {
-            trigger_error("HomePage setting not found, setting to none.");
-            $homePageSetting = $this->getSettingsManager()->set(self::SETTINGS_HOMEPAGE, 0, $languageId);
-        }
-        $homePageId = (int)$homePageSetting->getValue();
-        if ($homePageId === 0) return null;
-
-        $homePage = $this->getByGlobalId($languageId, $homePageId);
-        if (!$homePage instanceof PageWrapper) {
-            trigger_error("HomePage $homePageId not found, setting to none.");
-            $this->getSettingsManager()->set(self::SETTINGS_HOMEPAGE, 0, $languageId);
-
-            return $this->getHomePage($languageId);
-        }
-        return $homePage;
-    }
-
     /**
      * @param int $languageId
      * @param int $id PageId
      * @param bool $throw
      * @return null|PageWrapper
+     * @throws PageNotFound
      */
     public function getByGlobalId(int $languageId, int $id, bool $throw = true): ?PageWrapper {
         $cached = $this->getPlainById($id, $languageId, $throw);
@@ -257,9 +239,14 @@ class PageManager extends Manager implements IPageManager {
         return null;
     }
 
+    /**
+     * @param int $languageId
+     * @return null|PageWrapper
+     * @throws LanguageByIdNotFound
+     */
     public function get404(int $languageId): ?PageWrapper {
-        $pageId = $this->getSettingsManager()->get(self::SETTING_404, $languageId);
-
+        $language = $this->getLanguageManager()->getById($languageId);
+        return $this->getByGlobalId($languageId, $language->getErrorpageId(), false);
     }
 
     /**
@@ -284,6 +271,7 @@ class PageManager extends Manager implements IPageManager {
      * @param int $type (page|post)
      * @return int ID of the page added
      * @throws InvalidArgumentException|Exception
+     * @throws Throwable
      */
     public function addEmpty(int $type): int {
         if (!in_array($type, self::TYPES)) throw new InvalidArgumentException("Invalid type " . implode("|", self::TYPES) . " needed, $type got.");
@@ -321,6 +309,22 @@ class PageManager extends Manager implements IPageManager {
         return $globalId;
     }
 
+    /**
+     * @param int $pageId
+     * @param int $langId
+     * @param int|null $parentId
+     * @param string $title
+     * @param string $description
+     * @param string $url
+     * @param int $globalVisibility
+     * @param int $localVisibility
+     * @param string $content
+     * @param int $imageId
+     * @throws Exception
+     * @throws InvalidState
+     * @throws PageNotFound
+     * @throws Throwable
+     */
     public function update(int $pageId, int $langId, ?int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId) {
 
         $page = $this->getPlainById($pageId, $langId);
@@ -436,10 +440,9 @@ class PageManager extends Manager implements IPageManager {
         if (!$this->exists($globalId)) throw new InvalidArgumentException("Page not found");
 
         foreach ($this->getLanguageManager()->getAvailableLanguages() as $language) {
-            $homePage = $this->getHomePage($language->getId());
-            if ($homePage instanceof PageWrapper && $homePage->getGlobalId() === $globalId) {
+            if ($language->getHomepageId() == $globalId)
                 throw new InvalidArgumentException("Is at least one homepage");
-            }
+
         }
 
         $parentId = $this->getParentOf($globalId);

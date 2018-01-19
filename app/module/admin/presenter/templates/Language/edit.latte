@@ -1,7 +1,7 @@
 {block content}
     {control languageEditForm}
     <a id="language-delete"
-       href="{plink Language:delete \adminModule\LanguagePresenter::ID_KEY=>$id}">{_"admin.language.edit.action.delete.label"}</a>
+       href="{plink delete! $id}">{_"admin.language.edit.action.delete.label"}</a>
     <script>
         _stack.push(function (di) {
             jQuery(document).ready(function ($) {

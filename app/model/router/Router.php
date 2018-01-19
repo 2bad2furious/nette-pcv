@@ -117,7 +117,7 @@ class Router {
 
         $adminRouteList[] = new Route("admin", "Default:");
 
-        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action edit|delete>/<" . \adminModule\LanguagePresenter::ID_KEY . ">", [
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action edit>/<" . \adminModule\LanguagePresenter::ID_KEY . ">", [
             \adminModule\LanguagePresenter::ID_KEY => [
                 Route::PATTERN => "\d+",
             ],
@@ -127,7 +127,7 @@ class Router {
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/<action add>");
 
-        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/[<" . \adminModule\LanguagePresenter::GENERATED_KEY . " 1|0>]?<" . \adminModule\LanguagePresenter::SEARCH_KEY . "><" . \adminModule\LanguagePresenter::PAGE_KEY . "=1 \d+>", [
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter language>/?<" . \adminModule\LanguagePresenter::SEARCH_KEY . "><" . \adminModule\LanguagePresenter::PAGE_KEY . "=1 \d+>", [
             "action" => [
                 Route::VALUE => "default",
             ],

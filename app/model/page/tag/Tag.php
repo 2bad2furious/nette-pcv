@@ -15,7 +15,7 @@ class Tag {
      * @param string $name
      * @param Language $language
      */
-    public function __construct(int $id,string $name, Language $language) {
+    public function __construct(int $id, string $name, Language $language) {
         $this->id = $id;
         $this->name = $name;
         $this->language = $language;

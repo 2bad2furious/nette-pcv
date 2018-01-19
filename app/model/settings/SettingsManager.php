@@ -11,7 +11,14 @@ class SettingsManager extends Manager implements ISettingsManager {
         COLUMN_VALUE = "value",
         COLUMN_LANG = "lang_id";
 
-    public function get(string $option, ?int $language = null, bool $throw = true):?SettingWrapper {
+    /**
+     * @param string $option
+     * @param int|null $language
+     * @param bool $throw
+     * @return null|SettingWrapper
+     * @throws SettingNotFound
+     */
+    public function get(string $option, ?int $language = null, bool $throw = true): ?SettingWrapper {
         $cached = $this->getCache()->load($this->getCacheKey($option, $language),
             function () use ($option, $language) {
                 return $this->getFromDb($option, (int)$language);
@@ -19,11 +26,19 @@ class SettingsManager extends Manager implements ISettingsManager {
 
         if ($cached instanceof Setting) {
             return new SettingWrapper($cached, $this->getLanguageManager());
-        } else if ($throw) throw new SettingNotFound($option, $language instanceof Language ? $language->getId() : 0);
+        } else if ($throw) throw new SettingNotFound($option, (int)$language);
 
         return null;
     }
 
+    /**
+     * @param string $option
+     * @param string $value
+     * @param int|null $languageId
+     * @return SettingWrapper
+     * @throws SettingNotFound
+     * @throws Throwable
+     */
     public function set(string $option, string $value, ?int $languageId = null): SettingWrapper {
         $existing = $this->get($option, $languageId, false);
 
@@ -61,16 +76,6 @@ class SettingsManager extends Manager implements ISettingsManager {
         $this->getCache()->clean();
     }
 
-    public function getPageSettings(int $langId): PageSettings {
-        return new PageSettings(
-            $this->getLocalOrGlobal(PageManager::SETTINGS_SITE_NAME, $langId)->getValue(),
-            $this->getLocalOrGlobal(PageManager::SETTINGS_GOOGLE_ANALYTICS, $langId)->getValue(),
-            $this->getLocalOrGlobal(PageManager::SETTINGS_TITLE_SEPARATOR, $langId)->getValue(),
-            $this->getLogo($langId),
-            $this->getFavicon($langId)
-        );
-    }
-
     /**
      * @param string $option
      * @param int $langId
@@ -102,39 +107,5 @@ class SettingsManager extends Manager implements ISettingsManager {
 
     private function getCacheKey(string $option, ?int $language): string {
         return $option . "_" . (int)$language;
-    }
-
-    private function getLocalOrGlobal(string $option, int $languageId): SettingWrapper {
-        $local = $this->get($option, $languageId);
-        return ($local->getValue()) ? $local : $this->get($option, null);
-    }
-
-    //TODO fix copy-paste
-    private function getFavicon(int $languageId):?Media {
-        $option = PageManager::SETTINGS_FAVICON;
-        $faviconSetting = $this->getLocalOrGlobal($option, $languageId);
-        $faviconId = (int)$faviconSetting->getValue();
-        $favicon = $this->getMediaManager()->getById($faviconId, MediaManager::TYPE_IMAGE);
-        if (!$favicon instanceof Media && $faviconId !== 0) {
-            trigger_error("Favicon not found, unsetting.");
-            $this->set($option, 0, $faviconSetting->getLanguageId());
-
-            return $this->getFavicon($languageId);
-        }
-        return $favicon;
-    }
-
-    private function getLogo(int $languageId):?Media {
-        $option = PageManager::SETTINGS_LOGO;
-        $logoSetting = $this->getLocalOrGlobal($option, $languageId);
-        $logoId = (int)$logoSetting->getValue();
-        $logo = $this->getMediaManager()->getById($logoId, MediaManager::TYPE_IMAGE);
-        if (!$logo instanceof Media && $logoId !== 0) {
-            trigger_error("Logo not found, unsetting.");
-            $this->set($option, 0, $logoSetting->getLanguageId());
-
-            return $this->getLogo($languageId);
-        }
-        return $logo;
     }
 }

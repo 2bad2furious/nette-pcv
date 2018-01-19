@@ -5,7 +5,5 @@ interface ISettingsManager extends IManager {
 
     public function set(string $option, string $value, ?int $langId): SettingWrapper;
 
-    public function getPageSettings(int $languageId): PageSettings;
-
     public function cleanCache();
 }

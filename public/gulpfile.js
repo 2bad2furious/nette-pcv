@@ -19,6 +19,11 @@ function defaultAction() {
         .replace(history, "")
         .replace(builderSetUp, history + "\n" + builderSetUp);
 
+    if(!fs.existsSync("./libs"))
+        fs.mkdirSync("./libs")
+    if(!fs.existsSync("./libs/nittro"))
+        fs.mkdirSync("./libs/nittro")
+
     fs.writeFileSync("./libs/nittro/nittro.js", finalFileContent);
 
     fs.writeFileSync("./libs/nittro/nittro.css", builder.buildCss());

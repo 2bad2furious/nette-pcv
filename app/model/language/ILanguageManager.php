@@ -13,17 +13,28 @@ interface ILanguageManager extends IManager {
     const TRIGGER_LANGUAGE_ADDED = "trigger.language.added";
     const TRIGGER_LANGUAGE_EDITED = "trigger.language.edited";
 
-    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated): array;
+    /**
+     * @param int $page
+     * @param int $perPage
+     * @param $numOfPages
+     * @param null|string $search
+     * @return array
+     * @throws LanguageByIdNotFound
+     */
+    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search): array;
 
     /**
      * @return Language[]
+     * TODO cache?
+     * @throws LanguageByIdNotFound
      */
     public function getAvailableLanguages(): array;
 
     /**
-     * @param string $langCode of the language
-     * @param bool $throw if not found
+     * @param string $langCode
+     * @param bool $throw
      * @return Language|null
+     * @throws LanguageByCodeNotFound
      */
     public function getByCode(string $langCode, bool $throw = true): ?Language;
 
@@ -40,12 +51,27 @@ interface ILanguageManager extends IManager {
 
     /**
      * @return Language
+     * @throws LanguageByIdNotFound
      */
     public function getDefaultLanguage(): Language;
 
-    public function add(string $code, string $title): Language;
 
-    public function edit(int $langId, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page);
+    public function add(string $code, string $title,string $friendly): Language;
+
+    /**
+     * @param int $languageId
+     * @param string $friendly
+     * @param string $ga
+     * @param string $title
+     * @param string $separator
+     * @param int $logoId
+     * @param int $homePageId
+     * @param int $faviconId
+     * @param int $error404page
+     * @throws LanguageByIdNotFound
+     * @throws Throwable
+     */
+    public function edit(int $languageId,string $friendly, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page);
 
     /**
      * @param int $id

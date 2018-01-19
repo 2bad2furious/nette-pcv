@@ -25,7 +25,6 @@
 class PageWrapper {
     private $page;
     private $language;
-    private $pageSettings;
     private $pageManager;
     private $languageManager;
     private $settingsManager;
@@ -60,7 +59,7 @@ class PageWrapper {
 
     /**
      * @return Language
-     * @throws InvalidState
+     * @throws LanguageByIdNotFound
      */
     public function getLanguage(): Language {
         if (!$this->language instanceof Language) {
@@ -69,20 +68,16 @@ class PageWrapper {
         return $this->language;
     }
 
-    public function getAuthor():?UserIdentity {
+    public function getAuthor(): ?UserIdentity {
         return $this->userManager->getUserIdentityById($this->getAuthorId());
     }
 
     /**
-     * @return PageSettings
+     * @return bool
+     * @throws LanguageByIdNotFound
      */
-    private function getPageSettings(): PageSettings {
-        return $this->pageSettings instanceof PageSettings ? $this->pageSettings : $this->pageSettings = $this->settingsManager->getPageSettings($this->getLanguageId());
-    }
-
     public function isHomePage(): bool {
-        $page = $this->pageManager->getHomePage($this->getLanguageId());
-        return $page instanceof PageWrapper && $page->getLocalId() === $this->getLocalId();
+        return $this->getLanguage()->getHomepageId() == $this->getGlobalId();
     }
 
     /**
@@ -94,6 +89,11 @@ class PageWrapper {
         return call_user_func_array([$this->getPage(), $name], $arguments);
     }
 
+    /**
+     * @param bool $prependSlash
+     * @return string
+     * @throws LanguageByIdNotFound
+     */
     public function getCompleteUrl(bool $prependSlash = true): string {
         return ($prependSlash ? "/" : "") . $this->getLanguage()->getCode() . "/" . $this->getUrl();
     }
@@ -102,9 +102,13 @@ class PageWrapper {
         return $this->getStatus() === PageManager::STATUS_PUBLIC;
     }
 
+    /**
+     * @return string
+     * @throws LanguageByIdNotFound
+     */
     public function getCompleteTitle(): string {
-        $separator = $this->getPageSettings()->getTitleSeparator();
-        $siteTitle = $this->getPageSettings()->getSiteName();
+        $separator = $this->getLanguage()->getTitleSeparator();
+        $siteTitle = $this->getLanguage()->getSiteName();
 
         return $this->getTitle() . " " . (
             $siteTitle && $separator
@@ -115,21 +119,34 @@ class PageWrapper {
             );
     }
 
+    /**
+     * @param bool $prependSlash
+     * @return string
+     * @throws LanguageByIdNotFound
+     */
     public function getPermanentUrl(bool $prependSlash = true): string {
         return ($prependSlash ? "/" : "") . $this->getLanguage()->getCode() . "/" . PageManager::PAGE_URL_PERMANENT . "/" . $this->getGlobalId();
     }
 
-    public function getImage():?Media {
+    public function getImage(): ?Media {
         if (!($imageId = $this->getImageId())) return null;
         return $this->mediaManager->getById($imageId, MediaManager::TYPE_IMAGE);
     }
 
+    /**
+     * @return string
+     * @throws LanguageByIdNotFound
+     */
     public function getSiteName(): string {
-        return $this->getPageSettings()->getSiteName();
+        return $this->getLanguage()->getSiteName();
     }
 
+    /**
+     * @return string
+     * @throws LanguageByIdNotFound
+     */
     public function getGA(): string {
-        return $this->getPageSettings()->getGoogleAnalytics();
+        return $this->getLanguage()->getGa();
     }
 
     public function isTitleDefault(): bool {

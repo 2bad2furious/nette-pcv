@@ -7,26 +7,18 @@
                     class="fa fa-times"></i></a>
         {input submit}
     {/form}
-    {var $bools = [null,true,false]}
-    <div>
-        {dump $bools}
-        {foreach $bools as $key => $bool}
-            <a class="{if $bool == $isGenerated}active{/if}"
-               href="{plink this \adminModule\LanguagePresenter::GENERATED_KEY=>$bool}">{_"admin.language.default.generated.{$key}"}</a>
-        {/foreach}
-    </div>
     <a href="{plink add}">{_"admin.language.default.add.label"}</a>
-    <table>
+    <table n:snippet="languages">
         {foreach $languages as $lang}
             <tr>
                 <td>{$lang->getId()}</td>
-                <td>{if LanguageManager::isCodeGenerated($lang->getCode())}{_"admin.language.default.no_code"}{else}{$lang->getCode()}{/if}</td>
+                <td>{$lang->getCode()}</td>
                 <td>
                     <a
                             href="{plink edit \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">{_"admin.language.default.edit.label"}</a>
                 </td>
                 <td><a class="language-delete"
-                       href="{plink Language:delete \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">{_"admin.language.default.delete.label"}</a>
+                       href="{plink delete! $lang->getId()}">{_"admin.language.default.delete.label"}</a>
                 </td>
             </tr>
         {/foreach}
@@ -34,7 +26,7 @@
     {control paginator}
     <script>
         jQuery(document).ready(function ($) {
-            $("a.language-delete").click(function (e) {
+            $("#{$control->getSnippetId("languages")}").on("click","a.language-delete",function (e) {
                 if (!confirm({_"admin.language.default.action.delete.confirm"}))
                     e.preventDefault();
             })

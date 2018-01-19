@@ -22,7 +22,7 @@ class PagePresenter extends AdminPresenter {
         VISIBILITY_DELETED = "deleted",
         VISIBILITIES = [self::VISIBILITY_ALL, self::VISIBILITY_PUBLIC, self::VISIBILITY_DRAFT, /*self::VISIBILITY_DELETED until figured out*/],
 
-        DEFAULT_VISIBILITY = self::VISIBILITY_PUBLIC,
+        DEFAULT_VISIBILITY = self::VISIBILITY_ALL,
 
         VISIBILITY_TABLE = [
         self::VISIBILITY_ALL     => PageManager::STATUS_ALL,

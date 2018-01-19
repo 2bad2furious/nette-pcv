@@ -8,23 +8,32 @@ class LanguageManager extends Manager implements ILanguageManager {
     const TABLE = "language",
         COLUMN_ID = "language_id",
         COLUMN_CODE = "code", COLUMN_CODE_LENGTH = 5, COLUMN_CODE_PATTERN = "[a-z]{2}_[A-Z]{2}|[a-z]{2}",
+        COLUMN_FRIENDLY = "friendly", COLUMN_FRIENDLY_LENGTH = 25,
+        COLUMN_GA = "ga", COLUMN_GA_LENGTH = 15,
+        COLUMN_HOMEPAGE = "homepage_id",
+        COLUMN_ERRORPAGE = "errorpage_id",
+        COLUMN_SITE_NAME = "site_name", COLUMN_SITE_NAME_LENGTH = 40,
+        COLUMN_TITLE_SEPARATOR = "title_separator", COLUMN_TITLE_SEPARATOR_LENGTH = 20,
+        COLUMN_FAVICON = "favicon_id",
+        COLUMN_LOGO = "logo_id",
 
         SETTINGS_DEFAULT_LANGUAGE = "language.default";
-    const GENERATED_CODE_PREFIX = "glc";
-    const ACTION_CACHE = "language.cache",
-        ACTION_MANAGE = "language.manage";
 
-    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search, ?bool $codeIsGenerated): array {
+    /**
+     * @param int $page
+     * @param int $perPage
+     * @param $numOfPages
+     * @param null|string $search
+     * @return array
+     * @throws LanguageByIdNotFound
+     */
+    public function getFiltered(int $page, int $perPage, &$numOfPages, ?string $search): array {
         $selection = $this->getDatabase()
             ->table(self::TABLE)
             ->order(self::COLUMN_ID);
 
-        if (is_bool($codeIsGenerated)) {
-            $selection = $selection->where([self::COLUMN_CODE . ($codeIsGenerated ? " LIKE (?)" : " NOT LIKE (?)") => self::GENERATED_CODE_PREFIX . "%"]);
-        }
-
         if (is_string($search)) {
-            $selection = $selection->where(self::COLUMN_CODE . " LIKE (?)", "%" . $search . "%");
+            $selection->where(self::COLUMN_CODE . " LIKE (?)", "%" . $search . "%");
         }
 
         $data = $selection->page($page, $perPage, $numOfPages);
@@ -39,17 +48,14 @@ class LanguageManager extends Manager implements ILanguageManager {
     }
 
     /**
-     * @param bool $check whether to include languages that are not finished (=code is generated)
      * @return Language[]
      * TODO cache?
+     * @throws LanguageByIdNotFound
      */
-    public function getAvailableLanguages(bool $check = true): array {
+    public function getAvailableLanguages(): array {
         $data = $this->getDatabase()
             ->table(self::TABLE)
             ->order(self::COLUMN_ID);
-
-        if ($check)
-            $data = $data->where([self::COLUMN_CODE . " NOT LIKE(?)" => self::GENERATED_CODE_PREFIX . "%"]);
 
         $langs = [];
         /** @var IRow $lang */
@@ -59,6 +65,12 @@ class LanguageManager extends Manager implements ILanguageManager {
         return $langs;
     }
 
+    /**
+     * @param string $langCode
+     * @param bool $throw
+     * @return Language|null
+     * @throws LanguageByCodeNotFound
+     */
     public function getByCode(string $langCode, bool $throw = true): ?Language {
         $cached = $this->getCodeCache()->load($langCode,
             function () use ($langCode) {
@@ -69,6 +81,12 @@ class LanguageManager extends Manager implements ILanguageManager {
         return $cached instanceof Language ? $cached : null;
     }
 
+    /**
+     * @param int $id
+     * @param bool $throw
+     * @return Language|null
+     * @throws LanguageByIdNotFound
+     */
     public function getById(int $id, bool $throw = true): ?Language {
         $cached = $this->getIdCache()->load($id,
             function () use ($id) {
@@ -93,34 +111,116 @@ class LanguageManager extends Manager implements ILanguageManager {
         return $this->getById($languageId);
     }
 
-    public function edit(int $languageId, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page) {
+    /**
+     * @param int $languageId
+     * @param string $friendly
+     * @param string $ga
+     * @param string $title
+     * @param string $separator
+     * @param int $logoId
+     * @param int $homePageId
+     * @param int $faviconId
+     * @param int $error404page
+     * @throws LanguageByIdNotFound
+     * @throws Throwable
+     */
+    public function edit(int $languageId, string $friendly, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page) {
         $language = $this->getById($languageId);
 
-        $this->setSettings($languageId, $logoId, $ga, $faviconId, $homePageId, $separator, $title, $error404page);
+        if ($logoId !== 0)
+            $this->getMediaManager()->getById($logoId, MediaManager::TYPE_IMAGE);
+
+        if ($error404page !== 0)
+            $this->getMediaManager()->getById($faviconId, MediaManager::TYPE_IMAGE);
+
+        if (mb_strlen($ga) > self::COLUMN_GA_LENGTH)
+            throw new InvalidArgumentException("Google Analytics code must be at most " . self::COLUMN_GA_LENGTH . " long");
+
+        if (mb_strlen($friendly) > self::COLUMN_FRIENDLY_LENGTH)
+            throw new InvalidArgumentException("Friendly name must be at most " . self::COLUMN_FRIENDLY_LENGTH . " long");
+
+        if (mb_strlen($title) > self::COLUMN_SITE_NAME_LENGTH)
+            throw new InvalidArgumentException("Site name must be at most " . self::COLUMN_SITE_NAME_LENGTH . " long");
+
+        if (mb_strlen($separator) > self::COLUMN_TITLE_SEPARATOR_LENGTH)
+            throw new InvalidArgumentException("Separator must be at most " . self::COLUMN_TITLE_SEPARATOR_LENGTH . " long");
+
+        if ($homePageId)
+            $this->getPageManager()->exists($homePageId, $languageId);
+
+        if ($error404page)
+            $this->getPageManager()->exists($error404page, $languageId);
+
+
+        $this->runInTransaction(function () use ($language, $friendly, $ga, $title, $separator, $logoId, $homePageId, $faviconId, $error404page) {
+            return $this->getDatabase()->table(self::TABLE)
+                ->wherePrimary($language->getId())
+                ->update([
+                    self::COLUMN_FRIENDLY        => $friendly,
+                    self::COLUMN_TITLE_SEPARATOR => $separator,
+                    self::COLUMN_GA              => $ga,
+                    self::COLUMN_SITE_NAME       => $title,
+                    self::COLUMN_LOGO            => $logoId,
+                    self::COLUMN_HOMEPAGE        => $homePageId,
+                    self::COLUMN_FAVICON         => $faviconId,
+                    self::COLUMN_ERRORPAGE       => $error404page,
+                ]);
+        });
 
         $this->trigger(self::TRIGGER_LANGUAGE_EDITED, $language);
     }
 
-    public function add(string $code, string $title): Language {
+    /**
+     * @param string $code
+     * @param string $title
+     * @param string $friendly
+     * @return Language
+     * @throws LanguageByCodeNotFound
+     * @throws LanguageByIdNotFound
+     * @throws InvalidArgumentException
+     * @throws Throwable
+     */
+    public function add(string $code, string $title, string $friendly): Language {
         if (!preg_match("#" . self::COLUMN_CODE_PATTERN . "#", $code))
             throw new InvalidArgumentException("Code pattern not correct");
+
+        if (mb_strlen($title) > self::COLUMN_SITE_NAME_LENGTH)
+            throw new InvalidArgumentException("SITE NAME must be at most " . self::COLUMN_SITE_NAME_LENGTH . " long");
+
+        if (mb_strlen($friendly) > self::COLUMN_FRIENDLY_LENGTH)
+            throw new InvalidArgumentException("Frienldy must be at most " . self::COLUMN_FRIENDLY_LENGTH . " long");
 
         if ($this->getByCode($code, false) instanceof Language)
             throw new InvalidArgumentException("Code already used");
 
         $this->uncacheCode($code);//uncached new code
 
-        $id = $this->runInTransaction(function () use ($code) {
+
+        $faviconId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_FAVICON, null)->getValue();
+
+        $logoId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_LOGO, null)->getValue();
+
+        $ga = $this->getSettingsManager()->get(PageManager::SETTINGS_GOOGLE_ANALYTICS, null)->getValue();
+
+        $separator = $this->getSettingsManager()->get(PageManager::SETTINGS_TITLE_SEPARATOR, null)->getValue();
+
+        $id = $this->runInTransaction(function () use ($code, $title, $friendly, $faviconId, $logoId, $ga, $separator) {
             $id = $this->getDatabase()->table(self::TABLE)->insert([
-                self::COLUMN_CODE => $code,
+                self::COLUMN_CODE            => $code,
+                self::COLUMN_FRIENDLY        => $friendly,
+                self::COLUMN_SITE_NAME       => $title,
+                self::COLUMN_ERRORPAGE       => 0,
+                self::COLUMN_HOMEPAGE        => 0,
+                self::COLUMN_FAVICON         => $faviconId,
+                self::COLUMN_LOGO            => $logoId,
+                self::COLUMN_GA              => $ga,
+                self::COLUMN_TITLE_SEPARATOR => $separator,
             ])->getPrimary();
 
             $this->uncacheId($id);
 
             return $id;
         });
-
-        $this->setSettings($id, 0, "", 0, 0, " | ", $title, 0);
 
         $language = $this->getById($id);
 
@@ -132,6 +232,8 @@ class LanguageManager extends Manager implements ILanguageManager {
     /**
      * @param int $id
      * @throws CannotDeleteLastLanguage
+     * @throws LanguageByIdNotFound
+     * @throws Throwable
      */
     public function delete(int $id) {
         $language = $this->getById($id);
@@ -148,10 +250,6 @@ class LanguageManager extends Manager implements ILanguageManager {
         });
 
         $this->trigger(self::TRIGGER_LANGUAGE_DELETED, $language);
-    }
-
-    public static function isCodeGenerated(string $code): bool {
-        return substr($code, 0, strlen(self::GENERATED_CODE_PREFIX)) === self::GENERATED_CODE_PREFIX;
     }
 
     private function getCodeCache(): Cache {
@@ -200,26 +298,16 @@ class LanguageManager extends Manager implements ILanguageManager {
     private function createFromRow(IRow $row): Language {
         return new Language(
             $row[self::COLUMN_ID],
-            $row[self::COLUMN_CODE]
+            $row[self::COLUMN_CODE],
+            $row[self::COLUMN_FRIENDLY],
+            $row[self::COLUMN_SITE_NAME],
+            $row[self::COLUMN_TITLE_SEPARATOR],
+            $row[self::COLUMN_GA],
+            $row[self::COLUMN_LOGO],
+            $row[self::COLUMN_FAVICON],
+            $row[self::COLUMN_HOMEPAGE],
+            $row[self::COLUMN_ERRORPAGE]
         );
-    }
-
-    private function setSettings(int $languageId, int $logoId, string $ga, int $faviconId, int $homePageId, string $titleSeparator, string $siteName, int $error404pageId) {
-        $sm = $this->getSettingsManager();
-
-        $sm->set(PageManager::SETTINGS_LOGO, $logoId, $languageId);
-
-        $sm->set(PageManager::SETTINGS_GOOGLE_ANALYTICS, $ga, $languageId);
-
-        $sm->set(PageManager::SETTINGS_FAVICON, $faviconId, $languageId);
-
-        $sm->set(PageManager::SETTINGS_HOMEPAGE, $homePageId, $languageId);
-
-        $sm->set(PageManager::SETTINGS_TITLE_SEPARATOR, $titleSeparator, $languageId);
-
-        $sm->set(PageManager::SETTINGS_SITE_NAME, $siteName, $languageId);
-
-        $sm->set(PageManager::SETTING_404, $error404pageId, $languageId);
     }
 
     private function uncache(Language $language) {
