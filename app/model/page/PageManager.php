@@ -26,6 +26,8 @@ class PageManager extends Manager implements IPageManager {
         LOCAL_COLUMN_CREATED = "created",
         LOCAL_COLUMN_LAST_EDITED = "last_edited",
         LOCAL_COLUMN_AUTHOR = "author",
+        LOCAL_COLUMN_DISPLAY_TITLE = "display_title",
+        LOCAL_COLUMN_DISPLAY_BREADCRUMBS = "display_breadcrumbs",
 
         LOCAL_SEARCH = self::LOCAL_TABLE . "." . "content," . self::LOCAL_TABLE . "." . "title," . self::LOCAL_TABLE . "." . "url," . self::LOCAL_TABLE . "." . "description",
 
@@ -569,6 +571,8 @@ class PageManager extends Manager implements IPageManager {
             $row[self::LOCAL_COLUMN_IMAGE],
             $row[self::MAIN_COLUMN_STATUS],
             $row[self::LOCAL_COLUMN_STATUS],
+            false, //TODO get from db
+            false,
             $this->getChildrenIds($globalId)
         );
     }

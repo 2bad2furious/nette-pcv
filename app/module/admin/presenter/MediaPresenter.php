@@ -6,15 +6,14 @@ namespace adminModule;
 
 class MediaPresenter extends AdminPresenter {
 
-    protected function setPageTitle(): string {
-        // TODO: Implement setPageTitle() method.
-    }
-
     protected function getAllowedRoles(): array {
-        // TODO: Implement getAllowedRoles() method.
+        switch ($this->getAction()) {
+            case "default":
+                return \UserManager::ROLES_ADMINISTRATION;
+        }
     }
 
-    protected function setPageSubtitle(): string {
-        // TODO: Implement setPageSubtitle() method.
+    public function renderDefault(){
+
     }
 }

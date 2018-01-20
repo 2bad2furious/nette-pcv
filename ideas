@@ -17,3 +17,5 @@ get rid of pageType class - ok
 inconsistency in adminbar vs real administration - LANGUAGE - ok
 
 language has all its settings, settings only store the global and custom ones
+
+add page displayTitle form

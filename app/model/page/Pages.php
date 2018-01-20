@@ -28,6 +28,8 @@ abstract class APage {
     private $imageId;
     private $globalStatus;
     private $localStatus;
+    private $displayTitle;
+    private $displayBreadcrumbs;
     private $children = [];
 
     /**
@@ -46,9 +48,11 @@ abstract class APage {
      * @param int $imageId
      * @param int $globalStatus
      * @param int $localStatus
+     * @param bool $displayTitle
+     * @param bool $displayBreadcrumbs
      * @param int[] $childrenIds
      */
-    public function __construct(int $globalId, int $localId, int $parentId, int $langId, string $title, string $url, string $description, string $content, int $authorId, DateTime $created, DateTime $edited, int $imageId, int $globalStatus, int $localStatus, array $childrenIds) {
+    public function __construct(int $globalId, int $localId, int $parentId, int $langId, string $title, string $url, string $description, string $content, int $authorId, DateTime $created, DateTime $edited, int $imageId, int $globalStatus, int $localStatus, bool $displayTitle, bool $displayBreadcrumbs, array $childrenIds) {
         $this->globalId = $globalId;
         $this->localId = $localId;
         $this->parentId = $parentId;
@@ -63,6 +67,8 @@ abstract class APage {
         $this->imageId = $imageId;
         $this->globalStatus = $globalStatus;
         $this->localStatus = $localStatus;
+        $this->displayTitle = $displayTitle;
+        $this->displayBreadcrumbs = $displayBreadcrumbs;
 
         foreach ($childrenIds as $childrenId) {
             $this->addChild($childrenId);
