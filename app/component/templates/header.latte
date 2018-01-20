@@ -33,7 +33,7 @@
             {define header-children}
                 <ul>
                     {foreach $header as $h}
-                        <li>
+                        <li n:class="$h->isActive($page), active">
                             <a href="{$h->getUrl()}">{$h->getTitle()}</a>
                             {if $h->getChildren()}
                                 <input type="checkbox" id="checkbox-header-{$h->getId()}" class="header-toggler">

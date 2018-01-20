@@ -96,18 +96,24 @@ html {
       html body #admin-header-bar #logout:hover > i {
         color: red; }
     html body header {
-      text-align: center;
-      padding-top: 10px; }
+      position: absolute;
+      padding: 10px;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.8); }
+      html body header > input.header-toggler ~ label > i {
+        color: white; }
       html body header input.header-toggler {
         display: none; }
         html body header input.header-toggler:checked ~ label > i.collapse {
           display: initial; }
         html body header input.header-toggler:not(:checked) ~ label > i.expand {
           display: initial; }
-        html body header input.header-toggler:checked ~ nav, html body header input.header-toggler:checked ~ ul {
-          height: initial !important; }
+        html body header input.header-toggler:checked ~ nav {
+          height: calc(100vh - 32px); }
         html body header input.header-toggler:checked ~ ul {
-          border-top: 1px solid black; }
+          height: initial; }
+        html body header input.header-toggler:checked ~ nav, html body header input.header-toggler:checked ~ ul {
+          width: initial; }
       html body header label.small i.expand, html body header label.small i.collapse {
         font-size: 1em; }
       html body header label i.expand, html body header label i.collapse {
@@ -115,20 +121,21 @@ html {
         cursor: pointer;
         display: none; }
       html body header nav {
-        overflow: hidden;
-        height: 0; }
+        height: 0;
+        width: 0;
+        overflow: hidden; }
         html body header nav > ul {
-          height: initial !important; }
+          height: initial !important;
+          width: initial !important; }
         html body header nav ul {
           list-style-type: none;
           height: 0;
-          padding: 0;
+          width: 0;
+          padding-left: 15px;
           margin: 0;
           overflow: hidden; }
-          html body header nav ul li {
-            text-align: center;
-            margin: 0 auto;
-            max-width: 40%;
-            min-width: 320px; }
+          html body header nav ul li a, html body header nav ul li i {
+            font-size: 1.25em;
+            color: white; }
 
 /*# sourceMappingURL=css.css.map */

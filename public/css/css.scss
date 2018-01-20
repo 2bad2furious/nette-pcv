@@ -37,7 +37,7 @@ html {
       padding: 10px;
 
       * {
-        color: $color1;
+        color: white;
       }
       #logout {
         &:hover > i {
@@ -47,8 +47,14 @@ html {
     }
 
     header {
-      text-align: center;
-      padding-top: 10px;
+      position: absolute;
+      padding: 10px;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+
+      & > input.header-toggler ~ label > i {
+        color: white;
+      }
 
       input.header-toggler {
         display: none;
@@ -58,12 +64,14 @@ html {
         &:not(:checked) ~ label > i.expand {
           display: initial;
         }
-        &:checked ~ nav, &:checked ~ ul {
-          height: initial !important;
+        &:checked ~ nav {
+          height: calc(100vh - 32px);
         }
-
         &:checked ~ ul {
-          border-top: 1px solid black;
+          height: initial;
+        }
+        &:checked ~ nav, &:checked ~ ul {
+          width: initial;
         }
 
       }
@@ -83,28 +91,36 @@ html {
         }
       }
       nav {
-        overflow: hidden;
         height: 0;
+        width: 0;
+        overflow: hidden;
 
         & > ul {
           height: initial !important;
+          width: initial !important;
         }
-
         ul {
           list-style-type: none;
           height: 0;
-          padding: 0;
+          width: 0;
+          padding-left: 15px;
           margin: 0;
           overflow: hidden;
 
           li {
-            text-align: center;
-            margin: 0 auto;
-            max-width: 40%;
-            min-width: 320px;
+            //min-width: 320px;
+            a, i {
+              font-size: 1.25em;
+              color: white;
+            }
+
           }
+
         }
       }
+    }
+    main {
+      //padding-top: 55px;
     }
   }
 
