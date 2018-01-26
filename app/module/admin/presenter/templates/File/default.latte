@@ -1,0 +1,25 @@
+{block content}
+    {form mediaUploadForm}
+        <ul n:formErrors></ul>
+        {label \FormFactory::MEDIA_UPLOAD_NAME}
+        {input \FormFactory::MEDIA_UPLOAD_NAME}
+        {input submit}
+    {/form}
+    <div>
+        {foreach $files as $file}
+            <div>
+                <div id="preview">
+                    {dump $file->isImage()}
+                    {if $file->isImage()}
+                        <img src="/uploads/{$file->getSrc()}">
+                    {/if}
+                </div>
+                <div>
+                    name: {$file->getSrc()}
+                    link: <a href="/uploads/{$file->getSrc()}">/uploads/{$file->getSrc()}</a>
+                </div>
+            </div>
+        {/foreach}
+        {control paginator}
+    </div>
+{/block}-

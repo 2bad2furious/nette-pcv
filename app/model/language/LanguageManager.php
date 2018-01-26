@@ -98,7 +98,8 @@ class LanguageManager extends Manager implements ILanguageManager {
     }
 
     public function cleanCache() {
-        $this->getCache()->clean();
+        $this->getIdCache()->clean();
+        $this->getCodeCache()->clean();
     }
 
     /**
@@ -128,10 +129,10 @@ class LanguageManager extends Manager implements ILanguageManager {
         $language = $this->getById($languageId);
 
         if ($logoId !== 0)
-            $this->getMediaManager()->getById($logoId, MediaManager::TYPE_IMAGE);
+            $this->getMediaManager()->getById($logoId, FileManager::TYPE_IMAGE);
 
         if ($error404page !== 0)
-            $this->getMediaManager()->getById($faviconId, MediaManager::TYPE_IMAGE);
+            $this->getMediaManager()->getById($faviconId, FileManager::TYPE_IMAGE);
 
         if (mb_strlen($ga) > self::COLUMN_GA_LENGTH)
             throw new InvalidArgumentException("Google Analytics code must be at most " . self::COLUMN_GA_LENGTH . " long");
@@ -151,6 +152,7 @@ class LanguageManager extends Manager implements ILanguageManager {
         if ($error404page)
             $this->getPageManager()->exists($error404page, $languageId);
 
+        $this->uncache($language);
 
         $this->runInTransaction(function () use ($language, $friendly, $ga, $title, $separator, $logoId, $homePageId, $faviconId, $error404page) {
             return $this->getDatabase()->table(self::TABLE)

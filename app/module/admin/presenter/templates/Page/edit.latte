@@ -33,15 +33,7 @@
     <script type="text/javascript">
         _stack.push(function (di) {
             jQuery(document).ready(function ($) {
-                ClassicEditor
-                    .create(document.querySelector("textarea[data-{\FormFactory::TEXTAREA_ID_FOR_EDITOR|noescape}=true]"))
-                    .then(function (editor) {
-                        console.log("inited", editor)
-                    })
-                    .catch(function (error) {
-                        alert(error);
-                        console.error(error);
-                    });
+               CKEDITOR.replaceClass({\FormFactory::TEXTAREA_CLASS_FOR_EDITOR})
 
                 $("#page-delete").click(function (e) {
                     if (!confirm({_"admin.page.edit.action.delete.confirm"}))

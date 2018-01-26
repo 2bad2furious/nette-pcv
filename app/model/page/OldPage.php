@@ -38,7 +38,7 @@ class OldPage {
      */
     private $edited;
     /**
-     * @var null|Media
+     * @var null|File
      */
     private $image;
     /**
@@ -146,10 +146,10 @@ class OldPage {
         $this->language = $language;
     }
 
-    public function setImage(Media $media) {
+    public function setImage(File $media) {
         if ($media->getId() !== $this->imageId) throw new Exception("Ids are not the same");
         if (!$media->isImage()) throw new Exception("Not an image");
-        if ($this->image instanceof Media) throw new Exception("Image already set");
+        if ($this->image instanceof File) throw new Exception("Image already set");
         $this->image = $media;
     }
 
@@ -316,9 +316,9 @@ class OldPage {
     }
 
     /**
-     * @return Media
+     * @return File
      */
-    public function getImage(): ?Media {
+    public function getImage(): ?File {
         return $this->image;
     }
 

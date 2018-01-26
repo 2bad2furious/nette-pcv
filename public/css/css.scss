@@ -120,7 +120,16 @@ html {
       }
     }
     main {
-      //padding-top: 55px;
+      #snippet--content {
+        &.page-11 {
+          #wallpaper-home-image{
+            height:auto;
+            width:auto;
+            max-width: 100vw;
+            max-height: 100vh;
+          }
+        }
+      }
     }
   }
 

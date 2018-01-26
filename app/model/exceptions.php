@@ -8,7 +8,7 @@ class CannotDeleteLastLanguage extends Exception {
 }
 
 abstract class NotFound extends Exception {
-    public function __construct($message = "", Throwable $previous = null) {
+    public function __construct($message = "", ?Throwable $previous = null) {
         parent::__construct($message, 404, $previous);
     }
 
@@ -19,9 +19,9 @@ abstract class NotFoundById extends NotFound {
 
     private $id;
 
-    public function __construct(int $id, Throwable $previous = null) {
+    public function __construct(int $id, ?Throwable $previous = null) {
         $this->id = $id;
-        parent::__construct($this->getMessage() . " not found with id: " . $id, $previous);
+        parent::__construct($this->getName() . " not found with id: " . $id, $previous);
     }
 
     /**
@@ -58,7 +58,7 @@ class LanguageByIdNotFound extends NotFoundById {
     }
 }
 
-class LanguageByCodeNotFound extends NotFound{
+class LanguageByCodeNotFound extends NotFound {
     private $langCode;
 
     /**
@@ -78,6 +78,7 @@ class LanguageByCodeNotFound extends NotFound{
 class PageNotFound extends NotFound {
     private $id;
     private $languageId;
+
     public function __construct(int $id, int $languageId, Throwable $previous = null) {
         $this->id = $id;
         $this->languageId = $languageId;
@@ -97,3 +98,67 @@ class HomePageNotSet extends PageNotFound {
 
 }
 
+class FileNotFoundById extends NotFoundById {
+
+    protected function getName(): string {
+        return "File";
+    }
+}
+
+class FileNotFoundWithRightType extends FileNotFoundById {
+    /**
+     * @var int
+     */
+    private $desiredType;
+    /**
+     * @var int
+     */
+    private $foundType;
+
+    public function __construct(int $id, int $desiredType, int $foundType, Throwable $previous = null) {
+        $this->desiredType = $desiredType;
+        $this->foundType = $foundType;
+        parent::__construct($id, $previous);
+    }
+
+    /**
+     * @return int
+     */
+    public function getDesiredType(): int {
+        return $this->desiredType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFoundType(): int {
+        return $this->foundType;
+    }
+}
+
+class FileNotFoundByName extends NotFound {
+    /**
+     * @var string
+     */
+    private $name;
+
+    public function __construct(string $name, ?Throwable $previous = null) {
+
+        parent::__construct("File $name not foudn", $previous);
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string {
+        return $this->name;
+    }
+}
+
+class FileAlreadyExists extends Exception {
+    public function __construct(?Throwable $previous = null) {
+        parent::__construct("File already exists", 500, $previous);
+    }
+
+}

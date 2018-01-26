@@ -79,8 +79,8 @@ abstract class Manager implements IManager {
         return $this->getServiceLoader()->getTagManager();
     }
 
-    protected final function getMediaManager(): IMediaManager {
-        return $this->getServiceLoader()->getMediaManager();
+    protected final function getMediaManager(): IFileManager {
+        return $this->getServiceLoader()->getFileManager();
     }
 
     protected final function getDatabase(): Context {

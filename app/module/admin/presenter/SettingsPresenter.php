@@ -30,6 +30,10 @@ class SettingsPresenter extends AdminPresenter {
         return \UserManager::ROLES_USER_ADMINISTRATION;
     }
 
+
+    /**
+     * @throws \Exception
+     */
     public function actionClean() {
         $this->commonTryCall(function () {
             $pm = $this->getPageManager();

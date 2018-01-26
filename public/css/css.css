@@ -137,5 +137,10 @@ html {
           html body header nav ul li a, html body header nav ul li i {
             font-size: 1.25em;
             color: white; }
+    html body main #snippet--content.page-11 #wallpaper-home-image {
+      height: auto;
+      width: auto;
+      max-width: 100vw;
+      max-height: 100vh; }
 
 /*# sourceMappingURL=css.css.map */

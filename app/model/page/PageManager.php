@@ -197,7 +197,8 @@ class PageManager extends Manager implements IPageManager {
     }
 
     public function cleanCache() {
-        $this->getCache()->clean(); //TODO check if cleaning separately needed
+        $this->getGlobalCache()->clean();
+        $this->getUrlCache()->clean();
     }
 
     /**
@@ -360,8 +361,8 @@ class PageManager extends Manager implements IPageManager {
         if (!preg_match("#" . self::LOCAL_URL_CHARSET_FOR_ADMIN . "#", $url))
             throw new Exception("URL not the right pattern: " . self::LOCAL_URL_CHARSET);
 
-        $image = $imageId === 0 ? null : $this->getMediaManager()->getById($imageId, MediaManager::TYPE_IMAGE);
-        if ($imageId !== 0 && !$image instanceof Media)
+        $image = $imageId === 0 ? null : $this->getMediaManager()->getById($imageId, FileManager::TYPE_IMAGE);
+        if ($imageId !== 0 && !$image instanceof File)
             throw new InvalidArgumentException("Image not found");
 
         //uncache

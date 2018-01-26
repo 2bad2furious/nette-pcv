@@ -46,8 +46,8 @@ abstract class BaseControl extends \Nette\Application\UI\Control {
         return $this->getServiceLoader()->getSettingsManager();
     }
 
-    protected final function getMediaManager(): IMediaManager {
-        return $this->getServiceLoader()->getMediaManager();
+    protected final function getMediaManager(): IFileManager {
+        return $this->getServiceLoader()->getFileManager();
     }
 
     protected final function getFormFactory(): FormFactory {

@@ -16,7 +16,7 @@ services:
     - SettingsManager
     - TagManager
     - HeaderManager
-    - MediaManager
+    - FileManager
 
     #cacheStorage:
         #factory: Nette\Caching\Storages\DevNullStorage

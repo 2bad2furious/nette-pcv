@@ -38,9 +38,9 @@ class PageWrapper {
      * @param ILanguageManager $languageManager
      * @param ISettingsManager $settingsManager
      * @param IUserManager $userManager
-     * @param IMediaManager $mediaManager
+     * @param IFileManager $mediaManager
      */
-    public function __construct(APage $page, IPageManager $pageManager, ILanguageManager $languageManager, ISettingsManager $settingsManager, IUserManager $userManager, IMediaManager $mediaManager) {
+    public function __construct(APage $page, IPageManager $pageManager, ILanguageManager $languageManager, ISettingsManager $settingsManager, IUserManager $userManager, IFileManager $mediaManager) {
         $this->page = $page;
         $this->pageManager = $pageManager;
         $this->languageManager = $languageManager;
@@ -128,9 +128,9 @@ class PageWrapper {
         return ($prependSlash ? "/" : "") . $this->getLanguage()->getCode() . "/" . PageManager::PAGE_URL_PERMANENT . "/" . $this->getGlobalId();
     }
 
-    public function getImage(): ?Media {
+    public function getImage(): ?File {
         if (!($imageId = $this->getImageId())) return null;
-        return $this->mediaManager->getById($imageId, MediaManager::TYPE_IMAGE);
+        return $this->mediaManager->getById($imageId, FileManager::TYPE_IMAGE);
     }
 
     /**

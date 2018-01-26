@@ -181,8 +181,8 @@ abstract class BasePresenter extends Presenter {
         return $this->getServiceLoader()->getSettingsManager();
     }
 
-    protected final function getMediaManager(): IMediaManager {
-        return $this->getServiceLoader()->getMediaManager();
+    protected final function getFileManager(): IFileManager {
+        return $this->getServiceLoader()->getFileManager();
     }
 
 

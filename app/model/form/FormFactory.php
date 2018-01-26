@@ -29,7 +29,7 @@ class FormFactory extends Manager {
 
         LANGUAGE_EDIT_CODE_NAME = "language_code",
 
-        TEXTAREA_ID_FOR_EDITOR = "ckeditor";
+        TEXTAREA_CLASS_FOR_EDITOR = "ckeditor";
     const LANGUAGE_EDIT_SITE_TITLE_NAME = "site_title";
     const LANGUAGE_EDIT_TITLE_SEPARATOR_NAME = "separator";
     const LANGUAGE_EDIT_LOGO_NAME = "logo";
@@ -43,6 +43,7 @@ class FormFactory extends Manager {
     const HEADER_SUBMIT_NAME = "submit";
     const LANGUAGE_EDIT_404 = "page404_id";
     const LANGUAGE_EDIT_FRIENDLY_NAME = "friendly";
+    const MEDIA_UPLOAD_NAME = "upload";
 
     public function createPageEditForm(PageWrapper $page, callable $urlValidator) {
 
@@ -122,12 +123,14 @@ class FormFactory extends Manager {
             self::PAGE_EDIT_CONTENT_NAME,
             "admin.page.edit.local.content")
             ->setDefaultValue($page->getContent())
-            ->getControlPrototype()->data(self::TEXTAREA_ID_FOR_EDITOR, true);
+            ->getControlPrototype()->class(self::TEXTAREA_CLASS_FOR_EDITOR);
 
         $container->addSelect(
             self::PAGE_EDIT_IMAGE_NAME,
             "admin.page.edit.local.image.label",
-            [0 => "admin.page.edit.local.image.no"] + $this->getMediaManager()->getAvailableImages())
+            [0 => "admin.page.edit.local.image.no"] + array_map(function (File $media) {
+                return $media->getSrc();
+            }, $this->getMediaManager()->getAvailableImages()))
             ->setDefaultValue($page->getImageId());
 
         //todo add tag editing - not "in form"
@@ -260,7 +263,9 @@ class FormFactory extends Manager {
             ->setRequired(false)
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
-        $images = $this->getMediaManager()->getAvailableImages();
+        $images = array_map(function (Image $file) {
+            return $file->getSrc();
+        }, $this->getMediaManager()->getAvailableImages());
 
 
         $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME,
@@ -337,7 +342,10 @@ class FormFactory extends Manager {
             $availableLanguages)
             ->setDefaultValue($lm->getDefaultLanguage()->getId());
 
-        $images = $this->getMediaManager()->getAvailableImages();
+        $images = array_map(function (Image $img) {
+            return $img->getSrc();
+        }, $this->getMediaManager()->getAvailableImages());
+
         $logo = $form->addSelect(
             self::SETTINGS_EDIT_LOGO,
             "admin.settings.edit.logo.label",
@@ -403,6 +411,18 @@ class FormFactory extends Manager {
             self::HEADER_SUBMIT_NAME,
             "admin.header." . ($headerWrapper instanceof HeaderPage ? "edit" : "add") . ".page.submit");
 
+        return $form;
+    }
+
+    public function createMediaUploadForm(): Form {
+        $form = $this->createNewAdminForm();
+        $form->addMultiUpload(
+            self::MEDIA_UPLOAD_NAME,
+            "admin.media.default.upload.label");//TODO limit types by MIME
+
+        $form->addSubmit(
+            "submit",
+            "admin.media.default.upload.label");
         return $form;
     }
 }

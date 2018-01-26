@@ -7,7 +7,7 @@ use Nette\DI\Container;
 use Nette\Security\User;
 
 class ServiceLoader {
-    private const CLASS_NAMES = [ITagManager::class, IPageManager::class, ILanguageManager::class, IUserManager::class, ISettingsManager::class, IHeaderManager::class, IMediaManager::class];
+    private const CLASS_NAMES = [ITagManager::class, IPageManager::class, ILanguageManager::class, IUserManager::class, ISettingsManager::class, IHeaderManager::class, IFileManager::class];
     /** @var  Container */
     private $context;
 
@@ -75,8 +75,8 @@ class ServiceLoader {
         return $this->context->getByType(\Kdyby\Translation\Translator::class);
     }
 
-    public final function getMediaManager(): IMediaManager {
-        return $this->context->getByType(IMediaManager::class);
+    public final function getFileManager(): IFileManager {
+        return $this->context->getByType(IFileManager::class);
     }
 
     public final function getContext(): Container {

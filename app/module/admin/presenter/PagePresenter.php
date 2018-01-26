@@ -94,6 +94,10 @@ class PagePresenter extends AdminPresenter {
         }
     }
 
+    /**
+     * @throws \Exception
+     * @throws \LanguageByIdNotFound
+     */
     public function actionCreate() {
         $globalId = $this->getPageManager()->addEmpty(self::TYPE_TABLE[$this->getParameter(self::TYPE_KEY)]);
         $args = [self::ID_KEY => $globalId, self::TYPE_KEY => null, self::EDIT_LANGUAGE_KEY => $this->getLanguage()];
@@ -101,6 +105,9 @@ class PagePresenter extends AdminPresenter {
         $this->redirect(302, "edit", $args);
     }
 
+    /**
+     * @throws \LanguageByCodeNotFound
+     */
     public function actionEdit() {
         $globalId = $this->getParameter(self::ID_KEY);
         $langCode = $this->getParameter(self::EDIT_LANGUAGE_KEY);
@@ -114,6 +121,10 @@ class PagePresenter extends AdminPresenter {
         $this->template->page = $page;
     }
 
+    /**
+     * @throws \LanguageByCodeNotFound
+     * @throws \LanguageByIdNotFound
+     */
     public function actionShow() {
         $this->template->type = $this->getType();
         $this->template->visibility = $this->getVisibility();
@@ -137,6 +148,9 @@ class PagePresenter extends AdminPresenter {
         }*/
     }
 
+    /**
+     * @throws \Exception
+     */
     public function actionDelete() {
 
         $this->commonTryCall(function () {
