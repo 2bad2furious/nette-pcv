@@ -193,7 +193,7 @@ class PagePresenter extends AdminPresenter {
     }
 
     private
-    function getSearchQuery():?string {
+    function getSearchQuery(): ?string {
         return $this->getParameter(\FormFactory::PAGE_SHOW_SEARCH_NAME);
     }
 
@@ -253,4 +253,12 @@ class PagePresenter extends AdminPresenter {
     function getEditPage(): \PageWrapper {
         return $this->template->page;
     }
+
+    public function createComponentAdminAdminBar(string $name): \AdminAdminBarControl {
+        if ($this->getAction() === "edit")
+            return \AdminAdminBarControl::createPageBar($this->getEditPage(), $this, $name);
+        return parent::createComponentAdminAdminBar($name);
+    }
+
+
 }

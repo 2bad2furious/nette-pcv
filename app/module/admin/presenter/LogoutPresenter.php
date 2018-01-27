@@ -15,6 +15,7 @@ class LogoutPresenter extends AdminPresenter {
     }
 
     public function actionDefault() {
+        $this->disallowAjax();
         $this->getUser()->logout(true);
         $this->flashMessage("admin.logout.success");
         $this->redirect(302,"Default:");

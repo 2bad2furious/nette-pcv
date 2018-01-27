@@ -4,14 +4,15 @@ body {
   margin: 0; }
   body, body * {
     box-sizing: inherit;
-    text-decoration: inherit;
-    color: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
     -moz-transition: inherit;
     -ms-transition: inherit;
     -o-transition: inherit;
-    transition: inherit; }
+    transition: inherit;
+    text-decoration: inherit; }
+    body:not(input):not(textarea):not(select):not(option):not(body), body *:not(input):not(textarea):not(select):not(option):not(body) {
+      color: inherit; }
   body:not(p, span, a) {
     display: block; }
   body:not(textarea) {
@@ -46,7 +47,7 @@ body {
       left: 0;
       right: 0;
       bottom: 0; }
-  body .center-all, html body main div#header-edit-form-wrapper.active > div {
+  body .center-all {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -69,111 +70,77 @@ body {
     padding: 2px;
     cursor: pointer; }
 
-div.ck-editor__editable {
-  background-color: white; }
-
-textarea, input, select {
-  padding: 5px;
-  border-radius: 1px;
-  border: none;
-  font-size: 1em; }
-
-ul {
-  list-style-type: none;
-  padding: 0; }
-  ul li a {
-    display: block; }
-
-.clearfix {
-  *zoom: 1; }
-  .clearfix:before, .clearfix:after {
-    content: " ";
-    display: table; }
-  .clearfix:after {
-    clear: both; }
-
 html {
-  font-family: "Open Sans", sans-serif; }
+  -webkit-transition: all 0.3s linear;
+  -moz-transition: all 0.3s linear;
+  -ms-transition: all 0.3s linear;
+  -o-transition: all 0.3s linear;
+  transition: all 0.3s linear;
+  font-family: "Open Sans", sans-serif, Arial, Verdana, "Trebuchet MS";
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box; }
   html body {
-    /* inheritance */
-    transition: 0.3s all linear;
-    box-sizing: border-box;
-    background-color: #ddd;
+    display: grid;
+    height: 100vh;
+    width: 100vw;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "top top" "nav main" "nav main";
+    color: #f5f6fa;
+    background-color: #2f3640;
     padding: 0;
-    margin: 0;
-    overflow-y: scroll; }
+    margin: 0; }
     html body header {
-      padding: 10px;
-      background: #000;
-      color: white;
-      height: 100vh;
-      width: 200px;
-      left: 0;
-      top: 0;
-      position: fixed;
-      z-index: 2; }
-      html body header #header-opener {
-        content: "close";
-        color: white;
-        cursor: pointer;
-        text-align: right;
-        width: 100%;
-        display: none; }
-      html body header nav ul {
-        list-style-type: disc;
-        padding-left: 20px; }
-    html body main {
-      width: 100%;
-      padding: 10px 10px 10px 250px;
-      /* 200 + normal padding */
-      overflow-x: hidden; }
-      html body main a.create_new {
-        padding: 6px;
-        border-radius: 1em;
-        border: solid 2px black;
-        color: black;
-        font-weight: 600;
-        display: inline-block; }
-        html body main a.create_new:hover, html body main a.create_new:active, html body main a.create_new:focus {
-          background: #000;
-          color: white; }
-      html body main.no-header {
-        padding-left: 0; }
-      html body main div#page-show ul li {
-        display: inline-block; }
-        html body main div#page-show ul li > * {
-          border-radius: 1em;
-          background-color: #fff;
-          padding: 6px;
-          text-decoration: none; }
-          html body main div#page-show ul li > *.active, html body main div#page-show ul li > *:hover {
-            background-color: #eee; }
-        html body main div#page-show ul li div {
-          display: inline-block; }
-          html body main div#page-show ul li div a {
-            display: inline-block;
-            padding: 3px;
-            background-color: #fff;
-            border-radius: 1em; }
-            html body main div#page-show ul li div a:hover, html body main div#page-show ul li div a.active {
-              background-color: #ddd; }
-      html body main div#header-edit-form-wrapper {
-        display: none; }
-        html body main div#header-edit-form-wrapper.active {
-          display: initial;
-          position: fixed;
-          background-color: rgba(51, 51, 51, 0.9);
-          height: 100vh;
-          width: 100vw;
-          top: 0;
-          left: 0; }
-          html body main div#header-edit-form-wrapper.active #edit-form-close {
-            color: white;
-            position: absolute;
-            font-size: 2em;
-            top: 30px;
-            right: 30px; }
-          html body main div#header-edit-form-wrapper.active > div {
-            background-color: white; }
+      grid-area: nav;
+      background-color: #2f3640;
+      padding: 20px; }
+      html body header ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0; }
+    html body div#admin-header-bar {
+      grid-area: top;
+      display: flex;
+      justify-content: space-between;
+      background-color: black;
+      padding: 10px; }
+      html body div#admin-header-bar #logout {
+        color: #c23616; }
+    html body #snippet--content {
+      grid-area: main;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      /*#content {
+        display: block;
+      }*/ }
+      html body #snippet--content:not(.login-default) {
+        background-color: #f5f6fa;
+        color: black; }
+      html body #snippet--content.login-default {
+        justify-content: center; }
+      html body #snippet--content > h1, html body #snippet--content > h2 {
+        text-align: center;
+        margin: 0; }
+      html body #snippet--content > * {
+        align-self: center; }
+    html body input {
+      -webkit-border-radius: 1px;
+      -moz-border-radius: 1px;
+      border-radius: 1px;
+      border: solid 1px #2f3640;
+      padding: 5px;
+      font-size: 1em; }
+      html body input:hover, html body input:focus, html body input:active {
+        -webkit-box-shadow: 1px 1px 5px 0px #2f3640;
+        -moz-box-shadow: 1px 1px 5px 0px #2f3640;
+        box-shadow: 1px 1px 5px 0px #2f3640; }
+      html body input[type=submit] {
+        background: #2f3640;
+        color: #f5f6fa; }
+    html body td > input {
+      width: 100%; }
 
 /*# sourceMappingURL=admin.css.map */

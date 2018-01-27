@@ -1,0 +1,22 @@
+<div id="admin-header-bar">
+    <div>
+        <a data-ajax="false" href="{plink :admin:Home: locale=>$admin_locale}" class="link scale">
+            <i class="fa fa-home"></i>
+            <span>{$admin_go_home_label}</span>
+        </a>
+        {if !$page->is404()}
+            <a data-ajax="false"
+               href="{plink :admin:Page:edit \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLanguage()->getCode(),locale=>$admin_locale}"
+               class="link scale">
+                <i class="fa fa-pencil-square-o"></i>
+                <span>{$admin_go_edit_label}</span>
+            </a>
+        {/if}
+    </div>
+    <span>
+        <span>{$username}</span>
+        <a id="logout" href="{plink :admin:Logout: locale=>$admin_locale}" class="link big scale">
+            <i class="fa fa-power-off"></i>
+        </a>
+            </span>
+</div>

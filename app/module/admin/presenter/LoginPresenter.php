@@ -55,7 +55,7 @@ class LoginPresenter extends AdminPresenter {
         return [\UserManager::ROLE_GUEST];
     }
 
-    protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
+    protected function onBadRole(array $allowedRoles, int $currentRole){
         $this->redirect("Default:Default");
     }
 

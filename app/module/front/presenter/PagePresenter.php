@@ -55,6 +55,8 @@ class PagePresenter extends BasePresenter {
 
         $this->template->page = $page;
         $this->payload->title = $page->getTitle();
+        $this->template->isLoggedIn = $this->getUser()->isLoggedIn();
+        dump($this->template->isLoggedIn);
         $this->template->setFile(__DIR__ . "/templates/Page/default.latte");
     }
 
@@ -64,10 +66,9 @@ class PagePresenter extends BasePresenter {
      */
     public function renderHome() {
         $language = $this->getLocaleLanguage();
-        $pageId = $language->getHomepageId();
 
-        $this->page = $this->getPageManager()->getByGlobalId($language->getId(), $pageId);
-
+        $this->page = $this->getPageManager()->getByGlobalId($language->getId(), $language->getHomepageId());
+        dump($this->page, $language);
         $this->prepareTemplate();
     }
 
@@ -98,5 +99,13 @@ class PagePresenter extends BasePresenter {
     public
     function createComponentSectionPage(string $name): SectionPageControl {
         return new SectionPageControl($this, $name);
+    }
+
+    public function getPage(): \PageWrapper {
+        return $this->page;
+    }
+
+    public function createComponentAdminBar(string $name): \AdminBarControl {
+        return new \AdminBarControl($this->page, $this, $name);
     }
 }

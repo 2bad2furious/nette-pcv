@@ -65,6 +65,9 @@ abstract class BasePresenter extends Presenter {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     protected function checkRoles() {
         $allowedRoles = $this->getAllowedRoles();
         $identity = $this->getUser()->getIdentity();
@@ -73,7 +76,7 @@ abstract class BasePresenter extends Presenter {
         $isInRoles = (in_array($currentRole, $allowedRoles));
 
         if (!$isInRoles) {
-            call_user_func($this->getCallbackWhenBadRole($allowedRoles, $currentRole));
+            $this->onBadRole($allowedRoles, $currentRole);
         }
     }
 
@@ -81,10 +84,13 @@ abstract class BasePresenter extends Presenter {
         return parent::flashMessage($this->translator->translate($message), $type);
     }
 
-    protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
-        return function () {
-            throw new Exception("Bad rights xd");
-        };
+    /**
+     * @param array $allowedRoles
+     * @param int $currentRole
+     * @throws Exception
+     */
+    protected function onBadRole(array $allowedRoles, int $currentRole){
+        throw new Exception("Bad rights xd");
     }
 
     /**

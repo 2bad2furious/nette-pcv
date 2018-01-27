@@ -25,16 +25,14 @@ abstract class AdminPresenter extends BasePresenter {
     }
 
 
-    protected function getCallbackWhenBadRole(array $allowedRoles, int $currentRole): callable {
+    protected function onBadBadRole(array $allowedRoles, int $currentRole) {
         Debugger::log($allowedRoles);
         Debugger::log($currentRole);
-        return function () {
-            /* sets failed url to redirect to after login */
-            $this->getCustomSession()->offsetSet("url", $this->getHttpRequest()->getUrl());
-            $this->getUser()->logout(true);
-            $this->addError("Invalid role for selected action.");
-            $this->redirect(302, "Default:Default");
-        };
+        /* sets failed url to redirect to after login */
+        $this->getCustomSession()->offsetSet("url", $this->getHttpRequest()->getUrl());
+        $this->getUser()->logout(true);
+        $this->addError("Invalid role for selected action.");
+        $this->redirect(302, "Default:Default");
     }
 
     protected function getAdminLocale(): string {
@@ -71,15 +69,19 @@ abstract class AdminPresenter extends BasePresenter {
         $title = $translator->translate($this->setPageTitle());
         $this->template->page_title = $title . " - " . $translator->translate("admin.global.title");
         $this->template->title = $title;
+
+        $this->template->presenter = $this->getPresenterShortname();
+        $this->template->action = $this->getAction();
+
         $this->payload->title = $this->template->page_title;
 
-        if($this->getReferer() && $this->isAjax()){
-            try{
-                if($this->isComingFromDifferentPresenter()) {
+        if ($this->getReferer() && $this->isAjax()) {
+            try {
+                if ($this->isComingFromDifferentPresenter()) {
                     $this->redrawContent();
                     $this->redrawHeader();
                 }
-            }catch (\InvalidState $exception){
+            } catch (\InvalidState $exception) {
                 Debugger::log($exception);
             }
         }
@@ -120,4 +122,7 @@ abstract class AdminPresenter extends BasePresenter {
         return [];
     }
 
+    public function createComponentAdminAdminBar(string $name): \AdminAdminBarControl {
+        return new \AdminAdminBarControl($this, $name);
+    }
 }

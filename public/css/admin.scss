@@ -1,168 +1,112 @@
 @import "default";
 
-div.ck-editor__editable {
-  background-color: white;
-}
-
-textarea, input, select {
-  padding: 5px;
-  border-radius: 1px;
-  border: none;
-  font-size: 1em;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-  li {
-    a {
-      display: block;
-    }
-  }
-}
-
-.clearfix {
-  *zoom: 1;
-  &:before,
-  &:after {
-    content: " ";
-    display: table;
-  }
-
-  &:after {
-    clear: both;
-  }
-}
+$colorOnBackground: #f5f6fa;
+$background: #2f3640;
 
 html {
-  font-family: "Open Sans", sans-serif;;
+  -webkit-transition: all 0.3s linear;
+  -moz-transition: all 0.3s linear;
+  -ms-transition: all 0.3s linear;
+  -o-transition: all 0.3s linear;
+  transition: all 0.3s linear;
 
+  font-family: "Open Sans", sans-serif, Arial, Verdana, "Trebuchet MS";
+
+  padding: 0;
+  margin: 0;
+
+  box-sizing: border-box;
   body {
-    /* inheritance */
-    transition: 0.3s all linear;
-    box-sizing: border-box;
+    display: grid;
+    height: 100vh;
+    width: 100vw;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "top top" "nav main" "nav main";
 
-    background-color: #ddd;
+    color: $colorOnBackground;
+    background-color: $background;
+
     padding: 0;
     margin: 0;
-    overflow-y: scroll;
     header {
+      grid-area: nav;
+      background-color: $background;
+      padding: 20px;
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+    }
+    div#admin-header-bar {
+      grid-area: top;
+      display: flex;
+      justify-content: space-between;
+
+      background-color: black;
       padding: 10px;
-      background: #000;
-      color: white;
-      height: 100vh;
-      width: 200px;
-      left: 0;
-      top: 0;
-      position: fixed;
-      z-index: 2;;
 
-      #header-opener {
-        content: "close";
-        color: white;
-        cursor: pointer;
-        text-align: right;
-        width: 100%;
-        display: none;
-      }
-      nav {
-        ul {
-          list-style-type: disc;
-          padding-left: 20px;
-        }
+      #logout {
+        color: #c23616;
       }
     }
-    main {
-      width: 100%;
-      padding: 10px 10px 10px 250px; /* 200 + normal padding */
-      overflow-x: hidden;
+    #snippet--content {
+      grid-area: main;
+      overflow-y: auto;
 
-      a.create_new {
-        padding: 6px;
-        border-radius: 1em;
-        border: solid 2px black;
+      display: flex;
+      flex-direction: column;
+
+      padding: 20px;
+
+      &:not(.login-default) {
+        background-color: $colorOnBackground;
         color: black;
-        font-weight: 600;
-        display: inline-block;
-
-        &:hover, &:active, &:focus {
-          background: #000;
-          color: white;
-        }
+      }
+      &.login-default {
+        justify-content: center;
       }
 
-      &.no-header {
-        padding-left: 0;
+      & > h1, & > h2 {
+        text-align: center;
+        margin: 0;
       }
 
-      div#page-show {
-        ul {
-          //margin:0;
-          li {
-            display: inline-block;
-            & > * {
-              border-radius: 1em;
-              background-color: #fff;
-              padding: 6px;
-              text-decoration: none;
-              &.active, &:hover {
-                background-color: #eee;
-              }
-            }
-            div {
-              display: inline-block;
-              a {
-                display: inline-block;
-                padding: 3px;
-                background-color: #fff;
-                border-radius: 1em;
-                &:hover, &.active {
-                  background-color: #ddd;;
-                }
-              }
-            }
-          }
-        }
+      & > * {
+        align-self: center;
       }
-      div#header-edit-form-wrapper {
-        display: none;
 
-        &.active {
-          display: initial;
-          position: fixed;
-          background-color: rgba(51, 51, 51, 0.9); //#333333
-          height: 100vh;
-          width: 100vw;
-          top: 0;
-          left: 0;
+      /*#content {
+        display: block;
+      }*/
 
-          #edit-form-close {
-            color: white;
-            position: absolute;
-            font-size: 2em;
-            top: 30px;
-            right: 30px;
-          }
+    }
 
-          & > div {
-            background-color: white;
-            @extend .center-all;
-          }
-        }
+    input {
+      -webkit-border-radius: 1px;
+      -moz-border-radius: 1px;
+      border-radius: 1px;
+
+      border: solid 1px $background;
+      padding: 5px;
+
+      font-size: 1em;
+
+      &:hover, &:focus, &:active {
+        -webkit-box-shadow: 1px 1px 5px 0px $background;
+        -moz-box-shadow: 1px 1px 5px 0px $background;
+        box-shadow: 1px 1px 5px 0px $background;
+      }
+      &[type=submit] {
+        background: $background;
+        color: $colorOnBackground;
       }
     }
 
-    &.header-closed {
-      header {
-        nav {
-          ul {
-            li {
-            }
-          }
-        }
-      }
-      main {
-      }
+    td > input {
+      width: 100%;
     }
   }
 }

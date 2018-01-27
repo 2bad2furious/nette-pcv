@@ -1,0 +1,20 @@
+<div id="admin-header-bar">
+    <span>
+        <span id="header-toggler">
+{*            <i id="header-opener" class="fa fa-bars"></i>
+            <i id="header-closer" class="fa fa-times"></i>*}
+        </span>
+        <span>
+            <a data-ajax="false" href="{plink :front:NoLang:}" class="scale"><i class="fa fa-home"></i>{_"admin.top.go_home"}</a>
+            {if $page}
+                <a href="{plink front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl()}">{_"admin.top.page.edit.view"}</a>
+            {/if}
+        </span>
+    </span>
+    <span>
+        <span>{$username}</span>
+        <a data-ajax="false" id="logout" href="{plink :admin:Logout:}" class="link big scale">
+            <i class="fa fa-power-off"></i>
+        </a>
+            </span>
+</div>

@@ -9,13 +9,11 @@
     <title>{$page_title}</title>
     <script type="application/javascript"> var _stack = []; </script>
     <link rel="stylesheet" type="text/css" href="/css/admin.css"/>
-    <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/scss/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="/libs/nittro/nittro.css"/>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i&amp;subset=cyrillic-ext,latin-ext"
           rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
           integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script
             src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -37,19 +35,20 @@
 </head>
 <body>
 {ifset $isLoggin}{else}
+    {control adminAdminBar}
     {control adminHeader}
 {/ifset}
-<main{ifset $isLoggin} class="no-header"{/ifset}>
-    <div n:snippet="content" class="nittro-transition-bar nittro-transition-auto">
-        <h1 class="admin-title">{$title}</h1>
-        {ifset $noSubtitle}{else}{if $page_subtitle}<h2 class="admin-subtitle">{$page_subtitle}</h2>{/if}{/ifset}
-        <div n:snippet="flashes">
-            {if $flashes}<a n:href="clearFlashes!">close flashes</a>{/if}
-            <ul n:flashes></ul>
-        </div>
+<div n:snippet="content" class="nittro-transition-bar nittro-transition-auto {$presenter}-{$action}">
+    <h1 class="admin-title">{$title}</h1>
+    {ifset $noSubtitle}{else}{if $page_subtitle}<h2 class="admin-subtitle">{$page_subtitle}</h2>{/if}{/ifset}
+    <div n:snippet="flashes">
+        {if $flashes}<a n:href="clearFlashes!">close flashes</a>{/if}
+        <ul n:flashes></ul>
+    </div>
+    <div id="content">
         {include content}
     </div>
-</main>
+</div>
 {ifset $isLoggin}{else}
     {control adminFooter}
 {/ifset}

@@ -4,14 +4,15 @@ body {
   margin: 0; }
   body, body * {
     box-sizing: inherit;
-    text-decoration: inherit;
-    color: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
     -moz-transition: inherit;
     -ms-transition: inherit;
     -o-transition: inherit;
-    transition: inherit; }
+    transition: inherit;
+    text-decoration: inherit; }
+    body:not(input):not(textarea):not(select):not(option):not(body), body *:not(input):not(textarea):not(select):not(option):not(body) {
+      color: inherit; }
   body:not(p, span, a) {
     display: block; }
   body:not(textarea) {

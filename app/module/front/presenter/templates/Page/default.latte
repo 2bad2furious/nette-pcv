@@ -59,12 +59,14 @@
     <script src="/js/js.min.js" type="application/javascript" defer></script>
 </head>
 <body>
+{if $isLoggedIn}{control adminBar}{/if}
 {control header}
 <main>
     {dump $page->getLanguage()->getHomePageId()}
     {dump $page->getGlobalId()}
     {dump $page->isHomePage()}{dump $page}
-    <div n:snippet="content" class="lang-{$page->getLanguage()->getCode()} page-{$page->getGlobalId()}{if $page->isHomePage()} homepage{/if}">
+    <div n:snippet="content"
+            class="lang-{$page->getLanguage()->getCode()} page-{$page->getGlobalId()}{if $page->isHomePage()} homepage{/if}">
         {control content $page}
     </div>
 </main>
