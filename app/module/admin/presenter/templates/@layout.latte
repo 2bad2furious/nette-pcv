@@ -26,15 +26,16 @@
     <script src="/node_modules/nestedSortable/jquery.mjs.nestedSortable.js" type="application/javascript"
             defer></script>
     <script type="application/javascript" src="/libs/nittro/nittro.min.js" defer></script>
-    <link href="/node_modules/froala-editor/css/froala_editor.min.css" type="text/css">
-    <link href="/node_modules/froala-editor/css/froala_editor.pkgd.min.css" type="text/css">
+    <link href="/node_modules/froala-editor/css/froala_style.min.css" rel="stylesheet" type="text/css">
+    <link href="/node_modules/froala-editor/css/froala_editor.min.css" type="text/css" rel="stylesheet">
+    <link href="/node_modules/froala-editor/css/froala_editor.pkgd.min.css" type="text/css" rel="stylesheet">
     <script src="/node_modules/froala-editor/js/froala_editor.pkgd.min.js" type="application/javascript" defer></script>
     <script type="application/javascript" src="/js/admin.min.js" defer></script>
 </head>
 <body class="nittro-transition-bar nittro-transition-auto">
     {ifset $isLoggin}{else}
-        {control adminAdminBar}
-        {control adminHeader}
+        <div n:snippet="admin-header-bar">{control adminAdminBar}</div>
+        <header>{control adminHeader}</header>
     {/ifset}
     <div n:snippet="content" class={$presenter}-{$action}">
         <h1 class="admin-title">{$title}</h1>

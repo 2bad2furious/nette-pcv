@@ -33,7 +33,9 @@
     <script type="text/javascript">
         _stack.push(function (di) {
             jQuery(document).ready(function ($) {
-               CKEDITOR.replaceClass({\FormFactory::TEXTAREA_CLASS_FOR_EDITOR})
+                $("select").selectmenu();
+
+               $(".{\FormFactory::TEXTAREA_CLASS_FOR_EDITOR|noescape}").froalaEditor()
 
                 $("#page-delete").click(function (e) {
                     if (!confirm({_"admin.page.edit.action.delete.confirm"}))

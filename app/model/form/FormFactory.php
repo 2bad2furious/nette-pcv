@@ -29,7 +29,7 @@ class FormFactory extends Manager {
 
         LANGUAGE_EDIT_CODE_NAME = "language_code",
 
-        TEXTAREA_CLASS_FOR_EDITOR = "ckeditor";
+        TEXTAREA_CLASS_FOR_EDITOR = "froala";
     const LANGUAGE_EDIT_SITE_TITLE_NAME = "site_title";
     const LANGUAGE_EDIT_TITLE_SEPARATOR_NAME = "separator";
     const LANGUAGE_EDIT_LOGO_NAME = "logo";

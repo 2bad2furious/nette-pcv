@@ -36,13 +36,21 @@ html {
       background-color: $background;
       padding: 20px;
 
-      ul {
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
+      nav#sidenav {
+        ul {
+          list-style-type: none;
+          padding: 0;
+          margin: 0;
+
+          a {
+            &:hover {
+              color:#7f8fa6
+            }
+          }
+        }
       }
     }
-    div#snippet-adminAdminBar-admin-header-bar {
+    div#snippet--admin-header-bar {
       grid-area: top;
       display: flex;
       justify-content: space-between;
@@ -52,6 +60,18 @@ html {
 
       #logout {
         color: #c23616;
+      }
+
+      a {
+        text-decoration: none;
+        @extend .scale;
+        &:hover {
+          color: #7f8fa6;
+        }
+
+        &#logout {
+          @extend .big;
+        }
       }
     }
     #snippet--content {
@@ -96,7 +116,7 @@ html {
           grid-template-areas: "filter" "create" "pages";
 
           & > * {
-            padding: 20px;
+            padding: 10px;
           }
 
           #filter {

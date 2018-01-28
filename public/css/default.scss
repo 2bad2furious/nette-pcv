@@ -10,7 +10,8 @@
 body {
   padding: 0;
   margin: 0;
-  &, :not([class^="ui-"]):not(.fa) {
+  //not JQUI, Font Awesome and FROALA
+  &, :not([class^="ui-"]):not([class^="fr-"]):not(.fa) {
     box-sizing: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
@@ -99,7 +100,7 @@ body {
     }
     &:not(.big):hover {
       &, * {
-        @include transform_scale(1.1);
+        @include transform_scale(1.02);
       }
     }
   }

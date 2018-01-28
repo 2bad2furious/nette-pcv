@@ -167,23 +167,19 @@ class PagePresenter extends AdminPresenter {
         $this->redirect(302, "show", [self::ID_KEY => null]);
     }
 
-    private
-    function getType(): string {
+    private function getType(): string {
         return $this->getParameter(self::TYPE_KEY);
     }
 
-    private
-    function getVisibility(): string {
+    private function getVisibility(): string {
         return $this->getParameter(self::VISIBILITY_KEY);
     }
 
-    private
-    function getLanguage(): ?string {
+    private function getLanguage(): ?string {
         return $this->getParameter(self::LANGUAGE_KEY);
     }
 
-    private
-    function hasTranslation(): ?bool {
+    private function hasTranslation(): ?bool {
         return $this->getParameter(self::HAS_TRANSLATION_KEY);
     }
 
@@ -192,18 +188,15 @@ class PagePresenter extends AdminPresenter {
         return $this->getParameter(self::PAGE_KEY, 1);
     }
 
-    private
-    function getSearchQuery(): ?string {
+    private function getSearchQuery(): ?string {
         return $this->getParameter(\FormFactory::PAGE_SHOW_SEARCH_NAME);
     }
 
-    public
-    function actionDefault() {
+    public function actionDefault() {
         $this->redirect(302, "show");
     }
 
-    public
-    function createComponentPageEditForm() {
+    public function createComponentPageEditForm() {
         $page = $this->getEditPage();
         $form = $this->getFormFactory()->createPageEditForm($page,
             function (BaseControl $url) use ($page) {
@@ -234,8 +227,7 @@ class PagePresenter extends AdminPresenter {
             ;
     }
 
-    public
-    function createComponentAdminPageSearch() {
+    public function createComponentAdminPageSearch() {
         $form = $this->getFormFactory()->createAdminPageSearch($this->getSearchQuery());
         $form->onSubmit[] = function () {
             $this->redirect(302, "this", [\FormFactory::PAGE_SHOW_SEARCH_NAME => $this->getSearchQuery()]);
@@ -244,13 +236,11 @@ class PagePresenter extends AdminPresenter {
     }
 
 
-    public
-    function createComponentPaginator(string $name) {
+    public function createComponentPaginator(string $name) {
         return new PaginatorControl($this, $name, self::PAGE_KEY, $this->getPage(), $this->numberOfPages);
     }
 
-    private
-    function getEditPage(): \PageWrapper {
+    private function getEditPage(): \PageWrapper {
         return $this->template->page;
     }
 
