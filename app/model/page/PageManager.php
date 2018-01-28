@@ -172,10 +172,13 @@ class PageManager extends Manager implements IPageManager {
             //$selection = $selection->where(["(" . implode(") OR (", $searchWheres) . ")"=> $values]);
         }
 
-        if ($language instanceof Language && is_bool($hasTranslation)) {
+        if (is_bool($hasTranslation)) {
             $selection = $selection->where(
-                [self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT . ($hasTranslation ? " != ?" : "") => "",
-                 self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG                                       => $language->getId(),]
+                [self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT . ($hasTranslation ? " != ?" : "") => ""] +
+                ($language instanceof Language ?
+                    [self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $language->getId()] :
+                    []
+                )
             );
         }
 

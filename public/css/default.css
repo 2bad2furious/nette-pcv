@@ -2,7 +2,7 @@
 body {
   padding: 0;
   margin: 0; }
-  body, body * {
+  body, body :not([class^="ui-"]):not(.fa) {
     box-sizing: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
@@ -11,7 +11,7 @@ body {
     -o-transition: inherit;
     transition: inherit;
     text-decoration: inherit; }
-    body:not(input):not(textarea):not(select):not(option):not(body), body *:not(input):not(textarea):not(select):not(option):not(body) {
+    body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not(.fa):not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit; }
   body:not(p, span, a) {
     display: block; }

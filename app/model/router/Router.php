@@ -24,6 +24,10 @@ class Router {
         $this->languageManager = $languageManager;
     }
 
+    /**
+     * @return \Nette\Application\IRouter
+     * @throws LanguageByIdNotFound
+     */
     public function createRouter(): \Nette\Application\IRouter {
         $router = new RouteList();
 
@@ -67,7 +71,7 @@ class Router {
             ],
             PagePresenter::LANGUAGE_KEY        => [
                 Route::VALUE   => PagePresenter::DEFAULT_LANGUAGE,
-                Route::PATTERN => $languages,
+                Route::PATTERN => $languages . ($languages ? "|" : "") . PagePresenter::LANGUAGE_ALL,
             ],
             PagePresenter::PAGE_KEY            => [
                 Route::VALUE   => 1,

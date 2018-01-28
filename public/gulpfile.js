@@ -26,5 +26,5 @@ function defaultAction() {
 
     fs.writeFileSync("./libs/nittro/nittro.js", finalFileContent);
 
-    fs.writeFileSync("./libs/nittro/nittro.css", builder.buildCss());
+    fs.writeFileSync("./libs/nittro/nittro.scss", builder.buildCss());
 }

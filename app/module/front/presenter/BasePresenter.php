@@ -22,6 +22,13 @@ abstract class BasePresenter extends Presenter {
     /** @var  ServiceLoader */
     private $serviceLoader;
 
+    /**
+     * @param $element
+     * @throws Exception
+     * @throws InvalidState
+     * @throws \Nette\Application\ForbiddenRequestException
+     * @throws \Nette\Security\AuthenticationException
+     */
     public function checkRequirements($element) {
         $this->checkCurrentIdentity();
         $this->checkRoles();
@@ -34,7 +41,7 @@ abstract class BasePresenter extends Presenter {
     public function startup() {
         $this->invalidLinkMode = self::INVALID_LINK_EXCEPTION;
         $this->checkRefererAndDisallowAjax();
-        $this->setDefaultSnippets(["content"]);
+        $this->setDefaultSnippets(["content", "admin-header-bar"]);
         parent::startup();
     }
 
@@ -89,7 +96,7 @@ abstract class BasePresenter extends Presenter {
      * @param int $currentRole
      * @throws Exception
      */
-    protected function onBadRole(array $allowedRoles, int $currentRole){
+    protected function onBadRole(array $allowedRoles, int $currentRole) {
         throw new Exception("Bad rights xd");
     }
 
@@ -122,7 +129,7 @@ abstract class BasePresenter extends Presenter {
      * @return null|UserIdentity
      * @throws InvalidState
      */
-    protected function getUserIdentity():?UserIdentity {
+    protected function getUserIdentity(): ?UserIdentity {
         $identity = $this->getUser()->getIdentity();
         if ($identity && !$identity instanceof UserIdentity) throw new InvalidState("UserIdentity not instanceof UserIdentity");
         return $identity instanceof UserIdentity ? $identity : null;
@@ -216,7 +223,7 @@ abstract class BasePresenter extends Presenter {
      * @return bool
      * @throws InvalidState
      */
-    protected function isComingFromThis():bool{
+    protected function isComingFromThis(): bool {
         $match = $this->getRefererRequest();
         dump($match);
         dump($this->getRequest());
@@ -251,7 +258,7 @@ abstract class BasePresenter extends Presenter {
      * @return Request|null
      * @throws InvalidState
      */
-    protected function getRefererRequest():?Request {
+    protected function getRefererRequest(): ?Request {
         static $match = null;
         if ($match === null) {
             $referer = $this->getReferer();
@@ -264,7 +271,7 @@ abstract class BasePresenter extends Presenter {
         return $match instanceof Request ? $match : null;
     }
 
-    protected function getReferer():?Url {
+    protected function getReferer(): ?Url {
         $request = $this->getHttpRequest();
         return ($request instanceof Nette\Http\Request) ? $request->getReferer() : null;
     }
@@ -277,11 +284,11 @@ abstract class BasePresenter extends Presenter {
         $this->redrawControl("content");
     }
 
-    protected function redrawHeader(){
+    protected function redrawHeader() {
         $this->redrawControl("header");
     }
 
-    protected function getSignalName():?string {
+    protected function getSignalName(): ?string {
         return $this->getParameter(self::SIGNAL_KEY);
     }
 

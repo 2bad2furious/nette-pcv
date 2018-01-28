@@ -14,6 +14,7 @@
           rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
           integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css" type="text/css" rel="stylesheet">
     <script
             src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -22,9 +23,6 @@
             src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
             integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
             crossorigin="anonymous" defer></script>
-    <script src="/node_modules/jquery-ui/ui/widget.js" type="application/javascript" defer></script>
-    <script src="/node_modules/jquery-ui/ui/widgets/mouse.js" defer type="application/javascript"></script>
-    <script src="/node_modules/jquery-ui/ui/widgets/sortable.js" type="application/javascript" defer></script>
     <script src="/node_modules/nestedSortable/jquery.mjs.nestedSortable.js" type="application/javascript"
             defer></script>
     <script type="application/javascript" src="/libs/nittro/nittro.min.js" defer></script>
@@ -33,24 +31,24 @@
     <script src="/node_modules/froala-editor/js/froala_editor.pkgd.min.js" type="application/javascript" defer></script>
     <script type="application/javascript" src="/js/admin.min.js" defer></script>
 </head>
-<body>
-{ifset $isLoggin}{else}
-    {control adminAdminBar}
-    {control adminHeader}
-{/ifset}
-<div n:snippet="content" class="nittro-transition-bar nittro-transition-auto {$presenter}-{$action}">
-    <h1 class="admin-title">{$title}</h1>
-    {ifset $noSubtitle}{else}{if $page_subtitle}<h2 class="admin-subtitle">{$page_subtitle}</h2>{/if}{/ifset}
-    <div n:snippet="flashes">
-        {if $flashes}<a n:href="clearFlashes!">close flashes</a>{/if}
-        <ul n:flashes></ul>
+<body class="nittro-transition-bar nittro-transition-auto">
+    {ifset $isLoggin}{else}
+        {control adminAdminBar}
+        {control adminHeader}
+    {/ifset}
+    <div n:snippet="content" class={$presenter}-{$action}">
+        <h1 class="admin-title">{$title}</h1>
+        {ifset $noSubtitle}{else}{if $page_subtitle}<h2 class="admin-subtitle">{$page_subtitle}</h2>{/if}{/ifset}
+        <div n:snippet="flashes">
+            <ul n:flashes></ul>
+            <a n:href="clearFlashes!" id="flash-closer">close flashes</a>
+        </div>
+        <div id="content">
+            {include content}
+        </div>
     </div>
-    <div id="content">
-        {include content}
-    </div>
-</div>
-{ifset $isLoggin}{else}
-    {control adminFooter}
-{/ifset}
+    {ifset $isLoggin}{else}
+        {control adminFooter}
+    {/ifset}
 </body>
 </html>

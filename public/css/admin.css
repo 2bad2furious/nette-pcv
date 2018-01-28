@@ -2,7 +2,7 @@
 body {
   padding: 0;
   margin: 0; }
-  body, body * {
+  body, body :not([class^="ui-"]):not(.fa) {
     box-sizing: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
@@ -11,7 +11,7 @@ body {
     -o-transition: inherit;
     transition: inherit;
     text-decoration: inherit; }
-    body:not(input):not(textarea):not(select):not(option):not(body), body *:not(input):not(textarea):not(select):not(option):not(body) {
+    body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not(.fa):not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit; }
   body:not(p, span, a) {
     display: block; }
@@ -81,16 +81,18 @@ html {
   margin: 0;
   box-sizing: border-box; }
   html body {
+    color: #f5f6fa;
+    background-color: #2f3640;
+    padding: 0;
+    margin: 0;
     display: grid;
     height: 100vh;
     width: 100vw;
     grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr;
     grid-template-areas: "top top" "nav main" "nav main";
-    color: #f5f6fa;
-    background-color: #2f3640;
-    padding: 0;
-    margin: 0; }
+    grid-auto-rows: 0px;
+    grid-auto-columns: 0px; }
     html body header {
       grid-area: nav;
       background-color: #2f3640;
@@ -99,23 +101,20 @@ html {
         list-style-type: none;
         padding: 0;
         margin: 0; }
-    html body div#admin-header-bar {
+    html body div#snippet-adminAdminBar-admin-header-bar {
       grid-area: top;
       display: flex;
       justify-content: space-between;
       background-color: black;
       padding: 10px; }
-      html body div#admin-header-bar #logout {
+      html body div#snippet-adminAdminBar-admin-header-bar #logout {
         color: #c23616; }
     html body #snippet--content {
       grid-area: main;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      padding: 20px;
-      /*#content {
-        display: block;
-      }*/ }
+      padding: 20px; }
       html body #snippet--content:not(.login-default) {
         background-color: #f5f6fa;
         color: black; }
@@ -124,8 +123,33 @@ html {
       html body #snippet--content > h1, html body #snippet--content > h2 {
         text-align: center;
         margin: 0; }
-      html body #snippet--content > * {
-        align-self: center; }
+      html body #snippet--content #flashes {
+        color: red; }
+        html body #snippet--content #flashes:empty ~ #flash-closer {
+          display: none; }
+      html body #snippet--content #content {
+        align-self: stretch;
+        display: flex;
+        justify-content: center;
+        /*#content {
+          display: block;
+        }*/ }
+        html body #snippet--content #content #page-show {
+          width: 100%;
+          display: grid;
+          grid-template-rows: auto auto auto;
+          grid-template-areas: "filter" "create" "pages"; }
+          html body #snippet--content #content #page-show > * {
+            padding: 20px; }
+          html body #snippet--content #content #page-show #filter {
+            grid-area: filter;
+            display: grid; }
+          html body #snippet--content #content #page-show #create {
+            grid-area: create; }
+          html body #snippet--content #content #page-show #pages {
+            grid-area: pages; }
+    html body form .admin-form-errors:empty {
+      margin: 0; }
     html body input {
       -webkit-border-radius: 1px;
       -moz-border-radius: 1px;

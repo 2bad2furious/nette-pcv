@@ -60,6 +60,10 @@ abstract class AdminPresenter extends BasePresenter {
         return $this->getSession("custom");
     }
 
+    /**
+     * @throws \LanguageByCodeNotFound
+     * @throws \LanguageByIdNotFound
+     */
     public function beforeRender() {
         $translator = $this->translator;
         $language = $this->getLocaleLanguage();
