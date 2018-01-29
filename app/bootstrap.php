@@ -8,6 +8,7 @@ $configurator->setDebugMode([
     "127.0.0.1",
     "192.168.1.54",
     "192.168.1.59",
+    "192.168.6.7"
 ]);
 //$configurator->setDebugMode(false);
 

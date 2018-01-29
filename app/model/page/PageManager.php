@@ -59,6 +59,13 @@ class PageManager extends Manager implements IPageManager {
     }
 
 
+    /**
+     * @param int $globalId
+     * @param int|null $languageId
+     * @param bool $throw
+     * @return bool
+     * @throws PageNotFound
+     */
     public function exists(int $globalId, ?int $languageId = null, bool $throw = false): bool {
         $exists = (is_int($languageId)) ?
             $this->getPlainById($globalId, $languageId, $throw) instanceof APage :

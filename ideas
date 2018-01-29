@@ -20,4 +20,6 @@ language has all its settings, settings only store the global and custom ones - 
 
 add page displayTitle form
 
+manager getters for important constants
+
 dashboard - home and 404s set and public

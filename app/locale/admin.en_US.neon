@@ -10,6 +10,14 @@ header:
     user: "Users"
     logout: "Log Out"
 
+home:
+    default:
+        title: ""
+    title: "Dashboard"
+
+top:
+    go_home: "Visit homepage"
+
 global:
     title: "Administration"
     page:
@@ -37,6 +45,7 @@ page:
         filter:
             search:
                 label: "Search"
+                submit: "Search"
                 cancel: "Cancel the search"
             type:
                 label: "By Type"
@@ -54,9 +63,15 @@ page:
 
             translation:
                 label: "By translation"
-                missing: "Missing translation"
-                not_missing: "Has translation"
-                all: "All"
+                missing:
+                    label: "Missing translation"
+                    all: "All missing"
+                not_missing:
+                    label: "Has translation"
+                    all: "All having"
+                all:
+                    label: "All"
+
         table:
             header:
                 globalId: "ID"

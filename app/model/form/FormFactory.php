@@ -144,13 +144,13 @@ class FormFactory extends Manager {
     private function createNewForm(): Form {
         $form = new Form();
         $form->setTranslator($this->getTranslator());
+        $form->getElementPrototype()->data("ajax", "false");//TODO do ajax forms
         return $form;
     }
 
     private function createNewAdminForm(): Form {
         $form = $this->createNewForm();
         $form->getElementPrototype()->class("admin-form");
-        $form->getElementPrototype()->data("ajax", "false");//TODO do ajax forms
         $form->getElementPrototype()->data("validation-mode", "live");
         return $form;
     }
@@ -171,7 +171,7 @@ class FormFactory extends Manager {
             ->setDefaultValue($query);
         $form->addSubmit(
             "submit",
-            "admin.page.show.search.submit");
+            "admin.page.show.filter.search.submit");
         return $form;
     }
 
