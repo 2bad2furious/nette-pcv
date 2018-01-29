@@ -23,3 +23,5 @@ add page displayTitle form
 manager getters for important constants
 
 dashboard - home and 404s set and public
+
+no js support for page - show (one form with names like keys for params)

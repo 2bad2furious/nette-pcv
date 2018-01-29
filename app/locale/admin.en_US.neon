@@ -10,6 +10,12 @@ header:
     user: "Users"
     logout: "Log Out"
 
+    title: "Header Management"
+    default:
+        filter:
+            language: "Language"
+        title: ""
+
 home:
     default:
         title: ""
@@ -77,9 +83,11 @@ page:
                 globalId: "ID"
                 titles: "Titles"
                 type: "Type"
+                language: "Language"
                 edit: "Edit"
                 delete: "Delete"
             body:
+                no_title: "No title yet"
                 type:
                     page: "Page"
                     post: "Post"

@@ -1,7 +1,7 @@
 {block content}
-    <div id="page-show">
-        <div id="filter">
-            <div>
+    <div id="filter">
+        <div id="first-filter-wrap">
+            <div id="page-search-form">
                 {_"admin.page.show.filter.search.label"}:
                 {form adminPageSearch}
                     <ul class="admin-form-errors" n:formErrors></ul>
@@ -22,6 +22,8 @@
                     </option>
                 </select>
             </div>
+        </div>
+        <div id="first-filter-wrap">
             <div id="statuses-links">
                 {_"admin.page.show.filter.visibility.label"}:
                 <select class="openOnChange" title="{_"admin.page.show.filter.visibility.label"}">
@@ -36,7 +38,7 @@
                 {_"admin.page.show.filter.translation.label"}:
                 <select title="{_"admin.page.show.filter.translation.label"}" class="openOnChange">
                     <option data-href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,adminModule\PagePresenter::PAGE_KEY=>1}"
-                    {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null}selected{/ifCurrent}>
+                            {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null}selected{/ifCurrent}>
                         {_"admin.page.show.filter.translation.all.label"}
                     </option>
                     <optgroup label="{_"admin.page.show.filter.translation.not_missing.label"}">
@@ -49,83 +51,91 @@
                         </option>
                     </optgroup>
                     <optgroup label="{_"admin.page.show.filter.translation.missing.label"}">
-                        <option data-href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>\adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::PAGE_KEY=>1}" {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>\adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0}selected{/ifCurrent}>
+                        <option data-href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>\adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::PAGE_KEY=>1}"
+                                {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>\adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0}selected{/ifCurrent}>
                             <strong>{_"admin.page.show.filter.translation.missing.all"}</strong>
                         </option>
                         <option n:foreach="$languages as $lang"
                                 data-href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0,adminModule\PagePresenter::PAGE_KEY=>1}"
-                        {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0}selected{/ifCurrent}>
+                                {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>0}selected{/ifCurrent}>
                             {$lang->getFriendly()}
                         </option>
                     </optgroup>
                 </select>
             </div>
         </div>
-        <div id="create">
-            {_"admin.page.show.create.label"}:
-            {foreach adminModule\PagePresenter::TYPES as $type_val}
-                {continueIf $type_val == adminModule\PagePresenter::TYPE_ALL}
-                <a href="{plink create adminModule\PagePresenter::TYPE_KEY=>$type_val}"
-                   class="create_new">{_"admin.page.show.create.{$type_val}"}</a>
-            {/foreach}
-        </div>
-        <div id="pages">
-            {if $results}
-                <table>
-                    <thead>
-                    <tr>
-                        <td>{_"admin.page.show.table.header.globalId"}</td>
-                        <td>{_"admin.page.show.table.header.type"}</td>
-                        <td>{_"admin.page.show.table.header.titles"}</td>
-                        <td>{_"admin.page.show.table.header.edit"}</td>
-                        <td>{_"admin.page.show.table.header.delete"}</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach $results as $globalId => $pages}
-                        {dump $pages}
-                        {dump count($pages)}
-                        {foreach $pages as $page}
-                            <tr>
-                                {first}
-                                    <td rowspan="{count($pages)}">{$globalId}</td>
-                                    <td rowspan="{count($pages)}">{_"admin.page.show.table.body.type.{$page->getType()}"}</td>
-                                {/first}
-                                <td>{$page->getTitle()|truncate:25}</td>
-                                <td><a class="action page-edit"
-                                       href="{plink edit adminModule\PagePresenter::ID_KEY=>$globalId,
-                            adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLanguage()->getCode()}">{$page->getLanguage()->getFriendly()}</a>
-                                </td>
-                                <td><a class="action page-delete"
-                                       href="{plink delete adminModule\PagePresenter::ID_KEY=>$globalId}">{_"admin.page.show.delete.label"}</a>
-                                </td>
-                            </tr>
-                        {/foreach}
+    </div>
+    <div id="create">
+        {_"admin.page.show.create.label"}:
+        {foreach adminModule\PagePresenter::TYPES as $type_val}
+            {continueIf $type_val == adminModule\PagePresenter::TYPE_ALL}
+            <a href="{plink create adminModule\PagePresenter::TYPE_KEY=>$type_val}"
+               class="create_new">{_"admin.page.show.create.{$type_val}"}</a>
+        {/foreach}
+    </div>
+    <div id="pages">
+        {if $results}
+            <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+            <table class="table">
+                <thead>
+                <tr>
+                    <td>{_"admin.page.show.table.header.globalId"}</td>
+                    <td>{_"admin.page.show.table.header.type"}</td>
+                    <td>{_"admin.page.show.table.header.titles"}</td>
+                    <td>{_"admin.page.show.table.header.language"}</td>
+                    <td>{_"admin.page.show.table.header.edit"}</td>
+                    <td>{_"admin.page.show.table.header.delete"}</td>
+                </tr>
+                </thead>
+                <tbody>
+                {foreach $results as $globalId => $pages}
+                    {dump $pages}
+                    {dump count($pages)}
+                    {foreach $pages as $page}
+                        <tr>
+                            {first}
+                                <td rowspan="{count($pages)}">{$globalId}</td>
+                                <td rowspan="{count($pages)}">{_"admin.page.show.table.body.type.{$page->getType()}"}</td>
+                            {/first}
+                            <td>
+                                    {if $page->isTitleDefault()}
+                                        {_"admin.page.show.table.body.no_title"|truncate:40}
+                                    {else}
+                                        {$page->getTitle()|truncate:40}
+                                    {/if}
+                            </td>
+                            <td>{$page->getLanguage()->getFriendly()}</td>
+                            <td>
+                                <a class="action page-edit"
+                                   href="{plink edit adminModule\PagePresenter::ID_KEY=>$globalId,
+                            adminModule\PagePresenter::EDIT_LANGUAGE_KEY=>$page->getLanguage()->getCode()}">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a class="action page-delete"
+                                   href="{plink delete adminModule\PagePresenter::ID_KEY=>$globalId}">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
                     {/foreach}
-                    </tbody>
-                </table>
-                {control paginator}
-            {else}
-                {_"admin.page.show.not_found"}
-            {/if}
-        </div>
-        <script>
-            _stack.push(function (di) {
-                jQuery(document).ready(function ($) {
-                    $("select").selectmenu();
-                    $("select.openOnChange").on("selectmenuchange change", function () {
-                        var selected = $(this).find("option:selected");
-                        var href = selected.attr("data-href");
-                        if (!href) throw new Error("Href not found");
-                        di.getService("page").open(href, "get");
-                    });
-
-                    $("a.page-delete.action").click(function (e) {
-                        if (!window.confirm({_"admin.page.show.delete.confirm"}))
-                            e.preventDefault();
-                    })
+                {/foreach}
+                </tbody>
+            </table>
+            {control paginator}
+        {else}
+            {_"admin.page.show.not_found"}
+        {/if}
+    </div>
+    <script>
+        _stack.push(function (di) {
+            jQuery(document).ready(function ($) {
+                $("a.page-delete.action").click(function (e) {
+                    if (!window.confirm({_"admin.page.show.delete.confirm"}))
+                        e.preventDefault();
                 })
             })
-        </script>
-    </div>
+        })
+    </script>
 {/block}

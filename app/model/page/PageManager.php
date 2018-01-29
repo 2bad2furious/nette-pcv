@@ -631,7 +631,7 @@ class PageManager extends Manager implements IPageManager {
         return $pages;
     }
 
-    public static function isDefaultUrl(string $url): bool {
+    public function isDefaultUrl(string $url): bool {
         return substr($url, 0, strlen(self::RANDOM_URL_PREFIX)) === self::RANDOM_URL_PREFIX;
     }
 
@@ -664,5 +664,9 @@ class PageManager extends Manager implements IPageManager {
             self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL     => $url,
             self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_AUTHOR  => $this->getUser()->getIdentity()->getId(),
         ])->getPrimary();
+    }
+
+    public function getDefaultTitle(): string {
+        return self::DEFAULT_TITLE;
     }
 }

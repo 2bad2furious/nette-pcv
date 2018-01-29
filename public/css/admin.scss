@@ -79,71 +79,122 @@ html {
     }
     #snippet--content {
       grid-area: main;
-      overflow-y: auto;
-
-      display: flex;
-      flex-direction: column;
-
-      padding: 20px;
-
-      &:not(.login-default) {
-        background-color: $colorOnBackground;
-        color: black;
-      }
-      &.login-default {
-        justify-content: center;
-      }
-
-      & > h1, & > h2 {
-        text-align: center;
-        margin: 0;
-      }
-
-      #flashes {
-        color: red;
-        &:empty ~ #flash-closer {
-          display: none;
-        }
-      }
-
-      #content {
-        align-self: stretch;
+      #contentWrapper {
+        height: 100%;
+        width: 100%;
+        overflow-y: auto;
 
         display: flex;
-        justify-content: center;
+        flex-direction: column;
 
-        #page-show {
-          width: 100%;
-          display: grid;
-          grid-template-rows: auto auto auto;
-          grid-template-areas: "filter" "create" "pages";
+        padding: 20px;
 
-          & > * {
-            padding: 10px;
-          }
+        &:not(.login-default) {
+          background-color: $colorOnBackground;
+          color: black;
+        }
+        &.login-default {
+          justify-content: center;
+        }
 
-          #filter {
-            grid-area: filter;
-            display: grid;
+        &.page-show {
+          #content {
 
-            &.active {
+            & > div {
+              padding: 5px;
+
+              #filter {
+                div {
+                  &#page-search-form {
+                    padding-bottom: 5px;
+                  }
+                  display: inline-block;
+                }
+
+              }
+            }
+            #pages {
+              table {
+                tbody {
+                  td {
+                    vertical-align: middle;
+                    a {
+                      &.page-edit {
+                        color: #273c75;
+                        &:hover {
+                          color: #192a56;
+                        }
+                      }
+                      &.page-delete {
+                        color: #2f3640;
+                        &:hover {
+                          color: #e84118;
+                        }
+                      }
+                    }
+                  }
+                }
+                thead td {
+                  font-weight: bold;
+                }
+              }
 
             }
           }
-          #create {
-            grid-area: create;
-          }
-          #pages {
-            grid-area: pages;
+        }
+
+        & > h1, & > h2 {
+          text-align: center;
+          margin: 0;
+        }
+
+        #flashes {
+          color: red;
+          &:empty ~ #flash-closer {
+            display: none;
           }
         }
 
-        /*#content {
-          display: block;
-        }*/
+        #content {
+          flex-direction: column;
+          align-self: stretch;
+
+          display: flex;
+          justify-content: center;
+          padding-bottom: 50px;
+          &.page-show {
+            width: 100%;
+            display: grid;
+            grid-template-rows: auto auto auto;
+            grid-template-areas: "filter" "create" "pages";
+
+            & > * {
+              padding: 10px;
+            }
+
+            #filter {
+              grid-area: filter;
+              display: grid;
+
+              &.active {
+
+              }
+            }
+            #create {
+              grid-area: create;
+            }
+            #pages {
+              grid-area: pages;
+            }
+          }
+
+          /*#content {
+            display: block;
+          }*/
+
+        }
 
       }
-
     }
     form {
       .admin-form-errors:empty {

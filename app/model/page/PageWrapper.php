@@ -150,7 +150,7 @@ class PageWrapper {
     }
 
     public function isTitleDefault(): bool {
-        return $this->getTitle() === PageManager::DEFAULT_TITLE;
+        return $this->getTitle() === $this->pageManager->getDefaultTitle();
     }
 
     public function getCheckedUrl() {
@@ -159,6 +159,6 @@ class PageWrapper {
     }
 
     public function isUrlGenerated(): bool {
-        return PageManager::isDefaultUrl($this->getUrl());
+        return $this->pageManager->isDefaultUrl($this->getUrl());
     }
 }

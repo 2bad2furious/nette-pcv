@@ -89,5 +89,7 @@ interface IPageManager extends IManager {
 
     public function delete(int $globalId);
 
-    public static function isDefaultUrl(string $url): bool;
+    public function isDefaultUrl(string $url): bool;
+
+    public function getDefaultTitle():string;
 }

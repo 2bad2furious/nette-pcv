@@ -23,8 +23,7 @@
             src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
             integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
             crossorigin="anonymous" defer></script>
-    <script src="/node_modules/nestedSortable/jquery.mjs.nestedSortable.js" type="application/javascript"
-            defer></script>
+    <script type="application/javascript" src="/node_modules/jquery-onmutate/src/jquery.onmutate.min.js" defer></script>
     <script type="application/javascript" src="/libs/nittro/nittro.min.js" defer></script>
     <link href="/node_modules/froala-editor/css/froala_style.min.css" rel="stylesheet" type="text/css">
     <link href="/node_modules/froala-editor/css/froala_editor.min.css" type="text/css" rel="stylesheet">
@@ -33,13 +32,18 @@
     <script type="application/javascript" src="/js/admin.min.js" defer></script>
 </head>
 <body class="nittro-transition-bar nittro-transition-auto">
-    {ifset $isLoggin}{else}
-        <div n:snippet="admin-header-bar">{control adminAdminBar}</div>
-        <header>{control adminHeader}</header>
-    {/ifset}
-    <div n:snippet="content" class={$presenter}-{$action}">
+{ifset $isLoggin}{else}
+    <div n:snippet="admin-header-bar">{control adminAdminBar}</div>
+    <header>{control adminHeader}</header>
+{/ifset}
+<div n:snippet="content">
+    <div id="contentWrapper" class="{$presenter|noescape}-{$action|noescape}">
         <h1 class="admin-title">{$title}</h1>
-        {ifset $noSubtitle}{else}{if $page_subtitle}<h2 class="admin-subtitle">{$page_subtitle}</h2>{/if}{/ifset}
+        {ifset $noSubtitle}{else}
+            {if $page_subtitle}
+                <h2 class="admin-subtitle">{$page_subtitle}</h2>
+            {/if}
+        {/ifset}
         <div n:snippet="flashes">
             <ul n:flashes></ul>
             <a n:href="clearFlashes!" id="flash-closer">close flashes</a>
@@ -48,8 +52,9 @@
             {include content}
         </div>
     </div>
-    {ifset $isLoggin}{else}
-        {control adminFooter}
-    {/ifset}
+</div>
+{ifset $isLoggin}{else}
+    {control adminFooter}
+{/ifset}
 </body>
 </html>

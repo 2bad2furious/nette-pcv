@@ -118,44 +118,67 @@ html {
         html body div#snippet--admin-header-bar a:hover {
           color: #7f8fa6; }
     html body #snippet--content {
-      grid-area: main;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      padding: 20px; }
-      html body #snippet--content:not(.login-default) {
-        background-color: #f5f6fa;
-        color: black; }
-      html body #snippet--content.login-default {
-        justify-content: center; }
-      html body #snippet--content > h1, html body #snippet--content > h2 {
-        text-align: center;
-        margin: 0; }
-      html body #snippet--content #flashes {
-        color: red; }
-        html body #snippet--content #flashes:empty ~ #flash-closer {
-          display: none; }
-      html body #snippet--content #content {
-        align-self: stretch;
+      grid-area: main; }
+      html body #snippet--content #contentWrapper {
+        height: 100%;
+        width: 100%;
+        overflow-y: auto;
         display: flex;
-        justify-content: center;
-        /*#content {
-          display: block;
-        }*/ }
-        html body #snippet--content #content #page-show {
-          width: 100%;
-          display: grid;
-          grid-template-rows: auto auto auto;
-          grid-template-areas: "filter" "create" "pages"; }
-          html body #snippet--content #content #page-show > * {
-            padding: 10px; }
-          html body #snippet--content #content #page-show #filter {
-            grid-area: filter;
-            display: grid; }
-          html body #snippet--content #content #page-show #create {
-            grid-area: create; }
-          html body #snippet--content #content #page-show #pages {
-            grid-area: pages; }
+        flex-direction: column;
+        padding: 20px; }
+        html body #snippet--content #contentWrapper:not(.login-default) {
+          background-color: #f5f6fa;
+          color: black; }
+        html body #snippet--content #contentWrapper.login-default {
+          justify-content: center; }
+        html body #snippet--content #contentWrapper.page-show #content > div {
+          padding: 5px; }
+          html body #snippet--content #contentWrapper.page-show #content > div #filter div {
+            display: inline-block; }
+            html body #snippet--content #contentWrapper.page-show #content > div #filter div#page-search-form {
+              padding-bottom: 5px; }
+        html body #snippet--content #contentWrapper.page-show #content #pages table tbody td {
+          vertical-align: middle; }
+          html body #snippet--content #contentWrapper.page-show #content #pages table tbody td a.page-edit {
+            color: #273c75; }
+            html body #snippet--content #contentWrapper.page-show #content #pages table tbody td a.page-edit:hover {
+              color: #192a56; }
+          html body #snippet--content #contentWrapper.page-show #content #pages table tbody td a.page-delete {
+            color: #2f3640; }
+            html body #snippet--content #contentWrapper.page-show #content #pages table tbody td a.page-delete:hover {
+              color: #e84118; }
+        html body #snippet--content #contentWrapper.page-show #content #pages table thead td {
+          font-weight: bold; }
+        html body #snippet--content #contentWrapper > h1, html body #snippet--content #contentWrapper > h2 {
+          text-align: center;
+          margin: 0; }
+        html body #snippet--content #contentWrapper #flashes {
+          color: red; }
+          html body #snippet--content #contentWrapper #flashes:empty ~ #flash-closer {
+            display: none; }
+        html body #snippet--content #contentWrapper #content {
+          flex-direction: column;
+          align-self: stretch;
+          display: flex;
+          justify-content: center;
+          padding-bottom: 50px;
+          /*#content {
+            display: block;
+          }*/ }
+          html body #snippet--content #contentWrapper #content.page-show {
+            width: 100%;
+            display: grid;
+            grid-template-rows: auto auto auto;
+            grid-template-areas: "filter" "create" "pages"; }
+            html body #snippet--content #contentWrapper #content.page-show > * {
+              padding: 10px; }
+            html body #snippet--content #contentWrapper #content.page-show #filter {
+              grid-area: filter;
+              display: grid; }
+            html body #snippet--content #contentWrapper #content.page-show #create {
+              grid-area: create; }
+            html body #snippet--content #contentWrapper #content.page-show #pages {
+              grid-area: pages; }
     html body form .admin-form-errors:empty {
       margin: 0; }
     html body input {
