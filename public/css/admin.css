@@ -127,7 +127,7 @@ html {
         flex-direction: column;
         padding: 20px; }
         html body #snippet--content #contentWrapper:not(.login-default) {
-          background-color: #f5f6fa;
+          background-color: white;
           color: black; }
         html body #snippet--content #contentWrapper.login-default {
           justify-content: center; }
@@ -149,13 +149,44 @@ html {
               color: #e84118; }
         html body #snippet--content #contentWrapper.page-show #content #pages table thead td {
           font-weight: bold; }
+        html body #snippet--content #contentWrapper.header-default #content ol.header-children {
+          list-style-type: none; }
+          html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item {
+            margin: 10px 0; }
+            html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div {
+              border: 1px solid #718093; }
+              html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div {
+                padding: 5px; }
+                html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div.header-item-controls {
+                  background-color: #f5f6fa;
+                  border-bottom: 1px solid #dcdde1; }
+                html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div.header-item-content > span {
+                  display: block; }
         html body #snippet--content #contentWrapper > h1, html body #snippet--content #contentWrapper > h2 {
           text-align: center;
           margin: 0; }
-        html body #snippet--content #contentWrapper #flashes {
-          color: red; }
-          html body #snippet--content #contentWrapper #flashes:empty ~ #flash-closer {
-            display: none; }
+        html body #snippet--content #contentWrapper #snippet--flashes {
+          position: relative; }
+          html body #snippet--content #contentWrapper #snippet--flashes #flashes {
+            list-style-type: none;
+            padding: 20px 10px 20px; }
+            html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash {
+              color: #f5f6fa; }
+              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash::before {
+                border: none; }
+              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
+                background-color: #e84118; }
+              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
+                background-color: #4cd137; }
+            html body #snippet--content #contentWrapper #snippet--flashes #flashes:empty {
+              padding: 0;
+              margin: 0; }
+              html body #snippet--content #contentWrapper #snippet--flashes #flashes:empty ~ #flash-closer {
+                display: none; }
+          html body #snippet--content #contentWrapper #snippet--flashes #flash-closer {
+            position: absolute;
+            right: 10px;
+            top: 20px; }
         html body #snippet--content #contentWrapper #content {
           flex-direction: column;
           align-self: stretch;
@@ -165,20 +196,6 @@ html {
           /*#content {
             display: block;
           }*/ }
-          html body #snippet--content #contentWrapper #content.page-show {
-            width: 100%;
-            display: grid;
-            grid-template-rows: auto auto auto;
-            grid-template-areas: "filter" "create" "pages"; }
-            html body #snippet--content #contentWrapper #content.page-show > * {
-              padding: 10px; }
-            html body #snippet--content #contentWrapper #content.page-show #filter {
-              grid-area: filter;
-              display: grid; }
-            html body #snippet--content #contentWrapper #content.page-show #create {
-              grid-area: create; }
-            html body #snippet--content #contentWrapper #content.page-show #pages {
-              grid-area: pages; }
     html body form .admin-form-errors:empty {
       margin: 0; }
     html body input {

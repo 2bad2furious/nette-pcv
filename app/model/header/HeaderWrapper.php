@@ -96,6 +96,10 @@ class HeaderWrapper {
         return $this->active;
     }
 
+    /**
+     * @return string
+     * @throws InvalidState
+     */
     public function getUrl(): string {
         if ($this->isPage())
             return $this->getPage()->getUrl();
@@ -103,13 +107,24 @@ class HeaderWrapper {
         return $this->getHeader()->getUrl();
     }
 
+    /**
+     * @return string
+     * @throws InvalidState
+     */
     public function getTitle(): string {
         if ($this->isPage())
-            return $this->getHeader()->getTitle() ?: $this->getPage()->getTitle();
+            return $this->getHeader()->getTitle() ?:
+                $this->getPage()->isTitleDefault() ? "" : $this->getPage()->getTitle(); //checking whether the title is set
 
         return $this->getHeader()->getTitle();
     }
 
+    /**
+     * @param bool $prependSlash
+     * @return string
+     * @throws InvalidState
+     * @throws LanguageByIdNotFound
+     */
     public function getCompleteUrl(bool $prependSlash = true): string {
         if ($this->isPage())
             return $this->getPage()->getCompleteUrl($prependSlash);
@@ -131,5 +146,25 @@ class HeaderWrapper {
 
     public function __call(string $name, array $arguments) {
         return call_user_func_array([$this->getHeader(), $name], $arguments);
+    }
+
+    public function isTitleCustom(): bool {
+        return !$this->getHeader()->getTitle();
+    }
+
+    public function canMoveUp(): bool {
+        return $this->headerManager->canBeMovedUp($this->getId());
+    }
+
+    public function canMoveDown(): bool {
+        return $this->headerManager->canBeMovedDown($this->getId());
+    }
+
+    public function canMoveLeft(): bool {
+        return $this->headerManager->canBeMovedLeft($this->getId());
+    }
+
+    public function canMoveRight(): bool {
+        return $this->headerManager->canBeMovedRight($this->getId());
     }
 }

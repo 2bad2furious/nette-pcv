@@ -12,7 +12,7 @@
             <option n:foreach="$languages as $lang"
                     data-href="{plink default \adminModule\HeaderPresenter::LANGUAGE_KEY=>$lang->getCode()}"
                     {ifCurrent default \adminModule\HeaderPresenter::LANGUAGE_KEY=>$lang->getCode()}selected{/ifCurrent}>
-                {_$lang->getFriendly()}
+                {$lang->getFriendly()}
             </option>
         </select>
     </div>
@@ -26,7 +26,7 @@
             {include "header-items.latte" header=>$header}
         {/snippet}
     </div>
-    <div id="header-edit-form-wrapper" class="{if $action}active{/if}">
+    <div id="header-edit-form-wrapper" class="{if $action !== "default"}active{/if}">
         <a id="edit-form-close" n:href="default \adminModule\HeaderPresenter::ID_KEY=>null,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE">close</a>
         <div n:snippet="edit-form">
             <div id="tabs" data-action="{$action}" data-id="{$id}">

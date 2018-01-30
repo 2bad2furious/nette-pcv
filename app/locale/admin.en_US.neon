@@ -10,8 +10,28 @@ header:
     user: "Users"
     logout: "Log Out"
 
+    not_found: "Header link not found"
+    moveLeft:
+        cannot: "Cannot move this to the left"
+    moveRight:
+        cannot: "Cannot move this to the right"
+    moveDown:
+        cannot: "Cannot move this down"
+    moveUp:
+        cannot: "Cannot move this up"
+
     title: "Header Management"
     default:
+        custom:
+            title: "Title"
+            url: "Url"
+        page:
+            title: "Custom title"
+            page: "Page"
+        deleteSelf:
+            confirm: "Are you sure? This will delete this link from header and move all its children to its place."
+        deleteAll:
+            confirm: "Are you sure? This will delete this page and all its descendants."
         filter:
             language: "Language"
         title: ""

@@ -79,6 +79,7 @@ html {
     }
     #snippet--content {
       grid-area: main;
+
       #contentWrapper {
         height: 100%;
         width: 100%;
@@ -90,7 +91,7 @@ html {
         padding: 20px;
 
         &:not(.login-default) {
-          background-color: $colorOnBackground;
+          background-color: white; //$colorOnBackground;
           color: black;
         }
         &.login-default {
@@ -143,15 +144,71 @@ html {
           }
         }
 
+        &.header-default {
+          #content {
+            ol.header-children {
+              list-style-type: none;
+
+              li.header-item {
+                margin: 10px 0;
+                & > div {
+                  border: 1px solid #718093;
+                  & > div {
+                    padding: 5px;
+                    &.header-item-controls {
+                      background-color: #f5f6fa;
+                      border-bottom: 1px solid #dcdde1;
+                    }
+                    &.header-item-content {
+                      & > span {
+                        display: block;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
         & > h1, & > h2 {
           text-align: center;
           margin: 0;
         }
+        #snippet--flashes {
+          position: relative;
+          #flashes {
+            list-style-type: none;
 
-        #flashes {
-          color: red;
-          &:empty ~ #flash-closer {
-            display: none;
+            padding: 20px 10px 20px;
+
+            li.nittro-flash {
+              color: #f5f6fa;
+              &::before {
+                border: none;
+              }
+              &.nittro-flash-error {
+                background-color: #e84118;
+
+              }
+              &.nittro-flash-success {
+                background-color: #4cd137;
+              }
+            }
+            &:empty {
+              padding: 0;
+
+              margin: 0;
+              & ~ #flash-closer {
+                display: none;
+              }
+            }
+          }
+
+          #flash-closer {
+            position: absolute;
+            right: 10px;
+            top: 20px;
           }
         }
 
@@ -162,31 +219,6 @@ html {
           display: flex;
           justify-content: center;
           padding-bottom: 50px;
-          &.page-show {
-            width: 100%;
-            display: grid;
-            grid-template-rows: auto auto auto;
-            grid-template-areas: "filter" "create" "pages";
-
-            & > * {
-              padding: 10px;
-            }
-
-            #filter {
-              grid-area: filter;
-              display: grid;
-
-              &.active {
-
-              }
-            }
-            #create {
-              grid-area: create;
-            }
-            #pages {
-              grid-area: pages;
-            }
-          }
 
           /*#content {
             display: block;

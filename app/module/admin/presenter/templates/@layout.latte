@@ -29,7 +29,7 @@
     <link href="/node_modules/froala-editor/css/froala_editor.min.css" type="text/css" rel="stylesheet">
     <link href="/node_modules/froala-editor/css/froala_editor.pkgd.min.css" type="text/css" rel="stylesheet">
     <script src="/node_modules/froala-editor/js/froala_editor.pkgd.min.js" type="application/javascript" defer></script>
-    <script type="application/javascript" src="/js/admin.min.js" defer></script>
+    <script type="application/javascript" src="/js/admin.js" defer></script>
 </head>
 <body class="nittro-transition-bar nittro-transition-auto">
 {ifset $isLoggin}{else}
@@ -46,7 +46,9 @@
         {/ifset}
         <div n:snippet="flashes">
             <ul n:flashes></ul>
-            <a n:href="clearFlashes!" id="flash-closer">close flashes</a>
+            <a n:href="clearFlashes!" id="flash-closer" data-history="false">
+                <i class="fa fa-times"></i>
+            </a>
         </div>
         <div id="content">
             {include content}

@@ -5,6 +5,7 @@ namespace adminModule;
 
 
 use Language;
+use Nette\Application\Request;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 
@@ -37,35 +38,46 @@ class HeaderPresenter extends AdminPresenter {
     }
 
 
+    /**
+     * @throws \LanguageByIdNotFound
+     */
     public function actionDefault() {
         if (!$this->getParameter(self::LANGUAGE_KEY))
             $this->redirect(302, "this",
                 [self::LANGUAGE_KEY => $this->getLanguageManager()->getDefaultLanguage()->getCode()]);
     }
 
+    /**
+     * @throws \LanguageByIdNotFound
+     * @throws \LanguageByCodeNotFound
+     * @throws \InvalidState
+     */
     public function renderDefault() {
         $this->template->language = $this->getCurrentLanguage();
         $this->template->languages = $this->getLanguageManager()->getAvailableLanguages();
-        $this->template->action = in_array(($action = $this->getAction()), ["add", "edit"]) ? $action : null;
+
         $this->template->header = $this->getHeaderManager()->getHeader($this->getCurrentLanguage()->getId());
         $this->template->formType = $this->getFormType();
         $this->template->id = $this->getIdParam();
 
 
-        if ($this->getSignalName() || $this->isAjax()) {
-            $this->redrawDefault();
-        }
-
         if ($this->getSignalName()) {
-            $this->redirect("default", [self::SIGNAL_KEY => null, "id" => null]);
+            $this->redrawHeaderPages();
         }
     }
 
+    /**
+     * @return Language
+     * @throws \LanguageByCodeNotFound
+     */
     private function getCurrentLanguage(): Language {
         $code = $this->getParameter(self::LANGUAGE_KEY);
         return $this->getLanguageManager()->getByCode($code);
     }
 
+    /**
+     * @throws \LanguageByCodeNotFound
+     */
     public function actionAdd() {
         $id = $this->getIdParam();
 
@@ -78,6 +90,9 @@ class HeaderPresenter extends AdminPresenter {
         $this->redrawControl("edit-form");
     }
 
+    /**
+     * @throws \LanguageByCodeNotFound
+     */
     public function actionEdit() {
         if (!$this->getHeaderManager()->exists($this->getIdParam(), $this->getCurrentLanguage()->getId())) {
 
@@ -90,6 +105,12 @@ class HeaderPresenter extends AdminPresenter {
         $this->redrawControl("edit-form");
     }
 
+    /**
+     * @param string $id
+     * @param string $parentId
+     * @param string $position
+     * @throws \Exception
+     */
     public function handleChangeParent(string $id, string $parentId, string $position) {
         $headerId = (int)$id;
         $parentHeaderId = (int)$parentId;
@@ -109,11 +130,8 @@ class HeaderPresenter extends AdminPresenter {
                 $this->error("ParentHeaderId $parentHeaderId not found", IResponse::S400_BAD_REQUEST);
 
             $this->getHeaderManager()->changeParentOrPosition($headerId, $parentHeaderId, $headerPosition);
-            $this->addSuccess("admin.header.change.parent.success");
-        }, function () {
-            $this->redrawControl("header-area");
-            $this->redrawControl("header-edit-form-wrapper");
         });
+
         $this->redirect(302, "default");
     }
 
@@ -207,55 +225,98 @@ class HeaderPresenter extends AdminPresenter {
         return $type;
     }
 
-    private function getIdParam():?int {
+    private function getIdParam(): ?int {
         $id = $this->getParameter(self::ID_KEY);
         //  if (is_null($id)) $this->error("Id not found");
         return (int)$id;
     }
 
+    /**
+     * @param int $id
+     * @throws \Exception
+     */
     public function handleMoveUp(int $id) {
-        if (!$this->getHeaderManager()->exists($id)) return $this->addError("admin.header.moveUp.not_found");
-
-        if (!$this->getHeaderManager()->canBeMovedUp($id)) return $this->addError("admin.header.moveUp.cannot");
+        if (!$this->getHeaderManager()->exists($id)) {
+            $this->addError("admin.header.moveUp.not_found");
+            return;
+        }
+        if (!$this->getHeaderManager()->canBeMovedUp($id)) {
+            $this->addError("admin.header.moveUp.cannot");
+            return;
+        }
 
         $this->commonTryCall(function () use ($id) {
             $this->getHeaderManager()->moveUp($id);
         });
     }
 
+    /**
+     * @param int $id
+     * @throws \Exception
+     */
     public function handleMoveLeft(int $id) {
-        if (!$this->getHeaderManager()->exists($id)) return $this->addError("admin.header.moveLeft.not_found");
-
-        if (!$this->getHeaderManager()->canBeMovedLeft($id)) return $this->addError("admin.header.moveLeft.cannot");
+        if (!$this->getHeaderManager()->exists($id)) {
+            $this->addError("admin.header.not_found");
+            return;
+        }
+        if (!$this->getHeaderManager()->canBeMovedLeft($id)) {
+            $this->addError("admin.header.moveLeft.cannot");
+            return;
+        }
 
         $this->commonTryCall(function () use ($id) {
             $this->getHeaderManager()->moveLeft($id);
         });
     }
 
+    /**
+     * @param int $id
+     * @throws \Exception
+     */
     public function handleMoveRight(int $id) {
-        if (!$this->getHeaderManager()->exists($id)) return $this->addError("admin.header.moveRight.not_found");
+        if (!$this->getHeaderManager()->exists($id)) {
+            $this->addError("admin.header.not_found");
+            return;
+        }
 
-        if (!$this->getHeaderManager()->canBeMovedRight($id)) return $this->addError("admin.header.moveRight.cannot");
+        if (!$this->getHeaderManager()->canBeMovedRight($id)) {
+            $this->addError("admin.header.cannot");
+            return;
+        }
 
         $this->commonTryCall(function () use ($id) {
             $this->getHeaderManager()->moveRight($id);
         });
     }
 
+    /**
+     * @param int $id
+     * @throws \Exception
+     */
     public function handleMoveDown(int $id) {
-        if (!$this->getHeaderManager()->exists($id)) return $this->addError("admin.header.moveDown.not_found");
-
-        dump($this->getHeaderManager()->canBeMovedDown($id));
-        if (!$this->getHeaderManager()->canBeMovedDown($id)) return $this->addError("admin.header.moveDown.cannot");
+        if (!$this->getHeaderManager()->exists($id)) {
+            $this->addError("admin.header.not_found");
+            return;
+        }
+        if (!$this->getHeaderManager()->canBeMovedDown($id)) {
+            $this->addError("admin.header.moveDown.cannot");
+            return;
+        }
 
         $this->commonTryCall(function () use ($id) {
             $this->getHeaderManager()->moveDown($id);
         });
     }
 
+    /**
+     * @param int $id
+     * @throws \Exception
+     */
     public function handleDeleteAll(int $id) {
-        if (!$this->getHeaderManager()->exists($id)) return $this->addError("admin.header.deleteAll.not_found");
+        if (!$this->getHeaderManager()->exists($id)) {
+            $this->addError("admin.header.deleteAll.not_found");
+            return;
+        }
 
         $this->commonTryCall(function () use ($id) {
             $this->getHeaderManager()->deleteBranch($id);
@@ -263,12 +324,23 @@ class HeaderPresenter extends AdminPresenter {
 
     }
 
+    /**
+     * @param int $id
+     * @throws \Exception
+     */
     public function handleDeleteSelf(int $id) {
-        if (!$this->getHeaderManager()->exists($id)) return $this->addError("admin.header.deleteSelf.not_found");
+        if (!$this->getHeaderManager()->exists($id)) {
+            $this->addError("admin.header.deleteSelf.not_found");
+            return;
+        }
 
         $this->commonTryCall(function () use ($id) {
             $this->getHeaderManager()->delete($id);
         });
 
+    }
+
+    private function redrawHeaderPages() {
+        $this->redrawControl("header-area");
     }
 }

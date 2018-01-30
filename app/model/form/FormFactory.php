@@ -379,7 +379,7 @@ class FormFactory extends Manager {
 
         $pages = $this->getPageManager()->getAllPages($languageId);
         $pageSelection = $form->addSelect(self::HEADER_PAGE_NAME, "admin.header.edit.page.label", array_map(function (PageWrapper $page) {
-            return $page->getTitle() . " " . $page->getGlobalId();
+            return $page->getGlobalId() . ($page->isTitleDefault() ? "" : " " . $page->getTitle());
         }, $pages));
         if ($headerWrapper instanceof HeaderWrapper)
             $pageSelection->setDefaultValue($headerWrapper->getPageId());
