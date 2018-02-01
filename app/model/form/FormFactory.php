@@ -44,6 +44,8 @@ class FormFactory extends Manager {
     const LANGUAGE_EDIT_404 = "page404_id";
     const LANGUAGE_EDIT_FRIENDLY_NAME = "friendly";
     const MEDIA_UPLOAD_NAME = "upload";
+    const PAGE_EDIT_DISPLAY_TITLE_NAME = "display_title";
+    const PAGE_EDIT_DISPLAY_BREADCRUMBS = "display_bread";
 
     public function createPageEditForm(PageWrapper $page, callable $urlValidator) {
 
@@ -60,7 +62,7 @@ class FormFactory extends Manager {
 
         if ($page->isPage()) {
             $parents = [0 => "admin.page.edit.global.parent.no"] + array_map(function (PageWrapper $page) {
-                    return $page->getTitle();
+                    return $page->getGlobalId() . " " . ($page->isTitleDefault() ? "" : $page->getTitle());
                 }, $this->getPageManager()->getViableParents($page->getGlobalId(), $page->getLanguageId()));
 
             $container->addSelect(
@@ -132,6 +134,24 @@ class FormFactory extends Manager {
                 return $media->getSrc();
             }, $this->getMediaManager()->getAvailableImages()))
             ->setDefaultValue($page->getImageId());
+
+        $title = $container->addCheckbox(self::PAGE_EDIT_DISPLAY_TITLE_NAME,
+            "admin.page.edit.local.display.title.label")
+            ->setDefaultValue($page->getDisplayBreadCrumbs());
+
+        $checkbox = $title->getControlPrototype();
+        $checkbox->data("off-text", $this->getTranslator()->translate("admin.page.edit.local.display.title.no"));
+        $checkbox->data("on-text", $this->getTranslator()->translate("admin.page.edit.local.display.title.yes"));
+        $checkbox->data("label-text", $this->getTranslator()->translate("admin.page.edit.local.display.title.label"));
+
+        $breadCrumbs = $container->addCheckbox(self::PAGE_EDIT_DISPLAY_BREADCRUMBS,
+            "admin.page.edit.local.display.breadcrumbs.label")
+            ->setDefaultValue($page->getDisplayTitle());
+        $checkbox = $breadCrumbs->getControlPrototype();
+
+        $checkbox->data("off-text", $this->getTranslator()->translate("admin.page.edit.local.display.breadcrumbs.no"));
+        $checkbox->data("on-text", $this->getTranslator()->translate("admin.page.edit.local.display.breadcrumbs.yes"));
+        $checkbox->data("label-text", $this->getTranslator()->translate("admin.page.edit.local.display.breadcrumbs.label"));
 
         //todo add tag editing - not "in form"
 
@@ -334,7 +354,7 @@ class FormFactory extends Manager {
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
         $availableLanguages = array_map(function (Language $language) {
-            return $language->getCode();
+            return $language->getFriendly();
         }, $lm->getAvailableLanguages());
         $form->addSelect(
             self::SETTINGS_EDIT_DEFAULT_LANGUAGE_NAME,
@@ -397,14 +417,14 @@ class FormFactory extends Manager {
 
     public function createHeaderCustomEditForm(?HeaderWrapper $headerWrapper) {
         $form = $this->createNewAdminForm();
-
+        dump($headerWrapper);
         $title = $form->addText(self::HEADER_TITLE_NAME, "admin.header.edit.title.required.label")
             ->addRule(Form::REQUIRED, "admin.header.edit.title.required.required");
         if ($headerWrapper instanceof HeaderWrapper) $title->setDefaultValue((string)$headerWrapper->getTitle());
 
         $url = $form->addText(self::HEADER_URL_NAME, "admin.header.edit.url.label")
             ->addRule(Form::URL, "admin.header.edit.url.pattern")
-            ->addRule(Form::REQUIRED, "admin.header.url.required");
+            ->addRule(Form::REQUIRED, "admin.header.edit.url.required");
         if ($headerWrapper instanceof HeaderWrapper) $url->setDefaultValue($headerWrapper->getUrl());
 
         $form->addSubmit(

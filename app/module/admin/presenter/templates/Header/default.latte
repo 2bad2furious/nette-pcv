@@ -27,8 +27,13 @@
         {/snippet}
     </div>
     <div id="header-edit-form-wrapper" class="{if $action !== "default"}active{/if}">
-        <a id="edit-form-close" n:href="default \adminModule\HeaderPresenter::ID_KEY=>null,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE">close</a>
+        <a id="edit-form-close" n:href="default \adminModule\HeaderPresenter::ID_KEY=>null,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE">
+            <i class="fa fa-times"></i>
+        </a>
         <div n:snippet="edit-form">
+            <link rel="stylesheet" href="/node_modules/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+            <script src="/node_modules/bootstrap-switch/dist/js/bootstrap-switch.min.js" type="application/javascript"
+                    defer></script>
             <div id="tabs" data-action="{$action}" data-id="{$id}">
                 {if $action === "add"}
                     {include "add-form.latte" formType=>$formType}
@@ -42,9 +47,11 @@
                     jQuery().ready(function ($) {
                         di.getService("page").getSnippet({$editSnippetId}).setup(
                             function (elem) {
-                                var tabs = $(elem).find("#tabs");
-                                if (tabs.children().length)
+                                if ($("#tab-page").children().length && $("#tab-custom").children().length)
                                     $("#header-edit-form-wrapper").addClass("active");
+
+                                $("#type-switcher").bootstrapSwitch();
+                                $("label[for=type-switcher]")
                             }).teardown(function () {
                             $("#header-edit-form-wrapper").removeClass("active")
                         });

@@ -215,12 +215,15 @@ class PagePresenter extends AdminPresenter {
                     $values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_CONTENT_NAME],
-                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_IMAGE_NAME]
+                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_IMAGE_NAME],
+                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_DISPLAY_TITLE_NAME],
+                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_DISPLAY_BREADCRUMBS]
                 );
 
-                $this->flashMessage("admin.page.edit.success");
-                $this->postGet("this");
+                $this->addSuccess("admin.page.edit.success");
             });
+
+            $this->postGet("this");
             //$this->redrawDefault(true);
         };
         return $form/*->setAction($this->link("edit", [self::ID_KEY => $page->getGlobalId(), self::EDIT_LANGUAGE_KEY => $this->getParameter(self::EDIT_LANGUAGE_KEY)]))*/

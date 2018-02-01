@@ -37,52 +37,6 @@ body {
     resize: none;
   }
 
-  #tabs {
-    position: relative;
-    // set height to be even for all tab groups
-    min-height: 180px;
-    display: block;
-  }
-
-  .tab {
-    float: left;
-
-    label.tab-label {
-      cursor: pointer;
-
-      font-size: 1.2em;
-      border-radius: 5px 5px 0 0;
-      padding: .5em 1em;
-    }
-
-    input[type=radio][name=tabgroup] {
-      position: absolute;
-      clip: rect(0, 0, 0, 0);
-
-      &:focus + label {
-
-      }
-
-      &:checked ~ label {
-        /*background: #c99;*/
-      }
-
-      &:checked ~ label ~ .tab-content {
-        display: initial;
-      }
-    }
-    .tab-content {
-      display: none;
-      border-radius: 0 5px 5px;
-      padding: .5em 2em;
-      position: absolute;
-      width: 100%;
-      top: 2em;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-  }
   .center-all {
     position: absolute;
     left: 50%;
@@ -108,5 +62,16 @@ body {
   .link {
     padding: 2px;
     cursor: pointer;
+  }
+
+  .nice-button {
+    width: 60px;
+    text-align: center;
+    padding: 10px;
+    background: #00a8ff;
+    margin: 10px 0px;
+    &:hover {
+      background-color: #0097e6;
+    }
   }
 }

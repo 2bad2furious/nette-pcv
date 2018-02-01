@@ -21,6 +21,33 @@ header:
         cannot: "Cannot move this up"
 
     title: "Header Management"
+    add:
+        page:
+            submit: "Add"
+        custom:
+            submit: "Add"
+        type:
+            page:
+                label: "Page"
+            custom:
+                label: "Custom"
+            switcher:
+                label: "Type - page?"
+    edit:
+        success: "Page successfully edited"
+        page:
+            label: "Page"
+        title:
+            optional:
+                label: "Custom title"
+            required:
+                label: "Title"
+                required: "Title is required"
+        url:
+            label: "Url"
+            pattern: "Url is not valid"
+            required: "Url is required"
+
     default:
         custom:
             title: "Title"
@@ -42,12 +69,31 @@ home:
     title: "Dashboard"
 
 top:
+    page:
+        edit:
+            view: "Visit the page"
     go_home: "Visit homepage"
 
 global:
     title: "Administration"
     page:
         no_title: "No title yet"
+
+language:
+    title: "Language managing"
+    default:
+        title: ""
+        search:
+            submit: "Search"
+        id: "ID"
+        code: "Code"
+        friendly: "Friendly"
+        edit: "Edit"
+        delete:
+            label: "Delete"
+            confirm: "Are you sure? This will delete this language and translations."
+        add: "Add"
+
 
 login:
     title: "Admin Login"
@@ -166,6 +212,15 @@ page:
             image:
                 no: "No image"
                 label: "Select an appropriate image"
+            display:
+                title:
+                    label: "Display title?"
+                    yes: "Yes"
+                    no: "No"
+                breadcrumbs:
+                    label: "Display breadcrumbs?"
+                    yes: "Yes"
+                    no: "No"
         action:
             delete:
                 label: "Delete"

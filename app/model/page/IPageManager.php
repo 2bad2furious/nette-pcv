@@ -85,7 +85,22 @@ interface IPageManager extends IManager {
      */
     public function addEmpty(int $type): int;
 
-    public function update(int $pageId, int $langId, int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId);
+    /**
+     * @param int $pageId
+     * @param int $langId
+     * @param int $parentId
+     * @param string $title
+     * @param string $description
+     * @param string $url
+     * @param int $globalVisibility
+     * @param int $localVisibility
+     * @param string $content
+     * @param int $imageId
+     * @param bool $displayTitle
+     * @param bool $displayBreadCrumbs
+     * @return mixed
+     */
+    public function update(int $pageId, int $langId, int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId, bool $displayTitle, bool $displayBreadCrumbs);
 
     public function delete(int $globalId);
 

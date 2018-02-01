@@ -306,7 +306,7 @@ abstract class BasePresenter extends Presenter {
             $this->somethingWentWrong();
 
             if ($onException) $onException($exception);
-            if ($exception) throw $exception;
+            /*if ($exception)*/ throw $exception;
         }
     }
 }

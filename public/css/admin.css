@@ -19,34 +19,6 @@ body {
     transition: inherit; }
   body textarea.oneline {
     resize: none; }
-  body #tabs {
-    position: relative;
-    min-height: 180px;
-    display: block; }
-  body .tab {
-    float: left; }
-    body .tab label.tab-label {
-      cursor: pointer;
-      font-size: 1.2em;
-      border-radius: 5px 5px 0 0;
-      padding: .5em 1em; }
-    body .tab input[type=radio][name=tabgroup] {
-      position: absolute;
-      clip: rect(0, 0, 0, 0); }
-      body .tab input[type=radio][name=tabgroup]:checked ~ label {
-        /*background: #c99;*/ }
-      body .tab input[type=radio][name=tabgroup]:checked ~ label ~ .tab-content {
-        display: initial; }
-    body .tab .tab-content {
-      display: none;
-      border-radius: 0 5px 5px;
-      padding: .5em 2em;
-      position: absolute;
-      width: 100%;
-      top: 2em;
-      left: 0;
-      right: 0;
-      bottom: 0; }
   body .center-all {
     position: absolute;
     left: 50%;
@@ -69,6 +41,14 @@ body {
   body .link {
     padding: 2px;
     cursor: pointer; }
+  body .nice-button, html body #snippet--content #contentWrapper.language-default #language-add {
+    width: 60px;
+    text-align: center;
+    padding: 10px;
+    background: #00a8ff;
+    margin: 10px 0px; }
+    body .nice-button:hover, html body #snippet--content #contentWrapper.language-default #language-add:hover {
+      background-color: #0097e6; }
 
 html {
   -webkit-transition: all 0.2s linear;
@@ -120,9 +100,11 @@ html {
     html body #snippet--content {
       grid-area: main; }
       html body #snippet--content #contentWrapper {
+        position: relative;
         height: 100%;
         width: 100%;
         overflow-y: auto;
+        overflow-x: hidden;
         display: flex;
         flex-direction: column;
         padding: 20px; }
@@ -131,6 +113,9 @@ html {
           color: black; }
         html body #snippet--content #contentWrapper.login-default {
           justify-content: center; }
+          html body #snippet--content #contentWrapper.login-default #content {
+            align-self: center;
+            justify-self: center; }
         html body #snippet--content #contentWrapper.page-show #content > div {
           padding: 5px; }
           html body #snippet--content #contentWrapper.page-show #content > div #filter div {
@@ -147,21 +132,108 @@ html {
             color: #2f3640; }
             html body #snippet--content #contentWrapper.page-show #content #pages table tbody td a.page-delete:hover {
               color: #e84118; }
-        html body #snippet--content #contentWrapper.page-show #content #pages table thead td {
-          font-weight: bold; }
-        html body #snippet--content #contentWrapper.header-default #content ol.header-children {
+        html body #snippet--content #contentWrapper.page-edit .admin-form {
+          display: grid;
+          grid-template-rows: auto 1fr;
+          grid-template-columns: 1fr auto;
+          grid-template-areas: "errors errors" "main side"; }
+          html body #snippet--content #contentWrapper.page-edit .admin-form div.spacer {
+            margin-top: 10px;
+            display: block; }
+          html body #snippet--content #contentWrapper.page-edit .admin-form .admin-form-errors {
+            grid-area: errors; }
+          html body #snippet--content #contentWrapper.page-edit .admin-form label {
+            display: block; }
+          html body #snippet--content #contentWrapper.page-edit .admin-form #form-main {
+            grid-area: main;
+            padding: 15px; }
+            html body #snippet--content #contentWrapper.page-edit .admin-form #form-main #url-content-wrapper {
+              display: block; }
+          html body #snippet--content #contentWrapper.page-edit .admin-form #form-side {
+            border-left: solid 1px #2f3640;
+            padding: 15px;
+            grid-area: side; }
+            html body #snippet--content #contentWrapper.page-edit .admin-form #form-side #controls {
+              margin-top: 10px;
+              display: flex;
+              justify-content: space-between;
+              align-content: center; }
+              html body #snippet--content #contentWrapper.page-edit .admin-form #form-side #controls a {
+                margin: auto 0; }
+        html body #snippet--content #contentWrapper.language-default table a.language-delete:hover {
+          color: #e84118; }
+        html body #snippet--content #contentWrapper.language-default table a.language-edit {
+          color: #353b48; }
+          html body #snippet--content #contentWrapper.language-default table a.language-edit:hover {
+            color: #2f3640; }
+        html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper {
+          display: none;
+          z-index: 2;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          justify-content: center;
+          align-content: center;
+          background-color: rgba(53, 59, 72, 0.95); }
+          html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher {
+            align-self: center; }
+            html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher.bootstrap-switch-on ~ #tab-page, html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher.bootstrap-switch-off ~ #tab-custom, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher.bootstrap-switch-on ~ #tab-page, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher.bootstrap-switch-off ~ #tab-custom, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher.bootstrap-switch-on ~ #tab-page, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher.bootstrap-switch-off ~ #tab-custom {
+              display: block; }
+            html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher ~ div, html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher ~ label[for=type-switcher], html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher ~ div, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher ~ label[for=type-switcher], html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher ~ div, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper .bootstrap-switch-id-type-switcher ~ label[for=type-switcher] {
+              display: none; }
+          html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper #type-switcher:not(:checked) ~ #tab-custom, html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper #type-switcher:checked ~ #tab-page, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper #type-switcher:not(:checked) ~ #tab-custom, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper #type-switcher:checked ~ #tab-page, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper #type-switcher:not(:checked) ~ #tab-custom, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper #type-switcher:checked ~ #tab-page {
+            display: block; }
+          html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper #type-switcher ~ div, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper #type-switcher ~ div, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper #type-switcher ~ div {
+            display: none; }
+          html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper #edit-form-close, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper #edit-form-close, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper #edit-form-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: none;
+            color: white;
+            font-size: 2em; }
+          html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper.active, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper.active, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper.active {
+            display: flex; }
+            html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper.active #edit-form-close, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper.active #edit-form-close, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper.active #edit-form-close {
+              display: block; }
+          html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper #snippet--edit-form, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper #snippet--edit-form, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper #snippet--edit-form {
+            display: flex; }
+            html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper #snippet--edit-form > div, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper #snippet--edit-form > div, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper #snippet--edit-form > div {
+              align-self: center;
+              display: flex;
+              align-content: center;
+              justify-content: center;
+              flex-direction: column;
+              flex-wrap: wrap; }
+        html body #snippet--content #contentWrapper.header-default #content ol.header-children, html body #snippet--content #contentWrapper.header-add #content ol.header-children, html body #snippet--content #contentWrapperheader-edit #content ol.header-children {
           list-style-type: none; }
-          html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item {
+          html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item {
             margin: 10px 0; }
-            html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div {
+            html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item > div, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item > div {
               border: 1px solid #718093; }
-              html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div {
+              html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item > div > div, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item > div > div {
                 padding: 5px; }
-                html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div.header-item-controls {
+                html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div.header-item-controls, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item > div > div.header-item-controls, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item > div > div.header-item-controls {
                   background-color: #f5f6fa;
-                  border-bottom: 1px solid #dcdde1; }
-                html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div.header-item-content > span {
+                  border-bottom: 1px solid #dcdde1;
+                  display: flex;
+                  align-content: center; }
+                html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div.header-item-content > span, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item > div > div.header-item-content > span, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item > div > div.header-item-content > span {
                   display: block; }
+        html body #snippet--content #contentWrapper.file-default .file-item .preview {
+          width: 120px;
+          height: 150px;
+          padding: 10px;
+          display: inline-flex;
+          align-content: center;
+          vertical-align: center; }
+          html body #snippet--content #contentWrapper.file-default .file-item .preview img {
+            max-width: 100%;
+            max-height: 100%; }
+        html body #snippet--content #contentWrapper.file-default .file-item .content span {
+          display: block; }
         html body #snippet--content #contentWrapper > h1, html body #snippet--content #contentWrapper > h2 {
           text-align: center;
           margin: 0; }
@@ -178,6 +250,10 @@ html {
                 background-color: #e84118; }
               html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
                 background-color: #4cd137; }
+              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
+                background-color: #00a8ff; }
+              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
+                background-color: #fbc531; }
             html body #snippet--content #contentWrapper #snippet--flashes #flashes:empty {
               padding: 0;
               margin: 0; }
@@ -198,6 +274,8 @@ html {
           }*/ }
     html body form .admin-form-errors:empty {
       margin: 0; }
+    html body form .admin-form-errors li.error {
+      color: #e84118; }
     html body input {
       -webkit-border-radius: 1px;
       -moz-border-radius: 1px;
@@ -212,6 +290,8 @@ html {
       html body input[type=submit] {
         background: #2f3640;
         color: #f5f6fa; }
+    html body table.table thead td {
+      font-weight: bold; }
     html body td > input {
       width: 100%; }
 

@@ -102,7 +102,7 @@ class HeaderWrapper {
      */
     public function getUrl(): string {
         if ($this->isPage())
-            return $this->getPage()->getUrl();
+            return $this->getPage()->getCheckedUrl();
 
         return $this->getHeader()->getUrl();
     }

@@ -333,12 +333,15 @@ class PageManager extends Manager implements IPageManager {
      * @param int $localVisibility
      * @param string $content
      * @param int $imageId
+     * @param bool $displayTitle
+     * @param bool $displayBreadCrumbs
      * @throws Exception
+     * @throws FileNotFoundById
      * @throws InvalidState
      * @throws PageNotFound
      * @throws Throwable
      */
-    public function update(int $pageId, int $langId, ?int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId) {
+    public function update(int $pageId, int $langId, ?int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId, bool $displayTitle, bool $displayBreadCrumbs) {
 
         $page = $this->getPlainById($pageId, $langId);
 
@@ -379,7 +382,7 @@ class PageManager extends Manager implements IPageManager {
         $this->urlUncache($page->getUrl(), $page->getLanguageId());
         $this->globalUncache($page->getGlobalId(), $page->getLanguageId());
 
-        $newPage = $this->runInTransaction(function () use ($parentId, $page, $globalVisibility, $url, $title, $description, $content, $image, $localVisibility) {
+        $newPage = $this->runInTransaction(function () use ($parentId, $page, $globalVisibility, $url, $title, $description, $content, $image, $localVisibility, $displayBreadCrumbs, $displayTitle) {
             if ($parentId !== $page->getParentId() || $globalVisibility !== $page->getGlobalStatus()) {
 
                 //uncache parent
@@ -411,13 +414,15 @@ class PageManager extends Manager implements IPageManager {
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID => $page->getLocalId(),
                 ])
                 ->update([
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL         => $url,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE       => $title,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DESCRIPTION => $description,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT     => $content,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_IMAGE       => $image,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS      => $localVisibility,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LAST_EDITED => new \Nette\Utils\DateTime(),
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL                 => $url,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE               => $title,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DESCRIPTION         => $description,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT             => $content,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_IMAGE               => $image,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS              => $localVisibility,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_TITLE       => $displayTitle,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_BREADCRUMBS => $displayBreadCrumbs,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LAST_EDITED   => new \Nette\Utils\DateTime(),
                 ]);
 
 
@@ -517,6 +522,13 @@ class PageManager extends Manager implements IPageManager {
         return "language_" . $languageId;
     }
 
+    /**
+     * @param int $pageId
+     * @param int $languageId
+     * @param bool $throw
+     * @return APage|null
+     * @throws PageNotFound
+     */
     private function getPlainById(int $pageId, int $languageId, bool $throw = true): ?APage {
         $cached = $this->getGlobalCache()->load($this->getGlobalCacheKey($pageId, $languageId), function (&$dependencies) use ($languageId, $pageId) {
             $dependencies = self::getDependencies($pageId, $languageId);
@@ -565,9 +577,7 @@ class PageManager extends Manager implements IPageManager {
     }
 
     private function createFromRow(IRow $row): APage {
-        $className = APage::CLASS_BY_TYPE[$row[self::MAIN_COLUMN_TYPE]];
-
-        return new $className(
+        return APage::factory(
             $globalId = $row[self::MAIN_COLUMN_ID],
             $row[self::LOCAL_COLUMN_ID],
             $row[self::MAIN_COLUMN_PARENT_ID],
@@ -582,8 +592,8 @@ class PageManager extends Manager implements IPageManager {
             $row[self::LOCAL_COLUMN_IMAGE],
             $row[self::MAIN_COLUMN_STATUS],
             $row[self::LOCAL_COLUMN_STATUS],
-            false, //TODO get from db
-            false,
+            $row[self::LOCAL_COLUMN_DISPLAY_TITLE],
+            $row[self::LOCAL_COLUMN_DISPLAY_BREADCRUMBS],
             $this->getChildrenIds($globalId)
         );
     }

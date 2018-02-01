@@ -343,4 +343,10 @@ class HeaderPresenter extends AdminPresenter {
     private function redrawHeaderPages() {
         $this->redrawControl("header-area");
     }
+
+
+    protected function setPageSubtitle(): string {
+        return "admin.".$this->getPresenterShortname().".default.title";
+    }
+
 }

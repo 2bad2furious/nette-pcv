@@ -7,16 +7,18 @@
     {/form}
     <div>
         {foreach $files as $file}
-            <div>
-                <div id="preview">
-                    {dump $file->isImage()}
+            <div class="file-item">
+                <div class="preview">
+                    {dump $file}
                     {if $file->isImage()}
                         <img src="/uploads/{$file->getSrc()}">
                     {/if}
                 </div>
-                <div>
-                    name: {$file->getSrc()}
-                    link: <a href="/uploads/{$file->getSrc()}">/uploads/{$file->getSrc()}</a>
+                <div class="content">
+                    <span class="name">name: {$file->getSrc()}</span>
+                    <span class="link">link:
+                        <a href="/uploads/{$file->getSrc()}">/uploads/{$file->getSrc()}</a>
+                    </span>
                 </div>
             </div>
         {/foreach}

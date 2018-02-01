@@ -21,6 +21,8 @@
  * @method bool isPost()
  * @method bool isPage()
  * @method bool is404()
+ * @method bool getDisplayTitle()
+ * @method bool getDisplayBreadCrumbs()
  */
 class PageWrapper {
     private $page;

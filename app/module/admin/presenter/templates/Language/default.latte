@@ -1,4 +1,5 @@
 {block content}
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
     {form languageSearchForm}
         <ul class="admin-form-errors" n:formErrors></ul>
         {input \adminModule\LanguagePresenter::SEARCH_KEY}
@@ -7,18 +8,42 @@
                     class="fa fa-times"></i></a>
         {input submit}
     {/form}
-    <a href="{plink add}">{_"admin.language.default.add.label"}</a>
-    <table n:snippet="languages">
+    <a href="{plink add}" id="language-add">{_"admin.language.default.add"}</a>
+    <table class="table" n:snippet="languages">
+        <thead>
+        <tr>
+            <td>
+                {_"admin.language.default.id"}
+            </td>
+            <td>
+                {_"admin.language.default.code"}
+            </td>
+            <td>
+                {_"admin.language.default.friendly"}
+            </td>
+            <td>
+                {_"admin.language.default.edit"}
+            </td>
+            <td>
+                {_"admin.language.default.delete.label"}
+            </td>
+        </tr>
+        </thead>
         {foreach $languages as $lang}
             <tr>
                 <td>{$lang->getId()}</td>
                 <td>{$lang->getCode()}</td>
+                <td>{$lang->getFriendly()}</td>
                 <td>
-                    <a
-                            href="{plink edit \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">{_"admin.language.default.edit.label"}</a>
+                    <a class="language-edit"
+                            href="{plink edit \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">
+                        <i class="fa fa-pencil"></i>
+                    </a>
                 </td>
                 <td><a class="language-delete"
-                       href="{plink delete! $lang->getId()}">{_"admin.language.default.delete.label"}</a>
+                       href="{plink delete! $lang->getId()}">
+                    <i class="fa fa-trash"></i>
+                    </a>
                 </td>
             </tr>
         {/foreach}
@@ -27,7 +52,7 @@
     <script>
         jQuery(document).ready(function ($) {
             $("#{$control->getSnippetId("languages")}").on("click","a.language-delete",function (e) {
-                if (!confirm({_"admin.language.default.action.delete.confirm"}))
+                if (!confirm({_"admin.language.default.delete.confirm"}))
                     e.preventDefault();
             })
         })

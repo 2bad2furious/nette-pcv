@@ -1,17 +1,12 @@
-    <div class="tab">
-        <input type="radio" name="tabgroup" id="tab-1"
-               {if $formType === \adminModule\HeaderPresenter::TYPE_PAGE}checked{/if}>
-        <label class="tab-label" for="tab-1">{_"admin.header.edit.tab.page"}</label>
-        <div class="tab-content">
-            {control headerPageEditForm}
-        </div>
-    </div>
-
-    <div class="tab">
-        <input type="radio" name="tabgroup" id="tab-2"
-               {if $formType === \adminModule\HeaderPresenter::TYPE_CUSTOM}checked{/if}>
-        <label class="tab-label" for="tab-2">{_"admin.header.edit.tab.custom"}</label>
-        <div class="tab-content">
-            {control headerCustomEditForm}
-        </div>
-    </div>
+<input type="checkbox" id="type-switcher"
+       class="no-ui"
+       data-state="{$formType === \adminModule\HeaderPresenter::TYPE_PAGE}"
+       data-on-text="{_"admin.header.edit.type.page.label"}"
+       data-off-text="{_"admin.header.edit.type.custom.label"}">
+<label for="type-switcher">{_"admin.header.edit.type.switcher.label"}</label>
+<div id="tab-page">
+    {control headerPageEditForm}
+</div>
+<div id="tab-custom">
+    {control headerCustomEditForm}
+</div>

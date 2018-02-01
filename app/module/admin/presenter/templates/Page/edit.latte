@@ -1,33 +1,61 @@
 {block content}
     //TODO show other translations
     {form pageEditForm}
+        <script src="/node_modules/bootstrap-switch/dist/js/bootstrap-switch.min.js" defer type="application/javascript"></script>
+        <link href="/node_modules/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
         <ul class="admin-form-errors" n:formErrors></ul>
-        <div id="form-global">
+        <div id="form-main">
+            {formContainer \FormFactory::PAGE_EDIT_LOCAL_CONTAINER}
+                <div class="spacer">
+                    {label FormFactory::PAGE_EDIT_TITLE_NAME}{input \FormFactory::PAGE_EDIT_TITLE_NAME}
+                </div>
+                <div class="spacer">
+                    {label \FormFactory::PAGE_EDIT_URL_NAME}{input FormFactory::PAGE_EDIT_URL_NAME}
+                    <span id="url-content-wrapper">{_"admin.page.edit.local.url.prelabel"}
+                        : '/{$page->getLanguage()->getCode()}/<span
+                                id="url-content" n:class="$page->isUrlGenerated() ? failure">{if $page->isUrlGenerated()}{_"admin.page.edit.local.url.check.isnt_checked"}{else}{$page->getCheckedUrl()}{/if}</span>'</span>
+                </div>
+                <div class="spacer">
+                    {label FormFactory::PAGE_EDIT_DESCRIPTION_NAME}{input FormFactory::PAGE_EDIT_DESCRIPTION_NAME}
+                </div>
+                <div class="spacer">
+                    {label FormFactory::PAGE_EDIT_CONTENT_NAME}{input FormFactory::PAGE_EDIT_CONTENT_NAME}
+                </div>
+            {/formContainer}
+        </div>
+        <div id="form-side">
+            {formContainer \FormFactory::PAGE_EDIT_LOCAL_CONTAINER}
+                <div class="spacer">
+                    {label \FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}{input \FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}
+                </div>
+                <div class="spacer">
+                    {label \FormFactory::PAGE_EDIT_IMAGE_NAME}{input \FormFactory::PAGE_EDIT_IMAGE_NAME}
+                </div>
+                <div class="spacer">
+                    {end($this->global->formsStack)[\FormFactory::PAGE_EDIT_DISPLAY_BREADCRUMBS]->getLabelPart()}
+                    {end($this->global->formsStack)[\FormFactory::PAGE_EDIT_DISPLAY_BREADCRUMBS]->getControlPart()}
+                </div>
+                <div class="spacer">
+                    {end($this->global->formsStack)[\FormFactory::PAGE_EDIT_DISPLAY_TITLE_NAME]->getLabelPart()}
+                    {end($this->global->formsStack)[\FormFactory::PAGE_EDIT_DISPLAY_TITLE_NAME]->getControlPart()}
+                    {* prevent showing input inside label*}
+                </div>
+            {/formContainer}
+            <div id="controls" class="spacer">
+                {input submit}
+                <a id="page-delete"
+                   href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">
+                    {_"admin.page.edit.action.delete.label"}
+                </a>
+                <a id="page-visit" data-ajax="false"
+                   href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLanguage()->getCode()}">
+                    {_"admin.page.edit.action.visit"}
+                </a>
+            </div>
             {formContainer \FormFactory::PAGE_EDIT_GLOBAL_CONTAINER}
                 {label FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}{input FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}
                 {if $page->isPage()}{label FormFactory::PAGE_EDIT_PARENT_NAME}{input FormFactory::PAGE_EDIT_PARENT_NAME}{/if}
             {/formContainer}
-        </div>
-        <div id="form-local">
-            {formContainer \FormFactory::PAGE_EDIT_LOCAL_CONTAINER}
-                {label FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}{input FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME}
-                {label FormFactory::PAGE_EDIT_TITLE_NAME}{input \FormFactory::PAGE_EDIT_TITLE_NAME}
-                {label \FormFactory::PAGE_EDIT_URL_NAME}{input FormFactory::PAGE_EDIT_URL_NAME}
-                <span id="url-content-wrapper">{_"admin.page.edit.local.url.prelabel"}: '/{$page->getLanguage()->getCode()}/<span
-                            id="url-content" n:class="$page->isUrlGenerated() ? failure">{if $page->isUrlGenerated()}{_"admin.page.edit.local.url.check.isnt_checked"}{else}{$page->getCheckedUrl()}{/if}</span>'</span>
-                {label FormFactory::PAGE_EDIT_DESCRIPTION_NAME}{input FormFactory::PAGE_EDIT_DESCRIPTION_NAME}
-                {label FormFactory::PAGE_EDIT_CONTENT_NAME}{input FormFactory::PAGE_EDIT_CONTENT_NAME}
-            {/formContainer}
-        </div>
-        <div id="form-side">
-            {formContainer local}
-                {label \FormFactory::PAGE_EDIT_IMAGE_NAME}{input \FormFactory::PAGE_EDIT_IMAGE_NAME}
-            {/formContainer}
-            {input submit}
-            <a id="page-delete"
-               href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">{_"admin.page.edit.action.delete.label"}</a>
-            <a id="page-visit" data-ajax="false"
-               href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLanguage()->getCode()}">{_"admin.page.edit.action.visit"}</a>
         </div>
     {/form}
     <script type="text/javascript">
@@ -35,7 +63,7 @@
             jQuery(document).ready(function ($) {
                 $("select").selectmenu();
 
-               $(".{\FormFactory::TEXTAREA_CLASS_FOR_EDITOR|noescape}").froalaEditor()
+                $(".{\FormFactory::TEXTAREA_CLASS_FOR_EDITOR|noescape}").froalaEditor()
 
                 $("#page-delete").click(function (e) {
                     if (!confirm({_"admin.page.edit.action.delete.confirm"}))

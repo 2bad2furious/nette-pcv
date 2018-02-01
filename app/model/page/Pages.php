@@ -8,6 +8,34 @@ abstract class APage {
         PageManager::TYPE_PAGE => Page::class,
     ];
 
+
+    /**
+     * @param int $type
+     * @param int $globalId
+     * @param int $localId
+     * @param int $parentId
+     * @param int $langId
+     * @param string $title
+     * @param string $url
+     * @param string $description
+     * @param string $content
+     * @param int $authorId
+     * @param DateTime $created
+     * @param DateTime $edited
+     * @param int $imageId
+     * @param int $globalStatus
+     * @param int $localStatus
+     * @param bool $displayTitle
+     * @param bool $displayBreadcrumbs
+     * @param array $childrenIds
+     * @return APage
+     */
+    public static function factory(int $type, int $globalId, int $localId, int $parentId, int $langId, string $title, string $url, string $description, string $content, int $authorId, DateTime $created, DateTime $edited, int $imageId, int $globalStatus, int $localStatus, bool $displayTitle, bool $displayBreadcrumbs, array $childrenIds): APage {
+        $className = APage::CLASS_BY_TYPE[$type];
+
+        return new $className($globalId, $localId, $parentId, $langId, $title, $url, $description, $content, $authorId, $created, $edited, $imageId, $globalStatus, $localStatus, $displayTitle, $displayBreadcrumbs, $childrenIds);
+    }
+
     private $globalId;
     private $localId;
     private $parentId;
@@ -203,6 +231,20 @@ abstract class APage {
     public abstract function getOgType(): string;
 
     public abstract function getType(): string;
+
+    /**
+     * @return bool
+     */
+    public function getDisplayTitle(): bool {
+        return $this->displayTitle;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDisplayBreadCrumbs(): bool {
+        return $this->displayBreadcrumbs;
+    }
 }
 
 class Page extends APage {

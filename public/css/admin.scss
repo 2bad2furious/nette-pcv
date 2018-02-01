@@ -81,9 +81,11 @@ html {
       grid-area: main;
 
       #contentWrapper {
+        position: relative;
         height: 100%;
         width: 100%;
         overflow-y: auto;
+        overflow-x: hidden;
 
         display: flex;
         flex-direction: column;
@@ -96,6 +98,10 @@ html {
         }
         &.login-default {
           justify-content: center;
+          #content {
+            align-self: center;
+            justify-self: center;
+          }
         }
 
         &.page-show {
@@ -135,17 +141,137 @@ html {
                     }
                   }
                 }
-                thead td {
-                  font-weight: bold;
-                }
               }
 
             }
           }
         }
+        &.page-edit {
+          .admin-form {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            grid-template-columns: 1fr auto;
+            grid-template-areas: "errors errors" "main side";
 
-        &.header-default {
+            div {
+              &.spacer {
+                margin-top:10px;
+                display: block;
+              }
+            }
+
+            .admin-form-errors {
+              grid-area: errors;
+            }
+            label {
+              display: block;
+            //  margin-top: 10px;
+            }
+            #form-main {
+              grid-area: main;
+              padding: 15px;
+              #url-content-wrapper {
+                display: block;
+              }
+            }
+            #form-side {
+              border-left: solid 1px #2f3640;
+              padding: 15px;
+              grid-area: side;
+              #controls {
+                margin-top: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-content: center;
+                a {
+                  margin: auto 0;
+                }
+              }
+            }
+          }
+        }
+        &.language-default {
+
+          #language-add {
+            @extend .nice-button;
+          }
+
+          table a {
+            &.language-delete:hover {
+              color: #e84118;
+            }
+            &.language-edit {
+              color: #353b48;
+              &:hover {
+                color: #2f3640;
+              }
+            }
+          }
+        }
+        &.header-default, &.header-add, &header-edit {
           #content {
+
+            #header-edit-form-wrapper {
+              display: none;
+              z-index: 2;
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              justify-content: center;
+              align-content: center;
+              background-color: rgba(53, 59, 72, 0.95); //#353b48
+
+              .bootstrap-switch-id-type-switcher {
+                align-self: center;
+                &.bootstrap-switch-on ~ #tab-page,
+                &.bootstrap-switch-off ~ #tab-custom {
+                  display: block;
+                }
+                & ~ div, & ~ label[for=type-switcher] {
+                  display: none;
+                }
+              }
+              #type-switcher {
+                &:not(:checked) ~ #tab-custom,
+                &:checked ~ #tab-page {
+                  display: block;
+                }
+                & ~ div {
+                  display: none;
+                }
+              }
+
+              #edit-form-close {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                display: none;
+                color: white;
+                font-size: 2em;
+              }
+
+              &.active {
+                display: flex;
+                #edit-form-close {
+                  display: block;
+                }
+              }
+              #snippet--edit-form {
+                display: flex;
+
+                & > div {
+                  align-self: center;
+                  display: flex;
+                  align-content: center;
+                  justify-content: center;
+                  flex-direction: column;
+                  flex-wrap: wrap;
+                }
+              }
+            }
+
             ol.header-children {
               list-style-type: none;
 
@@ -158,6 +284,9 @@ html {
                     &.header-item-controls {
                       background-color: #f5f6fa;
                       border-bottom: 1px solid #dcdde1;
+
+                      display: flex;
+                      align-content: center;
                     }
                     &.header-item-content {
                       & > span {
@@ -166,6 +295,27 @@ html {
                     }
                   }
                 }
+              }
+            }
+          }
+        }
+        &.file-default {
+          .file-item {
+            .preview {
+              width: 120px;
+              height: 150px;
+              padding: 10px;
+              display: inline-flex;
+              align-content: center;
+              vertical-align: center;
+              img {
+                max-width: 100%;
+                max-height: 100%;
+              }
+            }
+            .content {
+              span {
+                display: block;
               }
             }
           }
@@ -193,6 +343,12 @@ html {
               }
               &.nittro-flash-success {
                 background-color: #4cd137;
+              }
+              &.nittro-flash-info {
+                background-color: #00a8ff;
+              }
+              &.nittro-flash-warn {
+                background-color: #fbc531;
               }
             }
             &:empty {
@@ -229,8 +385,15 @@ html {
       }
     }
     form {
-      .admin-form-errors:empty {
-        margin: 0;
+      .admin-form-errors {
+        &:empty {
+          margin: 0;
+        }
+        li {
+          &.error {
+            color: #e84118;
+          }
+        }
       }
     }
     input {
@@ -254,6 +417,9 @@ html {
       }
     }
 
+    table.table thead td {
+      font-weight: bold;
+    }
     td > input {
       width: 100%;
     }
