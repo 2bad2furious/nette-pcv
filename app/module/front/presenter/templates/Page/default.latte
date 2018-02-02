@@ -13,10 +13,10 @@
     {if !$page->is404()}
         <meta property="og:url" content="{$baseUrl}/{$page->getPermanentUrl()}"/>
         {if $image=$page->getImage()}
-            <meta property="og:image" content="{$image->getSrc()}"/>
+            <meta property="og:image" content="{$image->getSrc()}"/>{*
             {if $alt=$image->getAlt()}
                 <meta property="og:image:alt" content="{$alt}">
-            {/if}
+            {/if}*}
         {/if}
     {else}
         {*<meta name="robots" content="noindex, nofollow">*}
@@ -48,6 +48,7 @@
         </script>
     {/if}
     <link rel="stylesheet" type="text/css" href="/css/css.css">
+    <link rel="stylesheet" type="text/css" href="/libs/nittro/nittro.css"/>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
           integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <script type="text/javascript">var _stack = [];</script>
@@ -58,22 +59,23 @@
     <script src="/libs/nittro/nittro.min.js" type="application/javascript" defer></script>
     <script src="/js/js.min.js" type="application/javascript" defer></script>
 </head>
-<body>
+<body class="nittro-transition-bar nittro-transition-auto">
 {if $isLoggedIn}{control adminBar}{/if}
 {control header}
-<main>
-    {dump $page->getLanguage()->getHomePageId()}
-    {dump $page->getGlobalId()}
-    {dump $page->isHomePage()}{dump $page}
-    <div n:snippet="content"
-            class="lang-{$page->getLanguage()->getCode()} page-{$page->getGlobalId()}{if $page->isHomePage()} homepage{/if}">
+<main n:snippet="content">
+    <div id="content"
+            n:class="$page->isHomePage() ? homepage"
+         data-language="{$page->getLanguage()->getCode()}"
+         data-page-id="{$page->getGlobalId()}">
+        <div n:snippet="flashes">
+            <ul n:flashes></ul>
+            <a n:href="clearFlashes!" id="flash-closer" data-history="false">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
         {control content $page}
     </div>
 </main>
 {*{control footerPage}*}
-<div n:snippet="flashes">
-    {if $flashes}<a n:href="clearFlashes!">close flashes</a>{/if}
-    <ul n:flashes></ul>
-</div>
 </body>
 </html>

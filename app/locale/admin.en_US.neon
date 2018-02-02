@@ -173,6 +173,7 @@ page:
         title: "Page Creation"
 
     edit:
+        success: "Page edited"
         title: "Page Editing"
         global:
             parent:

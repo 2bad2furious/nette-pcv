@@ -31,9 +31,6 @@
             <i class="fa fa-times"></i>
         </a>
         <div n:snippet="edit-form">
-            <link rel="stylesheet" href="/node_modules/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
-            <script src="/node_modules/bootstrap-switch/dist/js/bootstrap-switch.min.js" type="application/javascript"
-                    defer></script>
             <div id="tabs" data-action="{$action}" data-id="{$id}">
                 {if $action === "add"}
                     {include "add-form.latte" formType=>$formType}

@@ -1,8 +1,6 @@
 {block content}
     //TODO show other translations
     {form pageEditForm}
-        <script src="/node_modules/bootstrap-switch/dist/js/bootstrap-switch.min.js" defer type="application/javascript"></script>
-        <link href="/node_modules/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
         <ul class="admin-form-errors" n:formErrors></ul>
         <div id="form-main">
             {formContainer \FormFactory::PAGE_EDIT_LOCAL_CONTAINER}
@@ -43,11 +41,11 @@
             {/formContainer}
             <div id="controls" class="spacer">
                 {input submit}
-                <a id="page-delete"
+                <a id="page-delete" class="btn btn-primary delete"
                    href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">
                     {_"admin.page.edit.action.delete.label"}
                 </a>
-                <a id="page-visit" data-ajax="false"
+                <a id="page-visit" data-ajax="false" class="btn btn-primary visit"
                    href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLanguage()->getCode()}">
                     {_"admin.page.edit.action.visit"}
                 </a>
@@ -63,7 +61,17 @@
             jQuery(document).ready(function ($) {
                 $("select").selectmenu();
 
-                $(".{\FormFactory::TEXTAREA_CLASS_FOR_EDITOR|noescape}").froalaEditor()
+                $(".{\FormFactory::TEXTAREA_CLASS_FOR_EDITOR|noescape}").froalaEditor({
+                    imageUpload: false,
+                    fileUpload: false,
+                });
+                //TODO remove buttons for upload
+                //colorsText:THEME colors
+                //imageInsertButtons
+                //imageUpload:false
+                //imageManagerLoadURL
+                //iFrameStyleFiles
+                //fileUpload:false
 
                 $("#page-delete").click(function (e) {
                     if (!confirm({_"admin.page.edit.action.delete.confirm"}))

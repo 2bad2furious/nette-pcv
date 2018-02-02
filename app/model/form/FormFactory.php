@@ -1,6 +1,5 @@
 <?php
 
-use Nette\Application\UI\Form;
 use Nette\Forms\Controls\TextInput;
 
 class FormFactory extends Manager {
@@ -185,6 +184,7 @@ class FormFactory extends Manager {
 
     public function createAdminPageSearch(?string $query): Form {
         $form = $this->createNewAdminForm();
+        $form->getElementPrototype()->class("form-inline");
         $form->setMethod("get");
         $form->addText(self::PAGE_SHOW_SEARCH_NAME)
             ->setRequired(false)
@@ -388,6 +388,8 @@ class FormFactory extends Manager {
         $form->setMethod("get");
         $form->addText(\adminModule\LanguagePresenter::SEARCH_KEY)
             ->setRequired(false)->setDefaultValue($query);
+
+        $form->getElementPrototype()->class("form-inline");
 
         $form->addSubmit("submit", "admin.language.default.search.submit");
         return $form;

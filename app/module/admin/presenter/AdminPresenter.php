@@ -45,14 +45,6 @@ abstract class AdminPresenter extends BasePresenter {
         return $locale;
     }
 
-    public function redrawFlashes() {
-        $this->redrawControl("flashes");
-    }
-
-    public function handleClearFlashes() {
-        $this->redrawFlashes();
-    }
-
     /**
      * @return SessionSection
      */

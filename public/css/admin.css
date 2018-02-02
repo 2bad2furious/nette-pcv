@@ -49,6 +49,32 @@ body {
     margin: 10px 0px; }
     body .nice-button:hover, html body #snippet--content #contentWrapper.language-default #language-add:hover {
       background-color: #0097e6; }
+  body #snippet--flashes {
+    position: relative; }
+    body #snippet--flashes #flashes {
+      list-style-type: none;
+      padding: 20px 10px 20px; }
+      body #snippet--flashes #flashes li.nittro-flash {
+        color: #f5f6fa; }
+        body #snippet--flashes #flashes li.nittro-flash::before {
+          border: none; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
+          background-color: #e84118; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
+          background-color: #4cd137; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
+          background-color: #00a8ff; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
+          background-color: #fbc531; }
+      body #snippet--flashes #flashes:empty {
+        padding: 0;
+        margin: 0; }
+        body #snippet--flashes #flashes:empty ~ #flash-closer {
+          display: none; }
+    body #snippet--flashes #flash-closer {
+      position: absolute;
+      right: 10px;
+      top: 20px; }
 
 html {
   -webkit-transition: all 0.2s linear;
@@ -72,7 +98,28 @@ html {
     grid-template-rows: auto 1fr;
     grid-template-areas: "top top" "nav main" "nav main";
     grid-auto-rows: 0px;
-    grid-auto-columns: 0px; }
+    grid-auto-columns: 0px;
+    /*input {
+      -webkit-border-radius: 1px;
+      -moz-border-radius: 1px;
+      border-radius: 1px;
+
+      border: solid 1px $background;
+      padding: 5px;
+
+      font-size: 1em;
+
+      &:hover, &:focus, &:active {
+        -webkit-box-shadow: 1px 1px 5px 0px $background;
+        -moz-box-shadow: 1px 1px 5px 0px $background;
+        box-shadow: 1px 1px 5px 0px $background;
+      }
+      &[type=submit] {
+        background: $background;
+        color: $colorOnBackground;
+      }
+    }
+*/ }
     html body header {
       grid-area: nav;
       background-color: #2f3640;
@@ -116,6 +163,14 @@ html {
           html body #snippet--content #contentWrapper.login-default #content {
             align-self: center;
             justify-self: center; }
+            html body #snippet--content #contentWrapper.login-default #content .btn.submit {
+              background-color: #f5f6fa;
+              color: #192a56 !important;
+              margin: 0; }
+              html body #snippet--content #contentWrapper.login-default #content .btn.submit:hover {
+                background-color: #dcdde1; }
+        html body #snippet--content #contentWrapper.page-show form {
+          display: inline-flex; }
         html body #snippet--content #contentWrapper.page-show #content > div {
           padding: 5px; }
           html body #snippet--content #contentWrapper.page-show #content > div #filter div {
@@ -154,12 +209,13 @@ html {
             padding: 15px;
             grid-area: side; }
             html body #snippet--content #contentWrapper.page-edit .admin-form #form-side #controls {
+              color: #f5f6fa;
               margin-top: 10px;
               display: flex;
               justify-content: space-between;
               align-content: center; }
               html body #snippet--content #contentWrapper.page-edit .admin-form #form-side #controls a {
-                margin: auto 0; }
+                margin: auto 3px; }
         html body #snippet--content #contentWrapper.language-default table a.language-delete:hover {
           color: #e84118; }
         html body #snippet--content #contentWrapper.language-default table a.language-edit {
@@ -237,59 +293,42 @@ html {
         html body #snippet--content #contentWrapper > h1, html body #snippet--content #contentWrapper > h2 {
           text-align: center;
           margin: 0; }
-        html body #snippet--content #contentWrapper #snippet--flashes {
-          position: relative; }
-          html body #snippet--content #contentWrapper #snippet--flashes #flashes {
-            list-style-type: none;
-            padding: 20px 10px 20px; }
-            html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash {
-              color: #f5f6fa; }
-              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash::before {
-                border: none; }
-              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
-                background-color: #e84118; }
-              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
-                background-color: #4cd137; }
-              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
-                background-color: #00a8ff; }
-              html body #snippet--content #contentWrapper #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
-                background-color: #fbc531; }
-            html body #snippet--content #contentWrapper #snippet--flashes #flashes:empty {
-              padding: 0;
-              margin: 0; }
-              html body #snippet--content #contentWrapper #snippet--flashes #flashes:empty ~ #flash-closer {
-                display: none; }
-          html body #snippet--content #contentWrapper #snippet--flashes #flash-closer {
-            position: absolute;
-            right: 10px;
-            top: 20px; }
         html body #snippet--content #contentWrapper #content {
           flex-direction: column;
           align-self: stretch;
           display: flex;
           justify-content: center;
-          padding-bottom: 50px;
+          padding-bottom: 100px;
           /*#content {
             display: block;
           }*/ }
     html body form .admin-form-errors:empty {
-      margin: 0; }
+      margin: 0;
+      padding: 0; }
     html body form .admin-form-errors li.error {
       color: #e84118; }
-    html body input {
-      -webkit-border-radius: 1px;
-      -moz-border-radius: 1px;
-      border-radius: 1px;
-      border: solid 1px #2f3640;
-      padding: 5px;
-      font-size: 1em; }
-      html body input:hover, html body input:focus, html body input:active {
-        -webkit-box-shadow: 1px 1px 5px 0px #2f3640;
-        -moz-box-shadow: 1px 1px 5px 0px #2f3640;
-        box-shadow: 1px 1px 5px 0px #2f3640; }
-      html body input[type=submit] {
-        background: #2f3640;
-        color: #f5f6fa; }
+    html body .btn {
+      box-shadow: none !important;
+      margin: 0 3px;
+      background-color: #353b48;
+      border-color: #353b48;
+      color: #f5f6fa !important;
+      display: inline-block; }
+      html body .btn:hover {
+        background-color: #2f3640;
+        border-color: #2f3640; }
+      html body .btn.delete {
+        background-color: #e84118;
+        border-color: #e84118; }
+        html body .btn.delete:hover {
+          background-color: #c23616;
+          border-color: #c23616; }
+      html body .btn.visit {
+        background-color: #fbc531;
+        border-color: #fbc531; }
+        html body .btn.visit:hover {
+          background-color: #e1b12c;
+          border-color: #e1b12c; }
     html body table.table thead td {
       font-weight: bold; }
     html body td > input {

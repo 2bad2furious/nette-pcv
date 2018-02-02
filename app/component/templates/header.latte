@@ -9,17 +9,19 @@
             {define header-children}
                 <ul>
                     {foreach $header as $h}
-                        <li n:class="$h->isActive($page), active">
-                            <a href="{$h->getUrl()}">{$h->getTitle()}</a>
-                            {if $h->getChildren()}
-                                <input type="checkbox" id="checkbox-header-{$h->getId()}" class="header-toggler">
-                                <label for="checkbox-header-{$h->getId()}" class="small">
-                                    <i class="fa fa-plus-square expand"></i>
-                                    <i class="fa fa-minus-square collapse"></i>
-                                </label>
-                                {include header-children header=>$h->getChildren()}
-                            {/if}
-                        </li>
+                        {if $h->isOk()}
+                            <li n:class="$h->isActive($page) ? active">
+                                <a href="{$h->getCompleteUrl()}">{$h->getTitle()}</a>
+                                {if $h->getChildren()}
+                                    <input type="checkbox" id="checkbox-header-{$h->getId()}" class="header-toggler">
+                                    <label for="checkbox-header-{$h->getId()}" class="small">
+                                        <i class="fa fa-plus-square expand"></i>
+                                        <i class="fa fa-minus-square collapse"></i>
+                                    </label>
+                                    {include header-children header=>$h->getChildren()}
+                                {/if}
+                            </li>
+                        {/if}
                     {/foreach}
                 </ul>
             {/define}

@@ -19,7 +19,7 @@ services:
     - FileManager
 
     #cacheStorage:
-        #factory: Nette\Caching\Storages\DevNullStorage
+        #factory: Nette\Caching\Storages\SQLiteStorage("%tempDir%/cache/cache.s3db")
 #application:
  #   mapping:
   #      admin: admin\presenter\*Presenter

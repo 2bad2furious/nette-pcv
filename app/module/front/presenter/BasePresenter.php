@@ -309,4 +309,12 @@ abstract class BasePresenter extends Presenter {
             /*if ($exception)*/ throw $exception;
         }
     }
+
+    public function redrawFlashes() {
+        $this->redrawControl("flashes");
+    }
+
+    public function handleClearFlashes() {
+        $this->redrawFlashes();
+    }
 }

@@ -41,6 +41,11 @@
                             {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null}selected{/ifCurrent}>
                         {_"admin.page.show.filter.translation.all.label"}
                     </option>
+                    <option n:foreach="$languages as $lang"
+                            data-href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,adminModule\PagePresenter::PAGE_KEY=>1}"
+                    {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null}selected{/ifCurrent}>
+                        {$lang->getFriendly()}
+                    </option>
                     <optgroup label="{_"admin.page.show.filter.translation.not_missing.label"}">
                         <option data-href="{plink this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1, adminModule\PagePresenter::LANGUAGE_KEY=>\adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::PAGE_KEY=>1}">
                             {_"admin.page.show.filter.translation.not_missing.all"}
@@ -75,7 +80,6 @@
     </div>
     <div id="pages">
         {if $results}
-            <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
             <table class="table">
                 <thead>
                 <tr>

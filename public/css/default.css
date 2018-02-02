@@ -49,5 +49,31 @@ body {
     margin: 10px 0px; }
     body .nice-button:hover {
       background-color: #0097e6; }
+  body #snippet--flashes {
+    position: relative; }
+    body #snippet--flashes #flashes {
+      list-style-type: none;
+      padding: 20px 10px 20px; }
+      body #snippet--flashes #flashes li.nittro-flash {
+        color: #f5f6fa; }
+        body #snippet--flashes #flashes li.nittro-flash::before {
+          border: none; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
+          background-color: #e84118; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
+          background-color: #4cd137; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
+          background-color: #00a8ff; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
+          background-color: #fbc531; }
+      body #snippet--flashes #flashes:empty {
+        padding: 0;
+        margin: 0; }
+        body #snippet--flashes #flashes:empty ~ #flash-closer {
+          display: none; }
+    body #snippet--flashes #flash-closer {
+      position: absolute;
+      right: 10px;
+      top: 20px; }
 
 /*# sourceMappingURL=default.css.map */

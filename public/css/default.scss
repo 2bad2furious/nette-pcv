@@ -74,4 +74,47 @@ body {
       background-color: #0097e6;
     }
   }
+  #snippet--flashes {
+    position: relative;
+    #flashes {
+      list-style-type: none;
+
+      padding: 20px 10px 20px;
+
+      li.nittro-flash {
+        color: #f5f6fa;
+        &::before {
+          border: none;
+        }
+        &.nittro-flash-error {
+          background-color: #e84118;
+
+        }
+        &.nittro-flash-success {
+          background-color: #4cd137;
+        }
+        &.nittro-flash-info {
+          background-color: #00a8ff;
+        }
+        &.nittro-flash-warn {
+          background-color: #fbc531;
+        }
+      }
+      &:empty {
+        padding: 0;
+
+        margin: 0;
+        & ~ #flash-closer {
+          display: none;
+        }
+      }
+    }
+
+    #flash-closer {
+      position: absolute;
+      right: 10px;
+      top: 20px;
+    }
+  }
+
 }

@@ -49,13 +49,38 @@ body {
     margin: 10px 0px; }
     body .nice-button:hover {
       background-color: #0097e6; }
+  body #snippet--flashes {
+    position: relative; }
+    body #snippet--flashes #flashes {
+      list-style-type: none;
+      padding: 20px 10px 20px; }
+      body #snippet--flashes #flashes li.nittro-flash {
+        color: #f5f6fa; }
+        body #snippet--flashes #flashes li.nittro-flash::before {
+          border: none; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
+          background-color: #e84118; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
+          background-color: #4cd137; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
+          background-color: #00a8ff; }
+        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
+          background-color: #fbc531; }
+      body #snippet--flashes #flashes:empty {
+        padding: 0;
+        margin: 0; }
+        body #snippet--flashes #flashes:empty ~ #flash-closer {
+          display: none; }
+    body #snippet--flashes #flash-closer {
+      position: absolute;
+      right: 10px;
+      top: 20px; }
 
 html {
   /* inheritance */
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  overflow-y: scroll;
   -webkit-transition: 0.1s all ease-out;
   -moz-transition: 0.1s all ease-out;
   -ms-transition: 0.1s all ease-out;
@@ -77,12 +102,15 @@ html {
       html body #admin-header-bar #logout:hover > i {
         color: red; }
     html body header {
-      position: absolute;
+      top: 0;
+      left: 0;
       padding: 10px;
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.8); }
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #273c75;
+      border-bottom: 3px solid #8c7ae6; }
       html body header > input.header-toggler ~ label > i {
-        color: white; }
+        color: #8c7ae6; }
       html body header input.header-toggler {
         display: none; }
         html body header input.header-toggler:checked ~ label > i.collapse {
@@ -90,7 +118,7 @@ html {
         html body header input.header-toggler:not(:checked) ~ label > i.expand {
           display: initial; }
         html body header input.header-toggler:checked ~ nav {
-          height: calc(100vh - 32px); }
+          height: 100%; }
         html body header input.header-toggler:checked ~ ul {
           height: initial; }
         html body header input.header-toggler:checked ~ nav, html body header input.header-toggler:checked ~ ul {
@@ -118,10 +146,27 @@ html {
           html body header nav ul li a, html body header nav ul li i {
             font-size: 1.25em;
             color: white; }
-    html body main #snippet--content.page-11 #wallpaper-home-image {
-      height: auto;
-      width: auto;
-      max-width: 100vw;
-      max-height: 100vh; }
+    html body main #content {
+      margin: 0 auto;
+      padding: 15px;
+      width: 70vw;
+      min-width: 320px; }
+      html body main #content[data-page-id="11"] hr {
+        border-width: 2px; }
+        html body main #content[data-page-id="11"] hr:nth-of-type(1) {
+          border-color: #9c88ff; }
+      html body main #content[data-page-id="11"] h1, html body main #content[data-page-id="11"] h2, html body main #content[data-page-id="11"] h3 {
+        text-align: center; }
+      html body main #content[data-page-id="11"] #top {
+        text-align: center; }
+        html body main #content[data-page-id="11"] #top img {
+          height: auto;
+          width: auto; }
+        html body main #content[data-page-id="11"] #top h1 {
+          color: #4cd137; }
+      html body main #content[data-page-id="11"] #what-is-this h2 {
+        color: #fbc531; }
+  html .nittro-transition-bar::before {
+    background-color: #4cd137; }
 
 /*# sourceMappingURL=css.css.map */
