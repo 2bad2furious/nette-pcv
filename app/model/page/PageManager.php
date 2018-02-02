@@ -6,7 +6,7 @@ use Nette\Database\IRow;
 class PageManager extends Manager implements IPageManager {
     const MAIN_TABLE = "page",
         MAIN_COLUMN_ID = "page_id",
-        MAIN_COLUMN_TYPE = "type", /** int 1 if page 0 if post more at @var Type */
+        MAIN_COLUMN_TYPE = "type", /** int 1 if page 0 if post more at @var APage */
         TYPES = [self::TYPE_PAGE, self::TYPE_POST],
         MAIN_COLUMN_STATUS = "global_status", STATUS_ALL = null, STATUS_PUBLIC = 1, STATUS_DELETED = -1, STATUS_DRAFT = 0,
         STATUSES = [self::STATUS_PUBLIC, self::STATUS_DRAFT],
@@ -179,15 +179,16 @@ class PageManager extends Manager implements IPageManager {
             //$selection = $selection->where(["(" . implode(") OR (", $searchWheres) . ")"=> $values]);
         }
 
-        if (is_bool($hasTranslation)) {
-            $selection = $selection->where(
-                [self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT . ($hasTranslation ? " != ?" : "") => ""] +
-                ($language instanceof Language ?
-                    [self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $language->getId()] :
-                    []
-                )
-            );
-        }
+        if (is_bool($hasTranslation))
+            $selection->where([
+                self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT . ($hasTranslation ? " != ?" : "") => "",
+            ]);
+
+        if ($language instanceof Language)
+            $selection->where([
+                self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $language->getId(),
+            ]);
+
 
         $leastVisibility = "LEAST(" . self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS . "," . self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS . ")";
         /* only some visibility vs all */
@@ -418,11 +419,11 @@ class PageManager extends Manager implements IPageManager {
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE               => $title,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DESCRIPTION         => $description,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT             => $content,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_IMAGE               => $image,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_IMAGE               => $image->getId(),
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS              => $localVisibility,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_TITLE       => $displayTitle,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_BREADCRUMBS => $displayBreadCrumbs,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LAST_EDITED   => new \Nette\Utils\DateTime(),
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LAST_EDITED         => new \Nette\Utils\DateTime(),
                 ]);
 
 
@@ -578,6 +579,7 @@ class PageManager extends Manager implements IPageManager {
 
     private function createFromRow(IRow $row): APage {
         return APage::factory(
+            $row[self::MAIN_COLUMN_TYPE],
             $globalId = $row[self::MAIN_COLUMN_ID],
             $row[self::LOCAL_COLUMN_ID],
             $row[self::MAIN_COLUMN_PARENT_ID],
@@ -667,12 +669,14 @@ class PageManager extends Manager implements IPageManager {
 
     private function addLocal(Language $language, int $globalId, string $url) {
         return $this->getDatabase()->table(self::LOCAL_TABLE)->insert([
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS  => self::STATUS_DRAFT,
-            self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID => $globalId,
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG    => $language->getId(),
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE   => self::DEFAULT_TITLE,
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL     => $url,
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_AUTHOR  => $this->getUser()->getIdentity()->getId(),
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS              => self::STATUS_DRAFT,
+            self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID             => $globalId,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG                => $language->getId(),
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE               => self::DEFAULT_TITLE,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL                 => $url,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_AUTHOR              => $this->getUser()->getIdentity()->getId(),
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_TITLE       => true,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_BREADCRUMBS => true,
         ])->getPrimary();
     }
 
