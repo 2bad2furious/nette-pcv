@@ -345,6 +345,8 @@ class FormFactory extends Manager {
         $form->addText(
             self::SETTINGS_EDIT_DEFAULT_SITE_TITLE,
             "admin.settings.edit.title.label")
+            ->addRule(Form::MAX_LENGTH, "admin.settings.edit.title.length", LanguageManager::COLUMN_SITE_NAME_LENGTH)
+            ->setRequired(false)
             ->setDefaultValue($siteTitle);
 
         $titleSeparator = $sm->get(PageManager::SETTINGS_TITLE_SEPARATOR, null)->getValue();
@@ -353,6 +355,7 @@ class FormFactory extends Manager {
             "admin.settings.edit.separator.label")
             ->setDefaultValue($titleSeparator)
             ->setRequired(false)
+            ->addRule(Form::MAX_LENGTH, "admin.settings.edit.separator.length", LanguageManager::COLUMN_TITLE_SEPARATOR_LENGTH)
             ->getControlPrototype()->class(self::ONE_LINE_TEXTAREA_CLASS);
 
         $availableLanguages = array_map(function (Language $language) {
@@ -371,7 +374,7 @@ class FormFactory extends Manager {
         $logo = $form->addSelect(
             self::SETTINGS_EDIT_LOGO,
             "admin.settings.edit.logo.label",
-            [0 => $this->getTranslator()->translate("admin.settings.edit.image.no")] + $images);
+            [0 => $this->getTranslator()->translate("admin.settings.edit.logo.no")] + $images);
         if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO, null)->getValue()))
             $logo->setDefaultValue($logoId);
 
@@ -379,7 +382,9 @@ class FormFactory extends Manager {
         $form->addText(
             self::SETTINGS_EDIT_DEFAULT_GOOGLE_ANALYTICS,
             "admin.settings.edit.ga.label")
-            ->setDefaultValue($ga);
+            ->setDefaultValue($ga)
+            ->setRequired(false)
+            ->addRule(Form::MAX_LENGTH, "admin.settings.edit.ga.length", LanguageManager::COLUMN_GA_LENGTH);
 
         $form->addSubmit("submit", "admin.settings.edit.save");
         return $form;

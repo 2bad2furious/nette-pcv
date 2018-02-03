@@ -262,6 +262,22 @@ page:
             edit: "Save"
             visit: "View the page"
 
+settings:
+    title: "Settings Managing"
+    default:
+        title: ""
+    edit:
+        language:
+            label: "Default language"
+        logo:
+            no: "No logo"
+            label: "Logo"
+        title:
+            label: ""
+
+    clean:
+        label "Clean the caches"
+
 logout:
     success: "You have been logged out."
 

@@ -18,10 +18,12 @@ inconsistency in adminbar vs real administration - LANGUAGE - ok
 
 language has all its settings, settings only store the global and custom ones - ok
 
-add page displayTitle form
+add page displayTitle form- ok
 
 manager getters for important constants
 
 dashboard - home and 404s set and public
 
 no js support for page - show (one form with names like keys for params)
+
+settings form with length limitation
