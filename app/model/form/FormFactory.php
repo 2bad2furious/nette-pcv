@@ -56,11 +56,12 @@ class FormFactory extends Manager {
         $container->addSelect(
             self::PAGE_EDIT_GLOBAL_VISIBILITY_NAME,
             "admin.page.edit.global.visibility.label",
-            [PageManager::STATUS_DRAFT => "admin.page.edit.global.visibility.draft", PageManager::STATUS_PUBLIC => "admin.page.edit.global.visibility.public"]
+            [PageManager::STATUS_DRAFT  => $this->getTranslator()->translate("admin.page.edit.global.visibility.draft"),
+             PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.global.visibility.public")]
         )->setDefaultValue($page->getGlobalStatus());
 
         if ($page->isPage()) {
-            $parents = [0 => "admin.page.edit.global.parent.no"] + array_map(function (PageWrapper $page) {
+            $parents = [0 => $this->getTranslator()->translate("admin.page.edit.global.parent.no")] + array_map(function (PageWrapper $page) {
                     return $page->getGlobalId() . " " . ($page->isTitleDefault() ? "" : $page->getTitle());
                 }, $this->getPageManager()->getViableParents($page->getGlobalId(), $page->getLanguageId()));
 
@@ -75,7 +76,8 @@ class FormFactory extends Manager {
         $container->addSelect(
             self::PAGE_EDIT_LOCAL_VISIBILITY_NAME,
             "admin.page.edit.local.visibility.label",
-            [PageManager::STATUS_DRAFT => "admin.page.edit.local.visibility.draft", PageManager::STATUS_PUBLIC => "admin.page.edit.local.visibility.public"]
+            [PageManager::STATUS_DRAFT  => $this->getTranslator()->translate("admin.page.edit.local.visibility.draft"),
+             PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.local.visibility.public")]
         )->setDefaultValue($page->getLocalStatus());
 
         $container->addText(
@@ -129,7 +131,7 @@ class FormFactory extends Manager {
         $container->addSelect(
             self::PAGE_EDIT_IMAGE_NAME,
             "admin.page.edit.local.image.label",
-            [0 => "admin.page.edit.local.image.no"] + array_map(function (File $media) {
+            [0 => $this->getTranslator()->translate("admin.page.edit.local.image.no")] + array_map(function (File $media) {
                 return $media->getSrc();
             }, $this->getMediaManager()->getAvailableImages()))
             ->setDefaultValue($page->getImageId());
@@ -290,14 +292,14 @@ class FormFactory extends Manager {
 
         $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME,
             "admin.language.edit.logo.label",
-            $images + [0 => "admin.language.edit.logo.no"])
+            [0 => $this->getTranslator()->translate("admin.language.edit.logo.no")] + $images)
             ->setDefaultValue($language->getLogoId());
 
 
         $form->addSelect(
             self::LANGUAGE_EDIT_FAVICON_NAME,
-            "admin.settings.edit.favicon",
-            $images + [0 => "admin.language.edit.favicon.no"])
+            "admin.language.edit.favicon.label",
+            [0 => $this->getTranslator()->translate("admin.language.edit.favicon.no")] + $images)
             ->setDefaultValue($language->getFaviconId());
 
         $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label")
@@ -309,7 +311,7 @@ class FormFactory extends Manager {
         $homePageSelection = $form->addSelect(
             self::LANGUAGE_EDIT_HOMEPAGE,
             "admin.language.edit.homepage.label",
-            [0 => "admin.lanuage.edit.homepage.no"] + array_map(function (PageWrapper $page) {
+            [0 => $this->getTranslator()->translate("admin.language.edit.homepage.no")] + array_map(function (PageWrapper $page) {
                 return $page->getGlobalId() . " - " . $page->getTitle();
             }, $allPages)
         );
@@ -320,7 +322,7 @@ class FormFactory extends Manager {
         $form->addSelect(
             self::LANGUAGE_EDIT_404,
             "admin.language.edit.404.label",
-            [0 => "admin.language.edit.404.no"] + array_map(function (PageWrapper $pageWrapper) {
+            [0 => $this->getTranslator()->translate("admin.language.edit.404.no")] + array_map(function (PageWrapper $pageWrapper) {
                 return $pageWrapper->getGlobalId() . " - " . $pageWrapper->getTitle();
             }, $allPages)
         );
@@ -369,7 +371,7 @@ class FormFactory extends Manager {
         $logo = $form->addSelect(
             self::SETTINGS_EDIT_LOGO,
             "admin.settings.edit.logo.label",
-            $images + [0 => "admin.settings.edit.image.no"]);
+            [0 => $this->getTranslator()->translate("admin.settings.edit.image.no")] + $images);
         if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO, null)->getValue()))
             $logo->setDefaultValue($logoId);
 

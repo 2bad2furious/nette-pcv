@@ -1,7 +1,15 @@
 <?php
 
 
+use Nette\Forms\Controls\SelectBox;
+use Nette\Forms\Controls\SubmitButton;
+
 trait TForm {
+
+    /**
+     * @return \Nette\Localization\ITranslator|null
+     */
+    protected abstract function getTranslator();
 
     //cant have constants what? xd
     private static $BOOTSTRAP_FORM_CONTROL_CLASS = "form-control";
@@ -32,9 +40,24 @@ trait TForm {
     }
 
     public function addSubmit($name, $caption = null) {
-        /** @var \Nette\Forms\Controls\SubmitButton $base */
+        /** @var SubmitButton $base */
         $base = parent::addSubmit($name, $caption);
         $base->getControlPrototype()->class("btn submit");
+        return $base;
+    }
+
+    /**
+     * Adds select box control that allows single item selection.
+     * @param  string
+     * @param  string|object
+     * @param  array
+     * @param  int
+     * @return SelectBox
+     */
+    public function addSelect($name, $label = null, array $items = null, $size = null) {
+        //TODO remove this with 3.0
+        $base = parent::addSelect($name, (($t = $this->getTranslator()) instanceof \Nette\Localization\ITranslator ? $t->translate($label) : $label), $items, $size)
+            ->setTranslator();//purposely unset translator so that the options dont get translated
         return $base;
     }
 }
