@@ -290,9 +290,11 @@ html {
             max-height: 100%; }
         html body #snippet--content #contentWrapper.file-default .file-item .content span {
           display: block; }
-        html body #snippet--content #contentWrapper > h1, html body #snippet--content #contentWrapper > h2 {
-          text-align: center;
-          margin: 0; }
+        html body #snippet--content #contentWrapper #page-titles {
+          margin-bottom: 20px; }
+          html body #snippet--content #contentWrapper #page-titles > h1, html body #snippet--content #contentWrapper #page-titles > h2 {
+            text-align: center;
+            margin: 0; }
         html body #snippet--content #contentWrapper #content {
           flex-direction: column;
           align-self: stretch;

@@ -333,9 +333,13 @@ html {
           }
         }
 
-        & > h1, & > h2 {
-          text-align: center;
-          margin: 0;
+        #page-titles {
+          margin-bottom: 20px;
+
+          & > h1, & > h2 {
+            text-align: center;
+            margin: 0;
+          }
         }
         #content {
           flex-direction: column;

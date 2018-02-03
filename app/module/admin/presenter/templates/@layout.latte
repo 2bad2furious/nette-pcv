@@ -42,12 +42,14 @@
 {/ifset}
 <div n:snippet="content">
     <div id="contentWrapper" class="{$presenter|noescape}-{$action|noescape}">
-        <h1 class="admin-title">{$title}</h1>
-        {ifset $noSubtitle}{else}
-            {if $page_subtitle}
-                <h2 class="admin-subtitle">{$page_subtitle}</h2>
-            {/if}
-        {/ifset}
+        <div id="page-titles">
+            <h1 class="admin-title">{$title}</h1>
+            {ifset $noSubtitle}{else}
+                {if $page_subtitle}
+                    <h2 class="admin-subtitle">{$page_subtitle}</h2>
+                {/if}
+            {/ifset}
+        </div>
         <div n:snippet="flashes">
             <ul n:flashes></ul>
             <a n:href="clearFlashes!" id="flash-closer" data-history="false">
