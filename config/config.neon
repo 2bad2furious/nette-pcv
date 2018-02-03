@@ -19,6 +19,7 @@ services:
     - FileManager
 
     #cacheStorage:
+        #factory: Nette\Caching\Storages\NewMemcachedStorage
         #factory: Nette\Caching\Storages\SQLiteStorage("%tempDir%/cache/cache.s3db")
 #application:
  #   mapping:
