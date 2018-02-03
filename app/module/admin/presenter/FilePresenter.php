@@ -27,7 +27,7 @@ class FilePresenter extends AdminPresenter {
     protected function getAllowedRoles(): array {
         switch ($this->getAction()) {
             case "default":
-                return \UserManager::ROLES_ADMINISTRATION;
+                return \IUserManager::ROLES_ADMINISTRATION;
         }
     }
 

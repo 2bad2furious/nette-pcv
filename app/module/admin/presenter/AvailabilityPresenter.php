@@ -20,7 +20,7 @@ class AvailabilityPresenter extends AdminPresenter {
     const ID = "id";
 
     protected function getAllowedRoles(): array {
-        return \UserManager::ROLES_ADMINISTRATION;
+        return \IUserManager::ROLES_ADMINISTRATION;
     }
 
     public function actionDefault() {

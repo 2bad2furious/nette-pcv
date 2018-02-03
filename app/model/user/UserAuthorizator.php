@@ -15,7 +15,7 @@ class UserAuthorizator implements \Nette\Security\IAuthorizator {
 
         switch ($resource) {
             case PageManager::ACTION_SEE_NON_PUBLIC_PAGES:
-                $allowedRoles = UserManager::ROLES_PAGE_DRAFTING;
+                $allowedRoles = IUserManager::ROLES_PAGE_DRAFTING;
                 break;
         }
 

@@ -74,7 +74,7 @@ class PagePresenter extends BasePresenter {
 
     protected
     function getAllowedRoles(): array {
-        return \UserManager::ROLES;
+        return \IUserManager::ROLES;
     }
 
     public

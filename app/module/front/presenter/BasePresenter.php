@@ -78,7 +78,7 @@ abstract class BasePresenter extends Presenter {
     protected function checkRoles() {
         $allowedRoles = $this->getAllowedRoles();
         $identity = $this->getUser()->getIdentity();
-        $currentRole = $identity instanceof UserIdentity ? $identity->getRole() : UserManager::ROLE_GUEST;
+        $currentRole = $identity instanceof UserIdentity ? $identity->getRole() : IUserManager::ROLE_GUEST;
 
         $isInRoles = (in_array($currentRole, $allowedRoles));
 

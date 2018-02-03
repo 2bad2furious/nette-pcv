@@ -18,39 +18,8 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUs
         COLUMN_CREATED = "created",
         COLUMN_VERIFIED = "verified",
         COLUMN_ROLE = "role",
-        COLUMN_CURRENT_LANGUAGE = "current_language", COLUMN_CURRENT_LANGUAGE_LENGTH = 5,
+        COLUMN_CURRENT_LANGUAGE = "current_language", COLUMN_CURRENT_LANGUAGE_LENGTH = 5;
 
-        //non-logged users
-        ROLE_GUEST = 0,
-
-        //normal users
-        ROLE_USER = 1,
-
-        //users, who can only create drafts, that have to be published by someone higher
-        ROLE_DRAFTER = 2, //
-
-        //publishes drafts or creates/edits/deletes any post
-        ROLE_PUBLISHER = 3,
-
-        //manages lower people
-        ROLE_ADMIN = 4,
-
-        //manages lower people
-        ROLE_SUPER_ADMIN = 5,
-
-        //all roles
-        ROLES = [self::ROLE_GUEST, self::ROLE_USER, self::ROLE_DRAFTER, self::ROLE_PUBLISHER, self::ROLE_ADMIN, self::ROLE_SUPER_ADMIN],
-
-        //users allowed to log in to administration
-        ROLES_ADMINISTRATION = [self::ROLE_DRAFTER, self::ROLE_PUBLISHER, self::ROLE_ADMIN, self::ROLE_SUPER_ADMIN],
-
-        ROLES_PAGE_DRAFTING = self::ROLES_ADMINISTRATION,
-
-        ROLES_PAGE_MANAGING = [self::ROLE_PUBLISHER, self::ROLE_ADMIN, self::ROLE_SUPER_ADMIN],
-
-        ROLES_USER_ADMINISTRATION = [self::ROLE_ADMIN, self::ROLE_SUPER_ADMIN],
-
-        ROLES_ADMIN_ADMINISTRATION = [self::ROLE_SUPER_ADMIN];
 
     /**
      * Performs an authentication against e.g. database.

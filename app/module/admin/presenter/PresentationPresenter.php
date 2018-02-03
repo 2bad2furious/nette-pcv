@@ -9,8 +9,7 @@ class PresentationPresenter extends AdminPresenter {
     protected function getAllowedRoles(): array {
         switch ($this->getAction()) {
             case "default":
-                return [9];
-                //return \UserManager::ROLES_PAGE_MANAGING;
+                return \UserManager::ROLES_PAGE_MANAGING;
             case "delete":
                 return \UserManager::ROLES_PAGE_MANAGING;
             case "edit":
