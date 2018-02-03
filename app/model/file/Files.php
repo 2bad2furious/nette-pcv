@@ -50,6 +50,10 @@ abstract class File {
         return $this->src;
     }
 
+    public function getWholeSrc(): string {
+        return FileManager::UPLOAD_DIRECTORY . "/" . $this->getSrc();
+    }
+
     public abstract function getType(): int;
 
     public function isImage(): int {

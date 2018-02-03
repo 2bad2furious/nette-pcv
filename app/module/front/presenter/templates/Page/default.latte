@@ -13,7 +13,7 @@
     {if !$page->is404()}
         <meta property="og:url" content="{$baseUrl}/{$page->getPermanentUrl()}"/>
         {if $image=$page->getImage()}
-            <meta property="og:image" content="{$image->getSrc()}"/>{*
+            <meta property="og:image" content="/{$image->getWholeSrc()}"/>{*
             {if $alt=$image->getAlt()}
                 <meta property="og:image:alt" content="{$alt}">
             {/if}*}
@@ -58,10 +58,23 @@
             crossorigin="anonymous" defer></script>
     <script src="/libs/nittro/nittro.min.js" type="application/javascript" defer></script>
     <script src="/js/js.min.js" type="application/javascript" defer></script>
+    {var $logo = $page->getFavicon()}
+    {if $logo}
+        <link rel="shortcut icon" href="/{$logo->getWholeSrc()}"/>
+        <link rel="icon" href="/{$logo->getWholeSrc()}"/>
+        <link rel="apple-touch-icon-precomposed" href="/{$logo->getWholeSrc()}"/>
+        <meta name="msapplication-TileImage" content="/{$logo->getWholeSrc()}"/>
+    {/if}
 </head>
 <body class="nittro-transition-bar nittro-transition-auto">
-{if $isLoggedIn}{control adminBar}{/if}
-{control header}
+{if $isLoggedIn}
+    <div n:snippet="admin-header-bar">
+        {control adminBar}
+    </div>
+{/if}
+<header n:snippet="header">
+    {control header}
+</header>
 <main n:snippet="content">
     <div id="content"
             n:class="$page->isHomePage() ? homepage"
