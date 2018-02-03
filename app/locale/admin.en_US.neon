@@ -93,6 +93,39 @@ language:
             label: "Delete"
             confirm: "Are you sure? This will delete this language and translations."
         add: "Add"
+    edit:
+        title: "Editing"
+        friendly:
+            label: "Friendly name"
+            required: "Friendly name is required"
+            length: "Friendly name must be at most %s characters long"
+        site_title:
+            label: "Site title"
+            required: "Site title is required"
+            length: "Site title must be at most %s characters long"
+        separator:
+            label: "Title separator (used between the page and site titles)"
+            length: "Title separator must be at most %s characters long"
+        ga:
+            label: "Google Analytics code"
+            length: "Google Analytics is at most %s characters long."
+        logo:
+            no: "No Logo"
+            label: "Logo"
+        favicon:
+            no: "No Favicon"
+            label: "Favicon - image in the browser tab"
+        homepage:
+            no: "No Homepage"
+            label: "Homepage for this language"
+        404:
+            no: "No ErrorPage"
+            label: "ErrorPage"
+        submit: "Save"
+        action:
+            delete:
+                label: "Delete language"
+                confirm: "Are you sure? This will delete this language and all translations."
 
 
 login:
