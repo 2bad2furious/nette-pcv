@@ -32,6 +32,8 @@ class PageWrapper {
     private $settingsManager;
     private $userManager;
     private $mediaManager;
+    private $favicon;
+    private $logo;
 
     /**
      * PageWrapper constructor.
@@ -162,5 +164,31 @@ class PageWrapper {
 
     public function isUrlGenerated(): bool {
         return $this->pageManager->isDefaultUrl($this->getUrl());
+    }
+
+    /**
+     * @return Image|null
+     * @throws LanguageByIdNotFound
+     * @throws FileNotFoundById
+     */
+    public function getFavicon(): ?Image {
+        if ($this->favicon !== false) {
+            $favId = $this->getLanguage()->getFaviconId();
+            $this->favicon = ($favId) ? $this->mediaManager->getById($favId, IFileManager::TYPE_IMAGE, false) : false;
+        }
+        return $this->favicon instanceof Image ? $this->favicon : null;
+    }
+
+    /**
+     * @return Image|null
+     * @throws FileNotFoundById
+     * @throws LanguageByIdNotFound
+     */
+    public function getLogo():?Image{
+        if ($this->logo !== false) {
+            $favId = $this->getLanguage()->getLogoId();
+            $this->logo = ($favId) ? $this->mediaManager->getById($favId, IFileManager::TYPE_IMAGE, false) : false;
+        }
+        return $this->logo instanceof Image ? $this->favicon : null;
     }
 }
