@@ -7,7 +7,7 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Security\Passwords;
 use Nette\Security\User;
 
-class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUserManager {
+class AccountManager extends Manager implements \Nette\Security\IAuthenticator, IAccountManager {
 
     const
         TABLE = "user",
@@ -59,14 +59,17 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUs
         return $this->getUserIdentityByIdentificationPassword($identification, $password) instanceof UserIdentity;
     }
 
-    public function getUserIdentityById(int $id): ?UserIdentity {
-        return $this->get($id);
+    public function getUserIdentityById(int $id, bool $throw = true): ?UserIdentity {
+        $identity = $this->get($id);
+        if ($identity instanceof UserIdentity) return $identity;
+        if ($throw) throw new UserIdentityByIdNotFound($id);
+        return null;
     }
 
     private function getUserIdentityByIdentificationPassword(string $identification, string $password): ?UserIdentity {
         $data = $this->getDatabase()->table(self::TABLE)->whereOr([
             self::COLUMN_USERNAME => $identification,
-            self::COLUMN_EMAIL => $identification,
+            self::COLUMN_EMAIL    => $identification,
         ])->select(self::COLUMN_PASSWORD)->select(self::COLUMN_ID)->fetch();
         if ($data instanceof ActiveRow && Passwords::verify($password, $data[self::COLUMN_PASSWORD])) {
             $identity = $this->get($data[self::COLUMN_ID]);
@@ -112,7 +115,7 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUs
             return $this->getDatabase()->table(self::TABLE)
                 ->wherePrimary($userId)
                 ->update([
-                    self::COLUMN_CURRENT_LANGUAGE => $language
+                    self::COLUMN_CURRENT_LANGUAGE => $language,
                 ]);
         });//TODO check whether something was changed? throw exception?
 
@@ -121,5 +124,32 @@ class UserManager extends Manager implements \Nette\Security\IAuthenticator, IUs
 
     private function uncache(int $userId) {
         $this->getCache()->remove($userId);
+    }
+
+    /**
+     * @param int[]|null $roles
+     * @param int $page
+     * @param int $perPage
+     * @param $numOfPages
+     * @return UserIdentity[]
+     */
+    public function getAll(?array $roles, int $page, int $perPage, &$numOfPages) {
+        $selection = $this->getDatabase()->table(self::TABLE);
+
+        if (is_array($roles)) {
+            foreach ($roles as $role) {
+                if (!is_int($role)) throw new InvalidArgumentException("Roles is not int[]");
+            }
+            $selection->where([
+                self::COLUMN_ROLE => $roles,
+            ]);
+        }
+
+        $users = [];
+        $selection->page($page, $perPage, $numOfPages);
+        while ($row = $selection->fetch()) {
+            $users[$row[self::COLUMN_ID]] = $this->getUserIdentityById($row[self::COLUMN_ID]);
+        }
+        return $users;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-interface IUserManager {
+interface IAccountManager {
     const
         //non-logged users
         ROLE_GUEST = 0,
@@ -57,9 +57,18 @@ interface IUserManager {
 
     public function loginCheck(string $identification, string $password): bool;
 
-    public function getUserIdentityById(int $id): ?UserIdentity;
+    public function getUserIdentityById(int $id,bool $throw = true): ?UserIdentity;
 
     public function cleanCache();
 
     public function saveCurrentLanguage(int $userId,string $language);
+
+    /**
+     * @param int[]|null $roles
+     * @param int $page
+     * @param int $perPage
+     * @param $numOfPages
+     * @return UserIdentity[]
+     */
+    public function getAll(?array $roles,int $page, int $perPage, &$numOfPages);
 }

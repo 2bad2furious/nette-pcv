@@ -72,32 +72,27 @@ class PagePresenter extends BasePresenter {
         $this->prepareTemplate();
     }
 
-    protected
-    function getAllowedRoles(): array {
-        return \IUserManager::ROLES;
+    protected function getAllowedRoles(): array {
+        return \IAccountManager::ROLES;
     }
 
-    public
-    function createComponentContent(string $name): ContentControl {
-        return new ContentControl($this, $name);
+    public function createComponentContent(string $name): ContentControl {
+        return new ContentControl($this->getPage(), $this, $name);
     }
 
     /**
      * @param string $name
      * @return ArticlePageControl
      */
-    public
-    function createComponentArticlePage(string $name): ArticlePageControl {
+    public function createComponentArticlePage(string $name): ArticlePageControl {
         return new ArticlePageControl($this, $name);
     }
 
-    public
-    function createComponentHeader(string $name): HeaderPageControl {
+    public function createComponentHeader(string $name): HeaderPageControl {
         return new HeaderPageControl($this->page, $this, $name);
     }
 
-    public
-    function createComponentSectionPage(string $name): SectionPageControl {
+    public function createComponentSectionPage(string $name): SectionPageControl {
         return new SectionPageControl($this, $name);
     }
 
