@@ -298,17 +298,18 @@ html {
         html body #snippet--content #contentWrapper #content {
           flex-direction: column;
           align-self: stretch;
-          display: flex;
           justify-content: center;
-          padding-bottom: 100px;
-          /*#content {
-            display: block;
-          }*/ }
+          display: flex;
+          padding-bottom: 100px; }
+          html body #snippet--content #contentWrapper #content > form {
+            align-self: center; }
     html body form .admin-form-errors:empty {
       margin: 0;
       padding: 0; }
     html body form .admin-form-errors li.error {
       color: #e84118; }
+    html body #content > .btn {
+      align-self: flex-start; }
     html body .btn {
       box-shadow: none !important;
       margin: 0 3px;

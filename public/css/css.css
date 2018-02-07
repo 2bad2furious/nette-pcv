@@ -92,14 +92,15 @@ html {
     background-color: "white"; }
     html body * {
       color: "black"; }
-    html body #admin-header-bar {
+    html body #snippet--admin-header-bar {
       display: flex;
+      flex-direction: row;
       justify-content: space-between;
       background-color: "black";
       padding: 10px; }
-      html body #admin-header-bar * {
+      html body #snippet--admin-header-bar * {
         color: "white"; }
-      html body #admin-header-bar #logout:hover > i {
+      html body #snippet--admin-header-bar #logout:hover > i {
         color: red; }
     html body header {
       top: 0;

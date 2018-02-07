@@ -344,14 +344,12 @@ html {
         #content {
           flex-direction: column;
           align-self: stretch;
-
-          display: flex;
           justify-content: center;
+          display: flex;
           padding-bottom: 100px;
-
-          /*#content {
-            display: block;
-          }*/
+          & > form {
+            align-self: center;
+          }
 
         }
 
@@ -370,6 +368,9 @@ html {
         }
       }
 
+    }
+    #content > .btn {
+      align-self: flex-start;
     }
     .btn {
       box-shadow: none !important;
