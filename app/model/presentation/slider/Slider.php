@@ -17,14 +17,14 @@ class Slider {
     public function __construct(int $id, string $title, int $lang_id, array $childrenIds) {
         $this->id = $id;
         $this->title = $title;
-        foreach($childrenIds as $childrenId){
+        foreach ($childrenIds as $childrenId) {
             $this->addChildId($childrenId);
         }
         $this->lang_id = $lang_id;
     }
 
     private function addChildId(int $childrenId) {
-        $this->childrenIds[] = $childrenId;
+        $this->childrenIds[$childrenId] = $childrenId;
     }
 
     /**

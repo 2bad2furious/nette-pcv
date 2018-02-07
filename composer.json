@@ -4,6 +4,7 @@
         "kdyby/translation": "^2.4",
         "nittro/nette-bridges": "^2.0",
         "nette/tester": "^2.0",
-        "ralouphie/mimey": "^1.0"
+        "ralouphie/mimey": "^1.0",
+        "maiorano84/shortcodes": "^1.2"
     }
 }

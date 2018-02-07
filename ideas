@@ -27,3 +27,7 @@ dashboard - home and 404s set and public
 no js support for page - show (one form with names like keys for params)
 
 settings form with length limitation
+
+add limits to sql queries where needed - performance boost
+
+addSuccess/Error/Warning add parameters

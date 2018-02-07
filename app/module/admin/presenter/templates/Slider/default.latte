@@ -1,0 +1,55 @@
+{block content}
+    <a href="{plink add}" class="btn">
+        {_"admin.slider.default.add"}
+    </a>
+    <p></p>
+    <table class="table">
+        <thead>
+        <tr>
+            <td>
+                {_"admin.slider.default.head.id"}
+            </td>
+            <td>
+                {_"admin.slider.default.head.title"}
+            </td>
+            <td>
+                {_"admin.slider.default.head.lang"}
+            </td>
+            <td>
+                {_"admin.slider.default.head.edit"}
+            </td>
+            <td>
+                {_"admin.slider.default.head.delete"}
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr n:foreach="$sliders as $slider">
+            <td>
+                {$slider->getId()}
+            </td>
+            <td>
+                {$slider->getTitle()}
+            </td>
+            <td>
+                {var $lang = $slider->getLanguage()}
+                {if $lang instanceof Language}
+                    {$lang->getFriendly()}
+                {else}
+                    {_"admin.slider.default.lang.all"}
+                {/if}
+            </td>
+            <td>
+                <a href="{plink edit \adminModule\SliderPresenter::ID_KEY=>$slider->getId()}">
+                    <i class="fa fa-pencil"></i>
+                </a>
+            </td>
+            <td>
+                <a href="{plink delete! $slider->getId()}">
+                    <i class="fa fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{/block}
