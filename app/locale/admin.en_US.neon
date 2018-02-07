@@ -4,10 +4,10 @@ header:
     page: "Pages"
     header: "Header"
     file: "Files"
-    presentation: "Presentations"
+    slider: "Sliders"
     language: "Languages"
     setting: "Settings"
-    user: "Users"
+    accounts: "Accounts"
     logout: "Log Out"
 
     not_found: "Header link not found"
@@ -276,10 +276,56 @@ settings:
             label: ""
 
     clean:
-        label "Clean the caches"
+        label: "Clean the caches"
 
 logout:
     success: "You have been logged out."
 
 paginator:
     label: "Page %page% of %all%"
+
+accounts:
+    title: "Account Managing"
+    default:
+        title: ""
+        head:
+            id: "ID"
+            username: "Username"
+            email: "Email"
+            role: "Role"
+            edit: "Edit"
+            delete: "Delete"
+
+        role:
+            1: "User"
+            2: "Drafter"
+            3: "Publisher"
+            4: "Admin"
+            5: "Super Admin"
+
+
+slider:
+    title: "Slider Managing"
+    add:
+        title: "Add new"
+    default:
+        title: ""
+        head:
+            id: "ID"
+            title: "Title"
+            lang: "Language"
+            edit: "Edit"
+            delete: "Delete"
+        add: "Add"
+
+form:
+    slider:
+        add:
+            title:
+                label: "Title"
+                required: "Title is required"
+                length: "Title must at most %s characters long"
+            lang:
+                label: "Language"
+                no: "No particular"
+            submit: "Add"
