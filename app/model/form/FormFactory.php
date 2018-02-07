@@ -45,6 +45,8 @@ class FormFactory extends Manager {
     const MEDIA_UPLOAD_NAME = "upload";
     const PAGE_EDIT_DISPLAY_TITLE_NAME = "display_title";
     const PAGE_EDIT_DISPLAY_BREADCRUMBS = "display_bread";
+    const SLIDER_TITLE_NAME = "title";
+    const SLIDER_LANG_NAME = "lang_id";
 
     public function createPageEditForm(PageWrapper $page, callable $urlValidator) {
 
@@ -452,6 +454,25 @@ class FormFactory extends Manager {
         $form->addSubmit(
             "submit",
             "admin.media.default.upload.label");
+        return $form;
+    }
+
+    public function createSliderAddForm(): Form {
+        $form = $this->createNewAdminForm();
+        $form->addText(
+            self::SLIDER_TITLE_NAME,
+            "admin.form.slider.add.title.label")
+            ->addRule(Form::MAX_LENGTH,
+                "admin.form.slider.add.title.length",
+                $this->getSliderManager()->getSliderTitleMaxLength())
+            ->addRule(Form::REQUIRED,
+                "admin.form.slider.add.title.required");
+        $form->addSelect(self::SLIDER_LANG_NAME,
+            "admin.form.slider.add.lang.label",
+            [0 => $this->getTranslator()->translate("admin.form.slider.add.lang.no")] + array_map(function (Language $lang) {
+                return $lang->getFriendly();
+            }, $this->getLanguageManager()->getAvailableLanguages()));
+        $form->addSubmit("submit", "admin.form.slider.add.submit");
         return $form;
     }
 }
