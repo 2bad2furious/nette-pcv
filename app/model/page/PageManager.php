@@ -8,9 +8,15 @@ class PageManager extends Manager implements IPageManager {
         MAIN_COLUMN_ID = "page_id",
         MAIN_COLUMN_TYPE = "type", /** int 1 if page 0 if post more at @var APage */
         TYPES = [self::TYPE_PAGE, self::TYPE_POST],
-        MAIN_COLUMN_STATUS = "global_status", STATUS_ALL = null, STATUS_PUBLIC = 1, STATUS_DELETED = -1, STATUS_DRAFT = 0,
-        STATUSES = [self::STATUS_PUBLIC, self::STATUS_DRAFT],
+        MAIN_COLUMN_STATUS = "global_status",
         MAIN_COLUMN_PARENT_ID = "parent_id",
+
+        ORDER_TABLE = [
+        self::ORDER_BY_ID           => self::MAIN_COLUMN_ID,
+        self::ORDER_BY_TITLE        => self::LOCAL_COLUMN_TITLE,
+        self::ORDER_BY_PUBLISH_TIME => self::LOCAL_COLUMN_CREATED,
+        self::ORDER_BY_EDITED_TIME  => self::LOCAL_COLUMN_LAST_EDITED,
+    ],
 
         LOCAL_TABLE = "page_local",
         LOCAL_COLUMN_ID = "page_local_id",
@@ -141,18 +147,26 @@ class PageManager extends Manager implements IPageManager {
      * @param int $perPage
      * @param &$numOfPages
      * @param null|string $search
+     * @param int $orderBy
      * @return PageWrapper[]
-     * @throws InvalidArgumentException for bad type|visibilty
      */
-    public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search) {
+    public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, ?int $page, ?int $perPage, &$numOfPages, ?string $search, int $orderBy = self::ORDER_BY_ID) {
         $selection = $this->getDatabase()->table(self::LOCAL_TABLE)
             ->group(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)
-            ->select("GROUP_CONCAT(" . self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID . " SEPARATOR '|') localIds")
+            ->select("GROUP_CONCAT(" . self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG . " SEPARATOR '|') langIds")
             ->select(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)
             ->order(self::LOCAL_COLUMN_LANG)
             ->order(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID);
 
         if (is_int($type)) $selection = $selection->where(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE, $type);
+
+        $abs = abs($orderBy);
+        $dir = $orderBy > 0 ? "ASC" : "DESC";
+
+        $order_by_column = (isset(self::ORDER_TABLE[$abs])) ? self::ORDER_TABLE[$abs] : null;
+        if ($order_by_column !== self::MAIN_COLUMN_ID && $order_by_column !== null && $language instanceof Language) {
+            $selection->order(self::LOCAL_TABLE . "." . $order_by_column . " " . $dir);
+        } else $selection->order(self::MAIN_TABLE . "." . self::MAIN_COLUMN_ID . " " . $dir);
 
         if (is_string($search)) {
             $searchWheres = [];
@@ -196,13 +210,22 @@ class PageManager extends Manager implements IPageManager {
             $selection = $selection->where([$leastVisibility => $visibility]);
         }
 
-        $result = $selection->page($page, $perPage, $numOfPages);
+        if ($perPage > 0 && $page > 0) {
+            $result = $selection->page($page, $perPage, $numOfPages);
+        } else if ($perPage > 0) {
+            $result = $selection->limit($perPage);
+        } else $result = $selection;
+
         if ($numOfPages === 0) $numOfPages = 1;
         $pages = [];
 
         while ($page = $result->fetch()) {
-            $localPages = $this->getByLocalIds(explode("|", $page["localIds"]));
-            $pages[$page[self::LOCAL_MAIN_COLUMN_ID]] = $localPages;
+            $langIds = explode("|", $page["langIds"]);
+            $globalId = $page[self::LOCAL_MAIN_COLUMN_ID];
+
+            $pages[$globalId] = array_map(function (int $langId) use ($globalId) {
+                return $this->getByGlobalId($langId, $globalId);
+            }, $langIds);
         }
         return $pages;
     }
@@ -246,7 +269,7 @@ class PageManager extends Manager implements IPageManager {
                 $this,
                 $this->getLanguageManager(),
                 $this->getSettingsManager(),
-                $this->getUserManager(),
+                $this->getAccountManager(),
                 $this->getMediaManager()
             );
         }
@@ -376,14 +399,14 @@ class PageManager extends Manager implements IPageManager {
             throw new Exception("URL not the right pattern: " . self::LOCAL_URL_CHARSET);
 
         $image = $imageId === 0 ? null : $this->getMediaManager()->getById($imageId, FileManager::TYPE_IMAGE);
-        if ($imageId !== 0 && !$image instanceof File)
+        if ($imageId !== 0 && !$image instanceof Image)
             throw new InvalidArgumentException("Image not found");
 
         //uncache
         $this->urlUncache($page->getUrl(), $page->getLanguageId());
         $this->globalUncache($page->getGlobalId(), $page->getLanguageId());
 
-        $newPage = $this->runInTransaction(function () use ($parentId, $page, $globalVisibility, $url, $title, $description, $content, $image, $localVisibility, $displayBreadCrumbs, $displayTitle) {
+        $newPage = $this->runInTransaction(function () use ($parentId, $page, $globalVisibility, $url, $title, $description, $content, $imageId, $localVisibility, $displayBreadCrumbs, $displayTitle) {
             if ($parentId !== $page->getParentId() || $globalVisibility !== $page->getGlobalStatus()) {
 
                 //uncache parent
@@ -393,7 +416,7 @@ class PageManager extends Manager implements IPageManager {
                     if ($parent instanceof APage) $this->urlUncache($parent->getUrl(), $page->getParentId());
                 }
                 //uncache future? parent
-                if ($parentId !== 0) {
+                if ($parentId) {//!== 0 && !== null
                     $futureParent = $this->getPlainById($parentId, $page->getLanguageId(), true);
                     $this->globalUncache($parentId, $page->getLanguageId());//
                     $this->urlUncache($futureParent, $page->getLanguageId());
@@ -419,7 +442,7 @@ class PageManager extends Manager implements IPageManager {
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE               => $title,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DESCRIPTION         => $description,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT             => $content,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_IMAGE               => $image->getId(),
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_IMAGE               => $imageId,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS              => $localVisibility,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_TITLE       => $displayTitle,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_BREADCRUMBS => $displayBreadCrumbs,
@@ -619,28 +642,6 @@ class PageManager extends Manager implements IPageManager {
         $this->getGlobalCache()->remove($this->getGlobalCacheKey($globalId, $langId));
         $this->getGlobalCache()->clean($tags = self::getTags($globalId, $langId));
         $this->getUrlCache()->clean($tags);
-    }
-
-    /**
-     * @param int[] $localIds
-     * @return PageWrapper[]
-     */
-    private function getByLocalIds(array $localIds): array {
-        $pages = [];
-        foreach ($localIds as $localId) {
-            $data = $this->getDatabase()->table(self::LOCAL_TABLE)
-                ->where([self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID => $localId])
-                ->select(self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG)
-                ->select(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)
-                ->fetch();
-
-            if (!$data instanceof IRow) throw new InvalidArgumentException();
-
-            $langId = $data[self::LOCAL_COLUMN_LANG];
-            $globalId = $data[self::LOCAL_MAIN_COLUMN_ID];
-            $pages[$localId] = $this->getByGlobalId($langId, $globalId);
-        }
-        return $pages;
     }
 
     public function isDefaultUrl(string $url): bool {

@@ -1,67 +1,50 @@
 <?php
 
 
+use Maiorano\Shortcodes\Manager\ShortcodeManager;
+
 class ContentControl extends BaseControl {
-    const SLIDER_CLASS = SliderControl::class,
-        SLIDER_NAME = "slider";
 
+    private $page;
 
-    const BY_NICK = [
-        self::SLIDER_NAME => self::SLIDER_CLASS,
-    ];
-
-    const SYNTAX_BEGINNING = "\[presentation_",
-        SYNTAX_NAME = "[A-Za-z0-9-]+",
-        SYNTAX_ID = "\d+",
-        SYNTAX_END = "\]";
-
-    /** #<presentation [A-Za-z0-9_-]{1,} \d{1,}> => <presentation xd-1 2># */
-    const SEARCH_SYNTAX = "#" . self::SYNTAX_BEGINNING . self::SYNTAX_NAME . "_" . self::SYNTAX_ID . self::SYNTAX_END . "#";
-    /**  #(?<=<presenter )[A-Za-z0-9_-]+#*/
-    const SEARCH_NAME = "#" . "(?<=" . self::SYNTAX_BEGINNING . ")" . self::SYNTAX_NAME . "#";
-    /** #(?<=<presnter $controlName )\d+# */
-    const SEARCH_ID = "#" . "(?<=" . self::SYNTAX_BEGINNING . "%s_" . ")" . self::SYNTAX_ID . "#";
-
-
-    /**
-     * @param PageWrapper $page
-     * @throws Exception for testing
-     */
-    public function render(PageWrapper $page): void {
-        $content = $page->getContent();
-        //dump(self::SEARCH_SYNTAX);
-        /* sets $matches to array of String[$n length] of matches => [[$match1,$match2]] */
-        preg_match_all(self::SEARCH_SYNTAX, $content, $matches);
-        $matches = $matches[0];
-
-        /** @var String[$n+1 length] $split */
-        $split = preg_split(self::SEARCH_SYNTAX, $content);
-        //dump($split);
-        for ($i = 0; $i < count($matches); $i++) {
-            echo $split[$i];
-            try {
-                preg_match(self::SEARCH_NAME, $matches[$i], $names);
-                $presentationName = (string)@$names[0];
-                //dump($presentationName, self::SEARCH_NAME);
-                preg_match(sprintf(self::SEARCH_ID, $presentationName), $matches[$i], $ids);
-                $id = (int)@$ids[0];
-                //dump($ids, $id, sprintf(self::SEARCH_ID, $presentationName));
-                $presentationClassName = $this->getClassNameForPresentation($presentationName);
-                if ($presentationClassName) {
-                    $presentation = new $presentationClassName($this->getPresenter(), $presentationName);
-                    if (!$presentation instanceof PresentationControl) throw new Exception("Control $presentationClassName not instance of PresentationControl");
-                    $presentation->redrawControl();
-                    $presentation->do_render($page, $id);
-                }
-            } catch (Exception $ex) {
-                //\Tracy\Debugger::log($ex);
-                throw $ex;
-            }
-        }
-        echo $split[$i];
+    public function __construct(PageWrapper $pageWrapper, BasePresenter $presenter, $name) {
+        $this->page = $pageWrapper;
+        parent::__construct($presenter, $name);
     }
 
-    private function getClassNameForPresentation(string $presentationName):?string {
-        return @self::BY_NICK[$presentationName];
+    public function render() {
+        $m = $this->getShortCodeManager();
+        $page = $this->page;
+        $template = $this->createTemplate();
+        $pm = $this->getPageManager();
+        $m->register(
+            new \Maiorano\Shortcodes\Library\SimpleShortcode("posts", [
+                "limit"       => 5,
+                "excerpt"     => 200,
+                "excerptEnd"  => "...",
+                "excerptMore" => "Read more.",
+            ], function (string $content, array $atts) use ($page, $pm, $template) {
+                dump($atts, $content);
+                $limit = (int)$atts['limit'] ?: 15;
+                $order = (int)$atts['order'] ?: IPageManager::ORDER_BY_ID;
+
+                $arr = $pm->getFiltered(IPageManager::TYPE_POST, IPageManager::STATUS_PUBLIC, $page->getLanguage(), null, 1, $limit, $var, null, $order);
+
+                dump($arr);
+
+                $template->setFile(__DIR__ . "/templates/posts_excerpt.latte");
+                $template->posts = array_map(function (array $posts) {
+                    return end($posts);
+                }, $arr);
+                $template->excerptReadMore = $atts['excerptMore'];
+                $template->excerpt = (int)$atts['excerpt'] ?: 200;
+                $template->excerptEnd = $atts['excerptEnd'];
+                $template->render();
+            }));
+        echo $m->doShortcode($this->page->getContent());
+    }
+
+    private function getShortCodeManager(): ShortcodeManager {
+        return new ShortcodeManager();
     }
 }

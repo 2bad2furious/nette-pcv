@@ -1,0 +1,5 @@
+<div>
+    {foreach $posts as $post}
+        {include "post_excerpt.latte" post=>$post, length => $excerpt, excerptReadMore => $excerptReadMore, excerptEnd => $excerptEnd}
+    {/foreach}
+</div>

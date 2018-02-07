@@ -3,6 +3,13 @@
 interface IPageManager extends IManager {
     const TYPE_PAGE = 1, TYPE_POST = 0, TYPE_ALL = null;//all is just for Filtered
     const DEFAULT_TITLE = "admin.global.page.no_title";
+    const STATUS_ALL = null, STATUS_PUBLIC = 1, STATUS_DELETED = -1, STATUS_DRAFT = 0,
+        STATUSES = [self::STATUS_PUBLIC, self::STATUS_DRAFT];
+
+    const ORDER_BY_ID = 1,
+        ORDER_BY_TITLE = 2,
+        ORDER_BY_PUBLISH_TIME = 3,
+        ORDER_BY_EDITED_TIME = 4;
 
     const TRIGGER_PAGE_ADDED = "trigger.page.added",
         TRIGGER_PAGE_EDITED = "trigger.page.edited",
@@ -42,14 +49,14 @@ interface IPageManager extends IManager {
      * @param int|null $visibility
      * @param Language|null $language
      * @param bool|null $hasTranslation
-     * @param int $page
-     * @param int $perPage
+     * @param int|null $page
+     * @param int|null $perPage
      * @param &$numOfPages
      * @param null|string $search
-     * @return PageWrapper[]
-     * @throws InvalidArgumentException for bad type|visibilty
+     * @param int $orderBy , positive for asc, negative for desc
+     * @return PageWrapper[][]
      */
-    public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, int $page, int $perPage, &$numOfPages, ?string $search);
+    public function getFiltered(?int $type = null, ?int $visibility = null, ?Language $language, ?bool $hasTranslation, ?int $page, ?int $perPage, &$numOfPages, ?string $search, int $orderBy = self::ORDER_BY_ID);
 
     public function cleanCache();
 
@@ -88,7 +95,7 @@ interface IPageManager extends IManager {
     /**
      * @param int $pageId
      * @param int $langId
-     * @param int $parentId
+     * @param int|null $parentId
      * @param string $title
      * @param string $description
      * @param string $url
@@ -100,11 +107,11 @@ interface IPageManager extends IManager {
      * @param bool $displayBreadCrumbs
      * @return mixed
      */
-    public function update(int $pageId, int $langId, int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId, bool $displayTitle, bool $displayBreadCrumbs);
+    public function update(int $pageId, int $langId, ?int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId, bool $displayTitle, bool $displayBreadCrumbs);
 
     public function delete(int $globalId);
 
     public function isDefaultUrl(string $url): bool;
 
-    public function getDefaultTitle():string;
+    public function getDefaultTitle(): string;
 }
