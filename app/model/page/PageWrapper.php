@@ -41,10 +41,10 @@ class PageWrapper {
      * @param IPageManager $pageManager
      * @param ILanguageManager $languageManager
      * @param ISettingsManager $settingsManager
-     * @param IUserManager $userManager
+     * @param IAccountManager $userManager
      * @param IFileManager $mediaManager
      */
-    public function __construct(APage $page, IPageManager $pageManager, ILanguageManager $languageManager, ISettingsManager $settingsManager, IUserManager $userManager, IFileManager $mediaManager) {
+    public function __construct(APage $page, IPageManager $pageManager, ILanguageManager $languageManager, ISettingsManager $settingsManager, IAccountManager $userManager, IFileManager $mediaManager) {
         $this->page = $page;
         $this->pageManager = $pageManager;
         $this->languageManager = $languageManager;
@@ -73,7 +73,9 @@ class PageWrapper {
     }
 
     public function getAuthor(): ?UserIdentity {
-        return $this->userManager->getUserIdentityById($this->getAuthorId());
+        if (is_int($authId = $this->getAuthorId()))
+            return $this->userManager->getUserIdentityById($authId);
+        return null;
     }
 
     /**
@@ -172,9 +174,9 @@ class PageWrapper {
      * @throws FileNotFoundById
      */
     public function getFavicon(): ?Image {
-        if ($this->favicon !== false) {
+        if ($this->favicon === null) {
             $favId = $this->getLanguage()->getFaviconId();
-            $this->favicon = ($favId) ? $this->mediaManager->getById($favId, IFileManager::TYPE_IMAGE, false) : false;
+            $this->favicon = ($favId) ? $this->mediaManager->getById($favId, IFileManager::TYPE_IMAGE, false) ?: false : false;
         }
         return $this->favicon instanceof Image ? $this->favicon : null;
     }
@@ -184,10 +186,10 @@ class PageWrapper {
      * @throws FileNotFoundById
      * @throws LanguageByIdNotFound
      */
-    public function getLogo():?Image{
-        if ($this->logo !== false) {
+    public function getLogo(): ?Image {
+        if ($this->logo === null) {
             $favId = $this->getLanguage()->getLogoId();
-            $this->logo = ($favId) ? $this->mediaManager->getById($favId, IFileManager::TYPE_IMAGE, false) : false;
+            $this->logo = ($favId) ? $this->mediaManager->getById($favId, IFileManager::TYPE_IMAGE, false) ?: false : false;
         }
         return $this->logo instanceof Image ? $this->favicon : null;
     }

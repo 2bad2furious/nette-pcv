@@ -82,15 +82,15 @@ class PagePresenter extends AdminPresenter {
     protected function getAllowedRoles(): array {
         switch ($this->getAction()) {
             case "default":
-                return \UserManager::ROLES_PAGE_DRAFTING;
+                return \AccountManager::ROLES_PAGE_DRAFTING;
             case "show":
-                return \UserManager::ROLES_PAGE_DRAFTING;
+                return \AccountManager::ROLES_PAGE_DRAFTING;
             case "create":
-                return \UserManager::ROLES_PAGE_MANAGING;
+                return \AccountManager::ROLES_PAGE_MANAGING;
             case "edit":
-                return \UserManager::ROLES_PAGE_MANAGING;
+                return \AccountManager::ROLES_PAGE_MANAGING;
             case "delete":
-                return \UserManager::ROLES_PAGE_MANAGING;
+                return \AccountManager::ROLES_PAGE_MANAGING;
         }
     }
 
@@ -113,7 +113,7 @@ class PagePresenter extends AdminPresenter {
         $langCode = $this->getParameter(self::EDIT_LANGUAGE_KEY);
         $language = $this->getLanguageManager()->getByCode($langCode);
 
-        $page = $this->getPageManager()->getByGlobalId($language->getId(), $globalId);
+        $page = $this->getPageManager()->getByGlobalId($language->getId(), $globalId, false);
         if (!$page instanceof \PageWrapper) {
             $this->addError("admin.page.edit.page_not_found");
             $this->redirect(302, "show", [self::LANGUAGE_KEY => self::LANGUAGE_ALL, self::ID_KEY => null]);
