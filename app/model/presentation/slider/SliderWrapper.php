@@ -40,7 +40,7 @@ class SliderWrapper {
      * @throws LanguageByIdNotFound
      */
     public function getLanguage(): ?Language {
-        if ($this->language === false) {
+        if ($this->language === null) {
             $this->language = $this->languageManager->getById($this->getLangId());
         }
         return $this->language instanceof Language ? $this->language : null;
