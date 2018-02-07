@@ -1,0 +1,46 @@
+{block content}
+    <table class="table">
+        <thead>
+            <tr>
+                <td>
+                    {_"admin.accounts.default.head.id"}
+                </td>
+                <td>
+                    {_"admin.accounts.default.head.username"}
+                </td>
+                <td>
+                    {_"admin.accounts.default.head.email"}
+                </td>
+                <td>
+                    {_"admin.accounts.default.head.role"}
+                </td>
+                <td>
+                    {_"admin.accounts.default.head.edit"}
+                </td>
+                <td>
+                    {_"admin.accounts.default.head.delete"}
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+        <tr n:foreach="$accounts as $account">
+            <td>
+                {$account->getId()}
+            </td>
+            <td>
+                {$account->getUsername()}
+            </td>
+            <td>
+                {$account->getEmail()}
+            </td>
+            <td>
+                {_"admin.accounts.default.role.".$account->getRole()}
+            </td>
+            <td>
+
+            </td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+{/block}
