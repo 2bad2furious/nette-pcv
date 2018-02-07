@@ -7,7 +7,7 @@ session:
 services:
     routerFactory: Router(%consoleMode%)
     router: @routerFactory::createRouter
-    authenticator: UserManager
+    authenticator: AccountManager
     authorizator: UserAuthorizator
     - ServiceLoader
     - PageManager
@@ -17,6 +17,7 @@ services:
     - TagManager
     - HeaderManager
     - FileManager
+    - SliderManager
 
     #cacheStorage:
         #factory: Nette\Caching\Storages\NewMemcachedStorage

@@ -19,7 +19,7 @@ abstract class AdminPresenter extends BasePresenter {
     protected function checkCurrentIdentity() {
         $identity = $this->getUserIdentity();
         if ($identity instanceof \UserIdentity && $identity->getCurrentLanguage() !== $currentLocale = $this->getAdminLocale()) {
-            $this->getUser()->login($this->getUserManager()->saveCurrentLanguage($identity->getId(), $currentLocale));
+            $this->getUser()->login($this->getAccountManager()->saveCurrentLanguage($identity->getId(), $currentLocale));
         }
         return parent::checkCurrentIdentity();
     }

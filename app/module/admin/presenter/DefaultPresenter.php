@@ -18,6 +18,6 @@ class DefaultPresenter extends AdminPresenter {
     }
 
     protected function getAllowedRoles(): array {
-        return \UserManager::ROLES;
+        return \AccountManager::ROLES;
     }
 }

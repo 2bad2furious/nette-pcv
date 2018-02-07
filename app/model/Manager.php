@@ -87,8 +87,8 @@ abstract class Manager implements IManager {
         return $this->getServiceLoader()->getDatabase();
     }
 
-    protected final function getUserManager(): IUserManager {
-        return $this->getServiceLoader()->getUserManager();
+    protected final function getAccountManager(): IAccountManager {
+        return $this->getServiceLoader()->getAccountManager();
     }
 
     protected final function getHeaderManager(): IHeaderManager {
@@ -97,6 +97,10 @@ abstract class Manager implements IManager {
 
     private function getServiceLoader(): ServiceLoader {
         return $this->context->getByType(ServiceLoader::class);
+    }
+
+    protected function getSliderManager(): ISliderManager {
+        return $this->getServiceLoader()->getSliderManager();
     }
 
     protected final function runInTransaction(callable $action, ?callable $onException = null) {

@@ -57,10 +57,10 @@ class TokenManager {
         if (!is_null($expireTime))
             $expireTime = DateTime::from($expireTime);
         $this->database->table(self::TOKEN_TABLE)->insert([
-            self::COLUMN_TOKEN  => $token,
-            UserManager::COLUMN_ID => $user_id,
-            self::COLUMN_ACTION         => $action,
-            self::COLUMN_EXPIRE         => $expireTime,
+            self::COLUMN_TOKEN        => $token,
+            AccountManager::COLUMN_ID => $user_id,
+            self::COLUMN_ACTION       => $action,
+            self::COLUMN_EXPIRE       => $expireTime,
         ]);
         return $token;
     }
@@ -110,7 +110,7 @@ class TokenManager {
 
         if ($check) {
             if ($cur_user_id = intval($this->user->getId()))
-                $where[UserManager::COLUMN_ID] = $cur_user_id;
+                $where[AccountManager::COLUMN_ID] = $cur_user_id;
             if (in_array($action, self::ONE_USE_ACTIONS)) {
                 $where[self::COLUMN_USED] = 0;
             }

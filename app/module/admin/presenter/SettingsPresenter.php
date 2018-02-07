@@ -27,7 +27,7 @@ class SettingsPresenter extends AdminPresenter {
     }
 
     protected function getAllowedRoles(): array {
-        return \UserManager::ROLES_USER_ADMINISTRATION;
+        return \AccountManager::ROLES_USER_ADMINISTRATION;
     }
 
 
@@ -44,7 +44,7 @@ class SettingsPresenter extends AdminPresenter {
             $sm->cleanCache();
             $hm = $this->getHeaderManager();
             $hm->cleanCache();
-            $um = $this->getUserManager();
+            $um = $this->getAccountManager();
             $um->cleanCache();
             //TODO rebuild media and tag cache
 

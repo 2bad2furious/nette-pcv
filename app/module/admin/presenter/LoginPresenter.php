@@ -17,7 +17,7 @@ class LoginPresenter extends AdminPresenter {
         $form->onValidate[] = function (Form $form, ArrayHash $values) {
             $username = $values[\FormFactory::LOGIN_IDENTIFICATION_NAME];
             $password = $values[\FormFactory::LOGIN_PASSWORD_NAME];
-            if (!$this->getUserManager()->loginCheck($username, $password)) {
+            if (!$this->getAccountManager()->loginCheck($username, $password)) {
                 $form->addError("admin.login.failure.password");
             }
         };
@@ -52,7 +52,7 @@ class LoginPresenter extends AdminPresenter {
     }
 
     protected function getAllowedRoles(): array {
-        return [\UserManager::ROLE_GUEST];
+        return [\AccountManager::ROLE_GUEST];
     }
 
     protected function onBadRole(array $allowedRoles, int $currentRole){

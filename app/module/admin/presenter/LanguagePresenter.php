@@ -30,11 +30,11 @@ class LanguagePresenter extends AdminPresenter {
     protected function getAllowedRoles(): array {
         switch ($this->getAction()) {
             case "default":
-                return \UserManager::ROLES_PAGE_DRAFTING;
+                return \AccountManager::ROLES_PAGE_DRAFTING;
             case "add":
-                return \UserManager::ROLES_ADMIN_ADMINISTRATION;
+                return \AccountManager::ROLES_ADMIN_ADMINISTRATION;
             case "edit":
-                return \UserManager::ROLES_ADMIN_ADMINISTRATION;
+                return \AccountManager::ROLES_ADMIN_ADMINISTRATION;
         }
     }
 

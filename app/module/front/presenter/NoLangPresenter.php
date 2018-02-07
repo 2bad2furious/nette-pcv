@@ -11,6 +11,6 @@ class NoLangPresenter extends \BasePresenter {
     }
 
     protected function getAllowedRoles(): array {
-        return \IUserManager::ROLES;
+        return \IAccountManager::ROLES;
     }
 }

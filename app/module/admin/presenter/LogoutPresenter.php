@@ -22,7 +22,7 @@ class LogoutPresenter extends AdminPresenter {
     }
 
     protected function getAllowedRoles(): array {
-        return \UserManager::ROLES_ADMINISTRATION;
+        return \AccountManager::ROLES_ADMINISTRATION;
     }
 
 }

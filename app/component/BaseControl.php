@@ -21,8 +21,8 @@ abstract class BaseControl extends \Nette\Application\UI\Control {
         return $this->serviceLoader;
     }
 
-    protected final function getUserManager(): IUserManager {
-        return $this->getServiceLoader()->getUserManager();
+    protected final function getUserManager(): IAccountManager {
+        return $this->getServiceLoader()->getAccountManager();
     }
 
 

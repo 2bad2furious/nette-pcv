@@ -34,7 +34,7 @@ class HeaderPresenter extends AdminPresenter {
     private $headerWrapper;
 
     protected function getAllowedRoles(): array {
-        return \UserManager::ROLES_PAGE_MANAGING;
+        return \AccountManager::ROLES_PAGE_MANAGING;
     }
 
 

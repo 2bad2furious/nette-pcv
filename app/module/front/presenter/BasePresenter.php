@@ -47,28 +47,27 @@ abstract class BasePresenter extends Presenter {
 
     protected function checkPaging(int $currentPage, int $maxPage, string $page_key) {
         if ($currentPage < 1) $this->redirect(302, "this", [$page_key => 1]);
-        else if ($currentPage > $maxPage) $this->redirect(302, "this", [$page_key => $maxPage]);
+        else if ($maxPage !== 0 && $currentPage > $maxPage) $this->redirect(302, "this", [$page_key => $maxPage]);
     }
 
     /**
      * @throws InvalidState
+     * @throws \Nette\Application\AbortException
      * @throws \Nette\Security\AuthenticationException
      */
     protected function checkCurrentIdentity() {
         $id = $this->getUser()->getId();
         if (is_int($id)) {
-            $newIdentity = $this->getUserManager()->getUserIdentityById($id);
-
+            try {
+                $newIdentity = $this->getAccountManager()->getUserIdentityById($id);
+            } catch (UserIdentityByIdNotFound $exception) {
+                $this->getUser()->logout(true);
+                $this->postGet("this");
+            }
             /* return if the sessioned identity is the same as the one in the db, logging in and out caused some regenerate_session_id issues */
             if ($newIdentity == $this->getUserIdentity()) return;
 
-            if ($newIdentity instanceof UserIdentity) {
-                $this->getUser()->login($newIdentity);
-            } else {
-                $this->somethingWentWrong();
-                dump("Identity not found");
-                $this->getUser()->logout(true);
-            }
+            $this->getUser()->login($newIdentity);
         }
     }
 
@@ -78,7 +77,7 @@ abstract class BasePresenter extends Presenter {
     protected function checkRoles() {
         $allowedRoles = $this->getAllowedRoles();
         $identity = $this->getUser()->getIdentity();
-        $currentRole = $identity instanceof UserIdentity ? $identity->getRole() : IUserManager::ROLE_GUEST;
+        $currentRole = $identity instanceof UserIdentity ? $identity->getRole() : IAccountManager::ROLE_GUEST;
 
         $isInRoles = (in_array($currentRole, $allowedRoles));
 
@@ -169,8 +168,8 @@ abstract class BasePresenter extends Presenter {
         return $this->serviceLoader;
     }
 
-    protected final function getUserManager(): IUserManager {
-        return $this->getServiceLoader()->getUserManager();
+    protected final function getAccountManager(): IAccountManager {
+        return $this->getServiceLoader()->getAccountManager();
     }
 
 
@@ -280,6 +279,10 @@ abstract class BasePresenter extends Presenter {
         return $this->context->getByType(IRouter::class);
     }
 
+    protected function getSliderManager(): ISliderManager {
+        return $this->getServiceLoader()->getSliderManager();
+    }
+
     protected function redrawContent() {
         $this->redrawControl("content");
     }
@@ -306,7 +309,8 @@ abstract class BasePresenter extends Presenter {
             $this->somethingWentWrong();
 
             if ($onException) $onException($exception);
-            /*if ($exception)*/ throw $exception;
+            /*if ($exception)*/
+            throw $exception;
         }
     }
 

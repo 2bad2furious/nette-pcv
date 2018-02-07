@@ -7,7 +7,7 @@ use Nette\DI\Container;
 use Nette\Security\User;
 
 class ServiceLoader {
-    private const CLASS_NAMES = [ITagManager::class, IPageManager::class, ILanguageManager::class, IUserManager::class, ISettingsManager::class, IHeaderManager::class, IFileManager::class];
+    private const CLASS_NAMES = [ITagManager::class, IPageManager::class, ILanguageManager::class, IAccountManager::class, ISettingsManager::class, IHeaderManager::class, IFileManager::class];
     /** @var  Container */
     private $context;
 
@@ -18,21 +18,21 @@ class ServiceLoader {
      */
     public function __construct(Container $context) {
         $this->context = $context;
-/*
-        //INITING for listener-registration
-        $reflection = $this->getReflection();
-        //dump(Manager::getInitingClass());
-        foreach (self::CLASS_NAMES as $k => $v) {
-        dump($context->findByType($v));
-            if (!$reflection instanceof ReflectionClass) $reflection = $this->getReflection();
+        /*
+                //INITING for listener-registration
+                $reflection = $this->getReflection();
+                //dump(Manager::getInitingClass());
+                foreach (self::CLASS_NAMES as $k => $v) {
+                dump($context->findByType($v));
+                    if (!$reflection instanceof ReflectionClass) $reflection = $this->getReflection();
 
-            dump($v, $reflection, ($reflection instanceof ReflectionClass && $reflection->implementsInterface($v)));
-            if (!$reflection instanceof ReflectionClass || !$reflection->implementsInterface($v))
-                $this->context->getByType($v);
-        }*/
+                    dump($v, $reflection, ($reflection instanceof ReflectionClass && $reflection->implementsInterface($v)));
+                    if (!$reflection instanceof ReflectionClass || !$reflection->implementsInterface($v))
+                        $this->context->getByType($v);
+                }*/
     }
 
-    private function getReflection():?ReflectionClass {
+    private function getReflection(): ?ReflectionClass {
         $managerInitingClass = Manager::getInitingClass();
         return $managerInitingClass ? new ReflectionClass($managerInitingClass) : null;
     }
@@ -46,8 +46,8 @@ class ServiceLoader {
     }
 
 
-    public final function getUserManager(): IUserManager {
-        return $this->context->getByType(IUserManager::class);
+    public final function getAccountManager(): IAccountManager {
+        return $this->context->getByType(IAccountManager::class);
     }
 
 
@@ -77,6 +77,10 @@ class ServiceLoader {
 
     public final function getFileManager(): IFileManager {
         return $this->context->getByType(IFileManager::class);
+    }
+
+    public final function getSliderManager(): ISliderManager {
+        return $this->context->getByType(ISliderManager::class);
     }
 
     public final function getContext(): Container {
