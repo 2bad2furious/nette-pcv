@@ -160,5 +160,25 @@ class FileAlreadyExists extends Exception {
     public function __construct(?Throwable $previous = null) {
         parent::__construct("File already exists", 500, $previous);
     }
+}
 
+class SliderByIdNotFound extends NotFoundById {
+
+    protected function getName(): string {
+        return "Slider";
+    }
+}
+
+class SlideByIdNotFound extends NotFoundById {
+
+    protected function getName(): string {
+        return "Slide";
+    }
+}
+
+class UserIdentityByIdNotFound extends NotFoundById {
+
+    protected function getName(): string {
+        return "UserIdentity ";
+    }
 }
