@@ -82,7 +82,7 @@ class PageNotFound extends NotFound {
     public function __construct(int $id, int $languageId, Throwable $previous = null) {
         $this->id = $id;
         $this->languageId = $languageId;
-        parent::__construct("Page $id - $languageId not found", $previous);
+        parent::__construct("Page pageId=$id - LanguageId=$languageId not found", $previous);
     }
 
 }
