@@ -29,5 +29,5 @@ interface IFileManager extends IManager {
 
     public function getMaxNameLength(): int;
 
-    public function getAll(?int $type, int $page, int $perPage, &$numOfPages): array;
+    public function getAll(?int $type, ?int $page, ?int $perPage, &$numOfPages): array;
 }

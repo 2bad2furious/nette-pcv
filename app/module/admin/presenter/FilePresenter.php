@@ -28,6 +28,8 @@ class FilePresenter extends AdminPresenter {
         switch ($this->getAction()) {
             case "default":
                 return \IAccountManager::ROLES_ADMINISTRATION;
+            case "all":
+                return \IAccountManager::ROLES_ADMINISTRATION;
         }
     }
 
@@ -87,6 +89,19 @@ class FilePresenter extends AdminPresenter {
             throw new \InvalidState("Type not found");
 
         return $type;
+    }
+
+    public function actionAll() {
+        $this->sendJson(
+            array_values(
+                array_map(function (\Image $image) {
+                    return [
+                        "url" => "/" . $image->getWholeSrc(),
+                    ];
+                }, $this->getFileManager()->getAll(\IFileManager::TYPE_IMAGE, null, null, $var)
+                )
+            )
+        );
     }
 
     private function getPage(): int {

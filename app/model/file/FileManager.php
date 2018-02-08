@@ -170,15 +170,21 @@ class FileManager extends Manager implements IFileManager {
      * @param $numOfPages
      * @return File[]
      */
-    public function getAll(?int $type, int $page, int $perPage, &$numOfPages): array {
+    public function getAll(?int $type, ?int $page, ?int $perPage, &$numOfPages): array {
 
         $data = $this->getDatabase()->table(self::TABLE);
 
         if (is_int($type))
             $data->where([self::COLUMN_TYPE => $type]);
 
+        if ($perPage > 0 && $page > 0) {
+            $result = $data->page($page, $perPage, $numOfPages);
+        } else if ($perPage > 0) {
+            $result = $data->limit($perPage);
+        } else $result = $data;
+
         return array_map(function (IRow $row) use ($type) {
             return $this->getById($row[self::COLUMN_ID], $type);
-        }, $data->page($page, $perPage, $numOfPages)->fetchAll());
+        }, $result->fetchAll());
     }
 }
