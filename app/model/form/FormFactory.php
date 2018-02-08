@@ -58,8 +58,8 @@ class FormFactory extends Manager {
         $container->addSelect(
             self::PAGE_EDIT_GLOBAL_VISIBILITY_NAME,
             "admin.page.edit.global.visibility.label",
-            [PageManager::STATUS_DRAFT  => $this->getTranslator()->translate("admin.page.edit.global.visibility.draft"),
-             PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.global.visibility.public")]
+            [PageManager::STATUS_DRAFT => $this->getTranslator()->translate("admin.page.edit.global.visibility.draft"),
+                PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.global.visibility.public")]
         )->setDefaultValue($page->getGlobalStatus());
 
         if ($page->isPage()) {
@@ -78,8 +78,8 @@ class FormFactory extends Manager {
         $container->addSelect(
             self::PAGE_EDIT_LOCAL_VISIBILITY_NAME,
             "admin.page.edit.local.visibility.label",
-            [PageManager::STATUS_DRAFT  => $this->getTranslator()->translate("admin.page.edit.local.visibility.draft"),
-             PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.local.visibility.public")]
+            [PageManager::STATUS_DRAFT => $this->getTranslator()->translate("admin.page.edit.local.visibility.draft"),
+                PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.local.visibility.public")]
         )->setDefaultValue($page->getLocalStatus());
 
         $container->addText(
@@ -158,9 +158,8 @@ class FormFactory extends Manager {
 
         //todo add tag editing - not "in form"
 
-        $form->addSubmit(
-            "submit",
-            "admin.page.edit.action.edit");
+        $form->addSubmit("submit", "admin.page.edit.action.edit");
+
         return $form;
     }
 
@@ -182,7 +181,7 @@ class FormFactory extends Manager {
         $form = $this->createNewForm();
         $form->addText(self::LOGIN_IDENTIFICATION_NAME, "admin.login.form.identification");
         $form->addPassword(self::LOGIN_PASSWORD_NAME, "admin.login.form.password");
-        $form->addSubmit(self::LOGIN_SUBMIT_NAME, "admin.login.form.submit");
+        $form->addSubmit(self::LOGIN_SUBMIT_NAME, "admin.login.form.submit", true, "");
         return $form;
     }
 
@@ -195,7 +194,9 @@ class FormFactory extends Manager {
             ->setDefaultValue($query);
         $form->addSubmit(
             "submit",
-            "admin.page.show.filter.search.submit");
+            "admin.page.show.filter.search.submit",
+            true,
+            "<i class='fa fa-search'></i>");
         return $form;
     }
 
@@ -400,7 +401,7 @@ class FormFactory extends Manager {
 
         $form->getElementPrototype()->class("form-inline");
 
-        $form->addSubmit("submit", "admin.language.default.search.submit");
+        $form->addSubmit("submit", "admin.language.default.search.submit", true, "<i class='fa fa-search'></i>");
         return $form;
     }
 
@@ -434,7 +435,7 @@ class FormFactory extends Manager {
         if ($headerWrapper instanceof HeaderWrapper) $title->setDefaultValue((string)$headerWrapper->getTitle());
 
         $url = $form->addText(self::HEADER_URL_NAME, "admin.header.edit.url.label")
-            ->addRule(Form::URL, "admin.header.edit.url.pattern")
+            ->addRule(Form::PATTERN, "admin.header.edit.url.pattern", $this->getHeaderManager()->getUrlPattern())
             ->addRule(Form::REQUIRED, "admin.header.edit.url.required");
         if ($headerWrapper instanceof HeaderWrapper) $url->setDefaultValue($headerWrapper->getUrl());
 
