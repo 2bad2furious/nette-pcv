@@ -8,7 +8,9 @@
                         class="fa fa-home"></i>{_"admin.top.go_home"}</a>
             {if $page}
                 <a data-ajax="false"
-                   href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl()}">{_"admin.top.page.edit.view"}</a>
+                   href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl()}">
+                    <i class="fa fa-eye"></i>{_"admin.top.page.edit.view"}
+                </a>
             {/if}
         </span>
     </span>
