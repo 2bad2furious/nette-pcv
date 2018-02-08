@@ -48,12 +48,12 @@ class HeaderManager extends Manager implements IHeaderManager {
      * @param bool $throw
      * @return HeaderWrapper|null
      */
-    public function getById(int $id, bool $throw = true):?HeaderWrapper {
+    public function getById(int $id, bool $throw = true): ?HeaderWrapper {
         $cached = $this->getPlainById($id, false);
 
         if ($cached instanceof Header) {
             return $this->constructHeaderWrapper($cached);
-        }else if($throw) throw new HeaderNotFound($id);
+        } else if ($throw) throw new HeaderNotFound($id);
         return null;
     }
 
@@ -72,10 +72,10 @@ class HeaderManager extends Manager implements IHeaderManager {
         return $this->runInTransaction(function () use ($title, $pageId, $languageId, $parentId) {
             $headerId = $this->getDatabase()->table(self::TABLE)
                 ->insert([
-                    self::COLUMN_TITLE     => $title ?: null,
-                    self::COLUMN_LANG      => $languageId,
+                    self::COLUMN_TITLE => $title ?: null,
+                    self::COLUMN_LANG => $languageId,
                     self::COLUMN_PARENT_ID => $parentId,
-                    self::COLUMN_PAGE_ID   => $pageId,
+                    self::COLUMN_PAGE_ID => $pageId,
                 ])->getPrimary();
 
             $this->uncache($headerId);
@@ -98,15 +98,15 @@ class HeaderManager extends Manager implements IHeaderManager {
 
         $this->getLanguageManager()->getById($languageId);
 
-        if (!filter_var($url, FILTER_VALIDATE_URL)) throw new InvalidArgumentException("Url {$url} is not valid");
+        if (!preg_match("#^" . $this->getUrlPattern() . "$#", $url)) throw new InvalidArgumentException("Url {$url} is not valid");
 
         return $this->runInTransaction(function () use ($url, $title, $languageId, $parentId) {
             $headerId = $this->getDatabase()->table(self::TABLE)
                 ->insert([
-                    self::COLUMN_TITLE     => $title ?: null,
-                    self::COLUMN_LANG      => $languageId,
+                    self::COLUMN_TITLE => $title ?: null,
+                    self::COLUMN_LANG => $languageId,
                     self::COLUMN_PARENT_ID => $parentId,
-                    self::COLUMN_PAGE_URL  => $url,
+                    self::COLUMN_PAGE_URL => $url,
                 ])->getPrimary();
 
             $this->uncache($headerId);
@@ -133,7 +133,7 @@ class HeaderManager extends Manager implements IHeaderManager {
                 ->wherePrimary($headerId)
                 ->update([
                     self::COLUMN_PAGE_ID => $pageId,
-                    self::COLUMN_TITLE   => $title ?: null,
+                    self::COLUMN_TITLE => $title ?: null,
                 ]);
         });
     }
@@ -149,7 +149,7 @@ class HeaderManager extends Manager implements IHeaderManager {
             return $this->getDatabase()->table(self::TABLE)
                 ->wherePrimary($headerId)
                 ->update([
-                    self::COLUMN_TITLE    => $title,
+                    self::COLUMN_TITLE => $title,
                     self::COLUMN_PAGE_URL => $url,
                 ]);
         });
@@ -242,7 +242,7 @@ class HeaderManager extends Manager implements IHeaderManager {
         $data = $this->getDatabase()->table(self::TABLE)
             ->where([
                 self::COLUMN_PARENT_ID => 0,
-                self::COLUMN_LANG      => $langId,
+                self::COLUMN_LANG => $langId,
             ])->select(self::COLUMN_ID)
             ->order(self::COLUMN_POSITION)
             ->fetchAll();
@@ -297,7 +297,7 @@ class HeaderManager extends Manager implements IHeaderManager {
                 ->wherePrimary($headerId)
                 ->update([
                     self::COLUMN_PARENT_ID => $parentHeaderId,
-                    self::COLUMN_POSITION  => ($position * 2) - 1,
+                    self::COLUMN_POSITION => ($position * 2) - 1,
                 ]);
 
 
@@ -430,7 +430,7 @@ class HeaderManager extends Manager implements IHeaderManager {
                 ->wherePrimary($header->getId())
                 ->update([
                     self::COLUMN_PARENT_ID => $parent->getParentId(),
-                    self::COLUMN_POSITION  => $parent->getPosition() + 1,
+                    self::COLUMN_POSITION => $parent->getPosition() + 1,
                 ]);
 
             $this->adjustPositionsAround($header);
@@ -456,7 +456,7 @@ class HeaderManager extends Manager implements IHeaderManager {
                 ->wherePrimary($header->getId())
                 ->update([
                     self::COLUMN_PARENT_ID => $upperSibling->getId(),
-                    self::COLUMN_POSITION  => count($upperSibling->getChildrenIds()) * 2 + 1,
+                    self::COLUMN_POSITION => count($upperSibling->getChildrenIds()) * 2 + 1,
                 ]);
 
             $this->adjustPositionsAround($this->getPlainById($header->getId())); //sorts the new parent (former upper sibling)
@@ -485,17 +485,21 @@ class HeaderManager extends Manager implements IHeaderManager {
         return $cached;
     }
 
-    private function getUpperSibling(int $headerId):?Header {
+    private function getUpperSibling(int $headerId): ?Header {
         $header = $this->getPlainById($headerId);
 
         $siblingId = $this->getDatabase()->table(self::TABLE)
             ->where([
-                self::COLUMN_PARENT_ID       => $header->getParentId(),
+                self::COLUMN_PARENT_ID => $header->getParentId(),
                 self::COLUMN_POSITION . " <" => $header->getPosition(),
             ])
             ->order(self::COLUMN_POSITION . " DESC")
             ->fetchField(self::COLUMN_ID);
 
         return is_int($siblingId) ? $this->getPlainById($siblingId) : null;
+    }
+
+    public function getUrlPattern(): string {
+        return "[a-zA-Z0-9\#_/+-]+";
     }
 }

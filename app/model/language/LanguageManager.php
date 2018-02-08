@@ -183,7 +183,7 @@ class LanguageManager extends Manager implements ILanguageManager {
      * @throws Throwable
      */
     public function add(string $code, string $title, string $friendly): Language {
-        if (!preg_match("#" . self::COLUMN_CODE_PATTERN . "#", $code))
+        if (!preg_match("#^" . self::COLUMN_CODE_PATTERN . "$#", $code))
             throw new InvalidArgumentException("Code pattern not correct");
 
         if (mb_strlen($title) > self::COLUMN_SITE_NAME_LENGTH)

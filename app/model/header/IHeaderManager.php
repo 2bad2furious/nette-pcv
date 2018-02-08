@@ -60,4 +60,6 @@ interface IHeaderManager {
 
     public function canBeMovedRight(int $headerId):bool;
 
+    public function getUrlPattern():string;
+
 }
