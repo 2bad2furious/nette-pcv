@@ -26,10 +26,10 @@ class PagePresenter extends AdminPresenter {
         DEFAULT_VISIBILITY = self::VISIBILITY_ALL,
 
         VISIBILITY_TABLE = [
-        self::VISIBILITY_ALL     => PageManager::STATUS_ALL,
-        self::VISIBILITY_PUBLIC  => PageManager::STATUS_PUBLIC,
+        self::VISIBILITY_ALL => PageManager::STATUS_ALL,
+        self::VISIBILITY_PUBLIC => PageManager::STATUS_PUBLIC,
         self::VISIBILITY_DELETED => PageManager::STATUS_DELETED,
-        self::VISIBILITY_DRAFT   => PageManager::STATUS_DRAFT,
+        self::VISIBILITY_DRAFT => PageManager::STATUS_DRAFT,
     ],
 
         TYPE_KEY = "type",
@@ -41,7 +41,7 @@ class PagePresenter extends AdminPresenter {
         DEFAULT_TYPE = self::TYPE_ALL,
 
         TYPE_TABLE = [
-        self::TYPE_ALL  => PageManager::TYPE_ALL,
+        self::TYPE_ALL => PageManager::TYPE_ALL,
         self::TYPE_PAGE => PageManager::TYPE_PAGE,
         self::TYPE_POST => PageManager::TYPE_POST,
     ],
@@ -101,8 +101,15 @@ class PagePresenter extends AdminPresenter {
      */
     public function actionCreate() {
         $globalId = $this->getPageManager()->addEmpty(self::TYPE_TABLE[$this->getParameter(self::TYPE_KEY)]);
-        $args = [self::ID_KEY => $globalId, self::TYPE_KEY => null, self::EDIT_LANGUAGE_KEY => $this->getLanguage()];
-        if ($this->getParameter(self::EDIT_LANGUAGE_KEY) === null) $args[self::EDIT_LANGUAGE_KEY] = $this->getLanguageManager()->getDefaultLanguage()->getCode();
+        $args = [
+            self::ID_KEY => $globalId,
+            self::TYPE_KEY => null,
+            self::EDIT_LANGUAGE_KEY => $this->getLanguage()
+        ];
+        if (!$this->getLanguageManager()->getByCode((string)$args[self::EDIT_LANGUAGE_KEY], false) instanceof \Language)
+            $args[self::EDIT_LANGUAGE_KEY] = $this->getLanguageManager()->getDefaultLanguage()->getCode();
+
+        dump($args, $this->getParameter(self::EDIT_LANGUAGE_KEY), $globalId);
         $this->redirect(302, "edit", $args);
     }
 
@@ -124,7 +131,7 @@ class PagePresenter extends AdminPresenter {
             array_map(
                 function (\PageWrapper $pageWrapper) {
                     return [
-                        "text" => $pageWrapper->getTitle(),
+                        "text" => $pageWrapper->getGlobalId() . " - " . $this->translator->translate($pageWrapper->getTitle()),
                         "href" => "[link pageId=" . $pageWrapper->getGlobalId() . " langId=" . $pageWrapper->getLanguageId() . "]",
                     ];
                 }, $this->getPageManager()->getAllPages($page->getLanguageId()))
