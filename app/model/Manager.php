@@ -47,7 +47,11 @@ abstract class Manager implements IManager {
     protected function trigger(string $trigger, $arg) {
         if (isset(self::$on[$trigger]))
             foreach (self::$on[$trigger] as $listener) {
-                call_user_func($listener, $arg);
+                try {
+                    call_user_func($listener, $arg);
+                } catch (Exception $x) {
+                    \Tracy\Debugger::log($x);
+                }
             }
     }
 
