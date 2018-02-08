@@ -151,7 +151,7 @@ class HeaderWrapper {
     }
 
     public function isTitleCustom(): bool {
-        return !$this->getHeader()->getTitle();
+        return !!$this->getHeader()->getTitle();
     }
 
     public function canMoveUp(): bool {
