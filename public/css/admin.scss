@@ -205,9 +205,6 @@ html {
           }
         }
         &.language-default {
-          #language-add {
-            @extend .nice-button;
-          }
 
           table a {
             &.language-delete:hover {
@@ -219,6 +216,11 @@ html {
                 color: #2f3640;
               }
             }
+          }
+        }
+        &.language-edit {
+          #language-delete {
+            align-self: center;
           }
         }
         &.header-default, &.header-add, &header-edit {

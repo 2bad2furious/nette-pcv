@@ -41,13 +41,13 @@ body {
   body .link {
     padding: 2px;
     cursor: pointer; }
-  body .nice-button, html body #snippet--content #contentWrapper.language-default #language-add {
+  body .nice-button {
     width: 60px;
     text-align: center;
     padding: 10px;
     background: #00a8ff;
     margin: 10px 0px; }
-    body .nice-button:hover, html body #snippet--content #contentWrapper.language-default #language-add:hover {
+    body .nice-button:hover {
       background-color: #0097e6; }
   body #snippet--flashes {
     position: relative; }
@@ -222,6 +222,8 @@ html {
           color: #353b48; }
           html body #snippet--content #contentWrapper.language-default table a.language-edit:hover {
             color: #2f3640; }
+        html body #snippet--content #contentWrapper.language-edit #language-delete {
+          align-self: center; }
         html body #snippet--content #contentWrapper.header-default #content #header-edit-form-wrapper, html body #snippet--content #contentWrapper.header-add #content #header-edit-form-wrapper, html body #snippet--content #contentWrapperheader-edit #content #header-edit-form-wrapper {
           display: none;
           z-index: 2;

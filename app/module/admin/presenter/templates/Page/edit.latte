@@ -43,10 +43,11 @@
                 {input submit}
                 <a id="page-delete" class="btn btn-primary delete"
                    href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">
+                    <i class="fa fa-trash"></i>
                     {_"admin.page.edit.action.delete.label"}
                 </a>
                 <a id="page-visit" data-ajax="false" class="btn btn-primary visit"
-                   href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLanguage()->getCode()}">
+                   href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl(),locale=>$page->getLanguage()->getCode()}"><i class="fa fa-eye"></i>
                     {_"admin.page.edit.action.visit"}
                 </a>
             </div>

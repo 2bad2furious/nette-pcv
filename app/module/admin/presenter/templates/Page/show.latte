@@ -14,7 +14,7 @@
             </div>
             <div id="type-links">
                 {_"admin.page.show.filter.type.label"}:
-                <select class="openOnChange" title="{_"admin.page.show.filter.type.label"}">
+                <select class="openOnChange selectmenu" title="{_"admin.page.show.filter.type.label"}">
                     <option n:foreach="adminModule\PagePresenter::TYPES as $type_val"
                             {ifCurrent this adminModule\PagePresenter::TYPE_KEY=>$type_val}selected{/ifCurrent}
                             data-href="{plink this adminModule\PagePresenter::TYPE_KEY=>$type_val,adminModule\PagePresenter::PAGE_KEY=>1}">
@@ -26,7 +26,7 @@
         <div id="first-filter-wrap">
             <div id="statuses-links">
                 {_"admin.page.show.filter.visibility.label"}:
-                <select class="openOnChange" title="{_"admin.page.show.filter.visibility.label"}">
+                <select class="openOnChange selectmenu" title="{_"admin.page.show.filter.visibility.label"}">
                     <option n:foreach="adminModule\PagePresenter::VISIBILITIES as $visibility_val"
                             data-href="{plink this adminModule\PagePresenter::VISIBILITY_KEY=>$visibility_val,adminModule\PagePresenter::PAGE_KEY=>1}"
                             {ifCurrent this adminModule\PagePresenter::VISIBILITY_KEY=>$visibility_val}selected{/ifCurrent}>
@@ -36,22 +36,24 @@
             </div>
             <div id="languages-links">
                 {_"admin.page.show.filter.translation.label"}:
-                <select title="{_"admin.page.show.filter.translation.label"}" class="openOnChange">
+                <select title="{_"admin.page.show.filter.translation.label"}" class="openOnChange selectmenu">
                     <option data-href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,adminModule\PagePresenter::PAGE_KEY=>1}"
                             {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null}selected{/ifCurrent}>
                         {_"admin.page.show.filter.translation.all.label"}
                     </option>
                     <option n:foreach="$languages as $lang"
                             data-href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null,adminModule\PagePresenter::PAGE_KEY=>1}"
-                    {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null}selected{/ifCurrent}>
+                            {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>null}selected{/ifCurrent}>
                         {$lang->getFriendly()}
                     </option>
                     <optgroup label="{_"admin.page.show.filter.translation.not_missing.label"}">
-                        <option data-href="{plink this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1, adminModule\PagePresenter::LANGUAGE_KEY=>\adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::PAGE_KEY=>1}">
+                        <option data-href="{plink this adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1, adminModule\PagePresenter::LANGUAGE_KEY=>\adminModule\PagePresenter::LANGUAGE_ALL,adminModule\PagePresenter::PAGE_KEY=>1}"
+                                {ifCurrent this \adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1, adminModule\PagePresenter::LANGUAGE_KEY=>\adminModule\PagePresenter::LANGUAGE_ALL}selected{/ifCurrent}>
                             {_"admin.page.show.filter.translation.not_missing.all"}
                         </option>
                         <option n:foreach="$languages as $lang"
-                                data-href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::PAGE_KEY=>1}">
+                                data-href="{plink this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1,adminModule\PagePresenter::PAGE_KEY=>1}"
+                                {ifCurrent this adminModule\PagePresenter::LANGUAGE_KEY=>$lang->getCode(),adminModule\PagePresenter::HAS_TRANSLATION_KEY=>1}selected{/ifCurrent}>
                             {$lang->getFriendly()}
                         </option>
                     </optgroup>
@@ -102,11 +104,11 @@
                                 <td rowspan="{count($pages)}">{_"admin.page.show.table.body.type.{$page->getType()}"}</td>
                             {/first}
                             <td>
-                                    {if $page->isTitleDefault()}
-                                        {_"admin.page.show.table.body.no_title"|truncate:40}
-                                    {else}
-                                        {$page->getTitle()|truncate:40}
-                                    {/if}
+                                {if $page->isTitleDefault()}
+                                    {_"admin.page.show.table.body.no_title"|truncate:40}
+                                {else}
+                                    {$page->getTitle()|truncate:40}
+                                {/if}
                             </td>
                             <td>{$page->getLanguage()->getFriendly()}</td>
                             <td>
@@ -116,12 +118,14 @@
                                     <i class="fa fa-pencil"></i>
                                 </a>
                             </td>
-                            <td>
-                                <a class="action page-delete"
-                                   href="{plink delete adminModule\PagePresenter::ID_KEY=>$globalId}">
-                                    <i class="fa fa-trash"></i>
-                                </a>
-                            </td>
+                            {first}
+                                <td rowspan="{count($pages)}">
+                                    <a class="action page-delete"
+                                       href="{plink delete adminModule\PagePresenter::ID_KEY=>$globalId}">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </td>
+                            {/first}
                         </tr>
                     {/foreach}
                 {/foreach}

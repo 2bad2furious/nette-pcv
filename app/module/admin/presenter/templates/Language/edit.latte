@@ -1,7 +1,10 @@
 {block content}
     {control languageEditForm}
     <a id="language-delete" class="btn delete"
-       href="{plink delete! $id}">{_"admin.language.edit.action.delete.label"}</a>
+       href="{plink delete! $id}">
+        <i class="fa fa-trash"></i>
+        {_"admin.language.edit.action.delete.label"}
+    </a>
     <script>
         _stack.push(function (di) {
             jQuery(document).ready(function ($) {

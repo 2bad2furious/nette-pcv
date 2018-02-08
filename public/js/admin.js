@@ -3,31 +3,9 @@ _stack.push(function (di) {
     jQuery(document).ready(function ($) {
         var body = $("body");
 
-        body.on("selectmenuchange change", "select.openOnChange", function () {
-            var selected = $(this).find("option:selected");
-            var href = selected.attr("data-href");
-            if (!href) throw new Error("Href not found");
-            di.getService("page").open(href, "get");
-        });
-
-        var checkboxUI = function (elements) {
-            elements.each(function (i, e) {
-                $(e).bootstrapSwitch();
-                $(e).siblings("label").hide()
-            })
-        };
-
-        var selectUI = function (elements) {
-            console.info(elements);
-            elements.selectmenu();
-            elements.on("remove", function () {
-                elements.selectmenu("destroy");
-            })
-        };
-
-        var froalaUI = function (elements) {
+        body.on("create", "textarea.froala", function () {
             var linkList = window.listOfShortcodeLinks || [];
-            elements.froalaEditor({//font-family,
+            $(this).froalaEditor({//font-family,
                 imageUpload: false,
                 fileUpload: false,
                 imageManagerLoadURL: '/admin/en_US/file/all',
@@ -44,7 +22,7 @@ _stack.push(function (di) {
                     "#e84118", "#f5f6fa", "#7f8fa6", "#273c75", "#353b48", "#333",
                     "#c23616", "#dcdde1", "#718093", "#192a56", "#2f3640", "#000"
                 ],
-                iframe: true,
+                //iframe: true,
                 scrollableContainer: '#content',
                 toolbarButtons: ['fullscreen', 'bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', '|', 'fontFamily', 'fontSize', 'color', 'inlineStyle', 'paragraphStyle', '|', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'outdent', 'indent', 'quote', '-', 'insertLink', 'insertImage', 'insertVideo', 'embedly', 'insertTable', '|', 'emoticons', 'specialCharacters', 'insertHR', 'selectAll', 'clearFormatting', '|', 'print', 'spellChecker', 'help', 'html', '|', 'undo', 'redo']
                 /*  DEFAULT WAS
@@ -53,15 +31,29 @@ _stack.push(function (di) {
                 linkList: linkList
             });
             console.info(linkList)
-        };
-
-        body.onCreate("textarea.froala", froalaUI)
-
-        body.onCreate("select", selectUI);
+        })
 
 
-        body.onCreate("input[type=checkbox]", checkboxUI);
+        body.on("create", "select.selectmenu", function () {
+            $(this).selectmenu();
+            $(this).on("remove", function () {
+                $(this).selectmenu("destroy");
+            })
+        });
 
 
+        body.on("create", "input[type=checkbox].switch", function () {
+            $(this).bootstrapSwitch();
+            $(this).siblings("label").hide()
+        })
+
+        body.on("selectmenuchange change", "select.openOnChange", function () {
+            var selected = $(this).find("option:selected");
+            var href = selected.attr("data-href");
+            if (!href) throw new Error("Href not found");
+            di.getService("page").open(href, "get");
+        });
     });
+
+
 });

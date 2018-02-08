@@ -8,7 +8,7 @@
     </style>
     <div>
         {_"admin.header.default.filter.language"}:
-        <select class="openOnChange" title="{_"admin.header.default.filter.language"}">
+        <select class="openOnChange selectmenu" title="{_"admin.header.default.filter.language"}">
             <option n:foreach="$languages as $lang"
                     data-href="{plink default \adminModule\HeaderPresenter::LANGUAGE_KEY=>$lang->getCode()}"
                     {ifCurrent default \adminModule\HeaderPresenter::LANGUAGE_KEY=>$lang->getCode()}selected{/ifCurrent}>
@@ -20,7 +20,9 @@
     <div>
         <div id="sortable-controls">
             <a n:href="add \adminModule\HeaderPresenter::ID_KEY=>0,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE"
-                    class="add">add</a>
+                    class="add btn">
+                {_"admin.header.default.add"}
+            </a>
         </div>
         {snippet header-area}
             {include "header-items.latte" header=>$header}
@@ -57,7 +59,7 @@
             </script>
         </div>
     </div>
-    <script n:snippet="script">
+    <script n:snippet="script" defer>
         //TODO do document listeners instead
         _stack.push(function (di) {
             jQuery().ready(function ($) {
