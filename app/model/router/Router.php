@@ -151,6 +151,8 @@ class Router {
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter slider>/<action add|edit>");
 
+        $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter file>/<action all>");
+
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter=Default>[/<action=default default>]");
 
         return $router;

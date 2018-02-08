@@ -5,6 +5,7 @@ namespace adminModule;
 
 
 use Kdyby\Translation\Translator;
+use Maiorano\Shortcodes\Manager\ShortcodeManager;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Forms\Controls\TextInput;
@@ -119,6 +120,15 @@ class PagePresenter extends AdminPresenter {
             $this->redirect(302, "show", [self::LANGUAGE_KEY => self::LANGUAGE_ALL, self::ID_KEY => null]);
         }
         $this->template->page = $page;
+        $this->template->listOfShortcodeLinks = array_values(
+            array_map(
+                function (\PageWrapper $pageWrapper) {
+                    return [
+                        "text" => $pageWrapper->getTitle(),
+                        "href" => "[link pageId=" . $pageWrapper->getGlobalId() . " langId=" . $pageWrapper->getLanguageId() . "]",
+                    ];
+                }, $this->getPageManager()->getAllPages($page->getLanguageId()))
+        );
     }
 
     /**

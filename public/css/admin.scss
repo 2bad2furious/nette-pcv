@@ -169,15 +169,16 @@ html {
               &.spacer {
                 margin-top: 10px;
                 display: block;
+
+                & > label {
+                  display: block;
+                  //  margin-top: 10px;
+                }
               }
             }
 
             .admin-form-errors {
               grid-area: errors;
-            }
-            label {
-              display: block;
-              //  margin-top: 10px;
             }
             #form-main {
               grid-area: main;

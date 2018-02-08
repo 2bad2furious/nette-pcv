@@ -50,28 +50,20 @@
                     {_"admin.page.edit.action.visit"}
                 </a>
             </div>
+            <div class="spacer">
             {formContainer \FormFactory::PAGE_EDIT_GLOBAL_CONTAINER}
                 {label FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}{input FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME}
                 {if $page->isPage()}{label FormFactory::PAGE_EDIT_PARENT_NAME}{input FormFactory::PAGE_EDIT_PARENT_NAME}{/if}
             {/formContainer}
+            </div>
         </div>
     {/form}
     <script type="text/javascript">
+        window.listOfShortcodeLinks = {$listOfShortcodeLinks};
+        console.info(window.listOfShortcodeLinks);
         _stack.push(function (di) {
             jQuery(document).ready(function ($) {
                 $("select").selectmenu();
-
-                $(".{\FormFactory::TEXTAREA_CLASS_FOR_EDITOR|noescape}").froalaEditor({
-                    imageUpload: false,
-                    fileUpload: false,
-                });
-                //TODO remove buttons for upload
-                //colorsText:THEME colors
-                //imageInsertButtons
-                //imageUpload:false
-                //imageManagerLoadURL
-                //iFrameStyleFiles
-                //fileUpload:false
 
                 $("#page-delete").click(function (e) {
                     if (!confirm({_"admin.page.edit.action.delete.confirm"}))

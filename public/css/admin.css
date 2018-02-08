@@ -195,10 +195,10 @@ html {
           html body #snippet--content #contentWrapper.page-edit .admin-form div.spacer {
             margin-top: 10px;
             display: block; }
+            html body #snippet--content #contentWrapper.page-edit .admin-form div.spacer > label {
+              display: block; }
           html body #snippet--content #contentWrapper.page-edit .admin-form .admin-form-errors {
             grid-area: errors; }
-          html body #snippet--content #contentWrapper.page-edit .admin-form label {
-            display: block; }
           html body #snippet--content #contentWrapper.page-edit .admin-form #form-main {
             grid-area: main;
             padding: 15px; }
