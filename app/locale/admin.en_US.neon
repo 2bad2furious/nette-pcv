@@ -10,6 +10,8 @@ header:
     accounts: "Accounts"
     logout: "Log Out"
 
+
+
     not_found: "Header link not found"
     moveLeft:
         cannot: "Cannot move this to the left"
@@ -49,6 +51,7 @@ header:
             required: "Url is required"
 
     default:
+        add: "Add"
         custom:
             title: "Title"
             url: "Url"
@@ -143,6 +146,9 @@ login:
 
 
 page:
+    delete:
+        success: "Page successfully deleted."
+        not_found: "Page not found"
     title: "Page Managing"
     show:
         title: ""
@@ -208,6 +214,7 @@ page:
     edit:
         success: "Page edited"
         title: "Page Editing"
+        not_found: "Page not found"
         global:
             parent:
                 label: "Select a parent"
