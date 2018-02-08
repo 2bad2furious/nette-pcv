@@ -12,16 +12,20 @@ class ContentControl extends BaseControl {
         parent::__construct($presenter, $name);
     }
 
+    /**
+     * @throws \Maiorano\Shortcodes\Exceptions\RegisterException
+     */
     public function render() {
         $m = $this->getShortCodeManager();
         $page = $this->page;
         $template = $this->createTemplate();
         $pm = $this->getPageManager();
         $m->register(
-            new \Maiorano\Shortcodes\Library\SimpleShortcode("posts", [
-                "limit"       => 5,
-                "excerpt"     => 200,
-                "excerptEnd"  => "...",
+            new \Maiorano\Shortcodes\Library\SimpleShortcode(
+                "posts", [
+                "limit" => 5,
+                "excerpt" => 200,
+                "excerptEnd" => "...",
                 "excerptMore" => "Read more.",
             ], function (string $content, array $atts) use ($page, $pm, $template) {
                 dump($atts, $content);
@@ -41,6 +45,23 @@ class ContentControl extends BaseControl {
                 $template->excerptEnd = $atts['excerptEnd'];
                 $template->render();
             }));
+        $m->register(new \Maiorano\Shortcodes\Library\SimpleShortcode(
+            "link",
+            [
+                "pageId" => null,
+                "landId" => null
+            ],
+            function (string $content, array $atts) use ($pm) {
+                $pageId = (int)$atts["pageId"];
+                $langId = (int)$atts["langId"];
+
+                if (!$pageId || !$langId) return "";
+
+                $page = $pm->getByGlobalId($langId, $pageId, false);
+                if ($page instanceof PageWrapper) return $page->getCompleteUrl(true);
+                return "";
+            }
+        ));
         echo $m->doShortcode($this->page->getContent());
     }
 
