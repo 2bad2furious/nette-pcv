@@ -7,13 +7,14 @@
             <a data-ajax="false" href="{plink :front:NoLang:}"><i
                         class="fa fa-home"></i>{_"admin.top.go_home"}</a>
             {if $page}
-                <a data-ajax="false" href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl()}">{_"admin.top.page.edit.view"}</a>
+                <a data-ajax="false"
+                   href="{plink :front:Page:default \frontModule\PagePresenter::PARAM_URL=>$page->getUrl()}">{_"admin.top.page.edit.view"}</a>
             {/if}
         </span>
     </span>
 <span>
         <span>{$username}</span>
-        <a data-ajax="false" id="logout" href="{plink :admin:Logout:}"
+        <a data-ajax="false" id="logout" href="{plink :admin:Logout:}">
             <i class="fa fa-power-off"></i>
         </a>
             </span>
