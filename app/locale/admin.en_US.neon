@@ -69,7 +69,7 @@ header:
 home:
     default:
         title: ""
-    title: "Dashboard"
+    title: "Hi :)"
 
 top:
     page:
@@ -94,9 +94,13 @@ language:
         edit: "Edit"
         delete:
             label: "Delete"
-            confirm: "Are you sure? This will delete this language and translations."
+            confirm:
+                 text: "Are you sure? This will delete this language and translations."
+                 yes: "Delete"
+                 no: "Cancel"
         add: "Add"
     edit:
+        success: "Language edited."
         title: "Editing"
         friendly:
             label: "Friendly name"
@@ -128,7 +132,10 @@ language:
         action:
             delete:
                 label: "Delete language"
-                confirm: "Are you sure? This will delete this language and all translations."
+                confirm:
+                     text: "Are you sure? This will delete this language and all translations."
+                     yes: "Delete"
+                     no: "Cancel"
 
 
 login:
@@ -205,7 +212,11 @@ page:
         visit: "View"
         delete:
             label: "Delete"
-            confirm: "This will delete all translations of this page/post"
+            confirm:
+                text: "Are you sure? This will delete all translations of this page/post"
+                yes: "Delete"
+                no: "Cancel"
+
 
         not_found: "Pages not found"
     create:
