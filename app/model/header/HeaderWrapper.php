@@ -73,7 +73,7 @@ class HeaderWrapper {
      */
     public function getPage() {
         if ($this->page !== false) {
-            $this->page = $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getPageId());
+            $this->page = $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getPageId(), false);
         }
         return $this->page instanceof PageWrapper ? $this->page : null;
     }
@@ -169,12 +169,13 @@ class HeaderWrapper {
     public function canMoveRight(): bool {
         return $this->headerManager->canBeMovedRight($this->getId());
     }
+
     /**
      * checks whether it has page if it needs it
      * used to not make the node rendered if eg. the page is not visible
      * @return bool
      */
-    public function isOk():bool{
-        return !$this->isPage() || $this->getPage() instanceof PageWrapper;
+    public function isOk(): bool {
+        return !$this->isPage() || ($this->getPage() instanceof PageWrapper && $this->getPage()->isVisibile());
     }
 }

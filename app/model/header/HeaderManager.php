@@ -15,6 +15,18 @@ class HeaderManager extends Manager implements IHeaderManager {
         COLUMN_PARENT_ID = "parent_id";
 
     protected function init() {
+        PageManager::on(IPageManager::TRIGGER_PAGE_DELETED, function (int $globalId) {
+            $data = $this->getDatabase()->table(self::TABLE)
+                ->where([self::COLUMN_PAGE_ID => $globalId]);
+
+            while ($row = $data->fetch()) {
+                try {
+                    $this->delete($row[self::COLUMN_ID]);
+                } catch (Exception $x) {
+                    \Tracy\Debugger::log($x);
+                }
+            }
+        });
         LanguageManager::on(LanguageManager::TRIGGER_LANGUAGE_DELETED, function (Language $language) {
             $this->getCache()->remove($language->getCode());
 
@@ -23,9 +35,12 @@ class HeaderManager extends Manager implements IHeaderManager {
             ]]);
 
             $this->runInTransaction(function () use ($language) {
-                $this->getDatabase()->table(self::TABLE)->where([
+                $data = $this->getDatabase()->table(self::TABLE)->where([
                     self::COLUMN_LANG => $language->getId(),
-                ])->delete();
+                ]);
+                while($row = $data->fetch()){
+                    $this->deleteBranch($row[self::COLUMN_ID]);
+                }
             });
         });
     }
