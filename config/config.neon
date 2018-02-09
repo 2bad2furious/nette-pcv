@@ -18,9 +18,12 @@ services:
     - HeaderManager
     - FileManager
     - SliderManager
+    - ShortcodeManager
 
-    #cacheStorage:
+
+    cacheStorage:
         #factory: Nette\Caching\Storages\NewMemcachedStorage
+        factory: OneInstanceFileStorage("%tempDir%/cache")
         #factory: Nette\Caching\Storages\SQLiteStorage("%tempDir%/cache/cache.s3db")
 #application:
  #   mapping:
