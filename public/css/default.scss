@@ -11,7 +11,7 @@ body {
   padding: 0;
   margin: 0;
   //not JQUI, Font Awesome and FROALA
-  &, :not([class^="ui-"]):not([class^="fr-"]):not(.fa) {
+  &, :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]) {
     box-sizing: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
@@ -24,6 +24,12 @@ body {
     &:not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit;
     }
+  }
+  .nittro-dialog-content {
+    color: black;
+  }
+  .nittro-dialog-holder{
+    justify-content: center;
   }
   &:not(p, span, a) {
     display: block;

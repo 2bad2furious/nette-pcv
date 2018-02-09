@@ -92,6 +92,10 @@ html {
 
         padding: 20px;
 
+        #homeWelcome {
+          text-align: center;
+        }
+
         &:not(.login-default) {
           background-color: white; //$colorOnBackground;
           color: black;
@@ -145,7 +149,7 @@ html {
                         }
                       }
                       &.page-delete {
-                        color: #2f3640;
+                        color: #c23616;
                         &:hover {
                           color: #e84118;
                         }
@@ -347,7 +351,7 @@ html {
         #content {
           flex-direction: column;
           align-self: stretch;
-          justify-content: center;
+          //justify-content: center;
           display: flex;
           padding-bottom: 100px;
           & > form {

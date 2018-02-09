@@ -2,7 +2,7 @@
 body {
   padding: 0;
   margin: 0; }
-  body, body :not([class^="ui-"]):not([class^="fr-"]):not(.fa) {
+  body, body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]) {
     box-sizing: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
@@ -11,8 +11,12 @@ body {
     -o-transition: inherit;
     transition: inherit;
     text-decoration: inherit; }
-    body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not(input):not(textarea):not(select):not(option):not(body) {
+    body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]):not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit; }
+  body .nittro-dialog-content {
+    color: black; }
+  body .nittro-dialog-holder {
+    justify-content: center; }
   body:not(p, span, a) {
     display: block; }
   body:not(textarea) {
@@ -155,6 +159,8 @@ html {
         display: flex;
         flex-direction: column;
         padding: 20px; }
+        html body #snippet--content #contentWrapper #homeWelcome {
+          text-align: center; }
         html body #snippet--content #contentWrapper:not(.login-default) {
           background-color: white;
           color: black; }
@@ -184,7 +190,7 @@ html {
             html body #snippet--content #contentWrapper.page-show #content #pages table tbody td a.page-edit:hover {
               color: #192a56; }
           html body #snippet--content #contentWrapper.page-show #content #pages table tbody td a.page-delete {
-            color: #2f3640; }
+            color: #c23616; }
             html body #snippet--content #contentWrapper.page-show #content #pages table tbody td a.page-delete:hover {
               color: #e84118; }
         html body #snippet--content #contentWrapper.page-edit .admin-form {
@@ -300,7 +306,6 @@ html {
         html body #snippet--content #contentWrapper #content {
           flex-direction: column;
           align-self: stretch;
-          justify-content: center;
           display: flex;
           padding-bottom: 100px; }
           html body #snippet--content #contentWrapper #content > form {
