@@ -76,6 +76,9 @@
     {control header}
 </header>
 <main n:snippet="content">
+    <div n:snippet="breadcrumbs">
+        {control breadcrumbs}
+    </div>
     <div id="content"
             n:class="$page->isHomePage() ? homepage"
          data-language="{$page->getLanguage()->getCode()}"
