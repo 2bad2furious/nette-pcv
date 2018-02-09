@@ -84,9 +84,14 @@ class PageManager extends Manager implements IPageManager {
         return $exists;
     }
 
-    public function getAllPages(int $languageId, ?int $type = self::TYPE_ALL): array {
-        $data = $this->getDatabase()->table(self::LOCAL_TABLE)
-            ->where([self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $languageId]);
+    public function getAllPages(?int $languageId = null, ?int $type = self::TYPE_ALL): array {
+        $data = $this->getDatabase()->table(self::LOCAL_TABLE);
+
+        if ($languageId > 0)
+            $data->where([self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $languageId]);
+
+        if ($type > 0)
+            $data->where([self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE => $type]);
 
         $pages = [];
         while ($row = $data->fetch()) {
@@ -216,6 +221,7 @@ class PageManager extends Manager implements IPageManager {
             $result = $selection->limit($perPage);
         } else $result = $selection;
 
+
         if ($numOfPages === 0) $numOfPages = 1;
         $pages = [];
 
@@ -244,7 +250,7 @@ class PageManager extends Manager implements IPageManager {
      */
     public function getByGlobalId(int $languageId, int $id, bool $throw = true): ?PageWrapper {
         $cached = $this->getPlainById($id, $languageId, $throw);
-        $result = $cached instanceof APage ? $this->getIfRightsAndSetMissing($cached) : null;
+        $result = $cached instanceof APage ? $this->createWrapper($cached) : null;
         return $result;
     }
 
@@ -256,24 +262,21 @@ class PageManager extends Manager implements IPageManager {
     public function getByUrl(int $languageId, string $url): ?PageWrapper {
         $cached = $this->getUrlCache()->load($this->getUrlCacheKey($url, $languageId), function (&$dependencies) use ($languageId, $url) {
             $page = $this->getPlainFromDbByUrl($url, $languageId);
-            $dependencies = self::getDependencies($page instanceof Page ? $page->getGlobalId() : -1, $languageId);
+            $dependencies = self::getDependencies($page instanceof APage ? $page->getGlobalId() : -1, $languageId);
             return $page;
         });
-
-        return $cached instanceof Page ? $this->getIfRightsAndSetMissing($cached) : null;
+        return $cached instanceof APage ? $this->createWrapper($cached) : null;
     }
 
-    private function getIfRightsAndSetMissing(APage $page): ?PageWrapper {
-        if ($page->getStatus() >= self::STATUS_PUBLIC || $this->getUser()->isAllowed(self::ACTION_SEE_NON_PUBLIC_PAGES)) {
-            return new PageWrapper($page,
-                $this,
-                $this->getLanguageManager(),
-                $this->getSettingsManager(),
-                $this->getAccountManager(),
-                $this->getMediaManager()
-            );
-        }
-        return null;
+    private function createWrapper(APage $page): PageWrapper {
+        return new PageWrapper(
+            $page,
+            $this,
+            $this->getLanguageManager(),
+            $this->getSettingsManager(),
+            $this->getAccountManager(),
+            $this->getMediaManager()
+        );
     }
 
     /**
@@ -419,7 +422,7 @@ class PageManager extends Manager implements IPageManager {
                 if ($parentId) {//!== 0 && !== null
                     $futureParent = $this->getPlainById($parentId, $page->getLanguageId(), true);
                     $this->globalUncache($parentId, $page->getLanguageId());//
-                    $this->urlUncache($futureParent, $page->getLanguageId());
+                    $this->urlUncache($futureParent->getUrl(), $page->getLanguageId());
                 }
 
                 $updateData = [self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS => $globalVisibility,];
@@ -502,6 +505,7 @@ class PageManager extends Manager implements IPageManager {
             $this->getDatabase()->table(self::MAIN_TABLE)
                 ->where([self::MAIN_COLUMN_ID => $globalId])->delete();
         });
+        $this->trigger(self::TRIGGER_PAGE_DELETED, $globalId);
     }
 
     private function getUrlCache(): Cache {

@@ -29,7 +29,7 @@ class PagePresenter extends BasePresenter {
         $language = $this->getLocaleLanguage()->getId();
 
         $this->page = $this->getPageManager()->getByUrl($language, (string)$url);
-        if ($this->page->isHomePage()) $this->redirect(301, "Home", [self::PARAM_URL => null]);
+        if ($this->page instanceof \PageWrapper && $this->page->isHomePage()) $this->redirect(301, "Home", [self::PARAM_URL => null]);
         $this->prepareTemplate();
     }
 
@@ -50,7 +50,7 @@ class PagePresenter extends BasePresenter {
     protected function prepareTemplate() {
         $page = $this->page;
 
-        if (!$page instanceof \PageWrapper)
+        if (!$page instanceof \PageWrapper || (!$page->isVisible() && !$this->getUser()->isAllowed(\IPageManager::ACTION_SEE_NON_PUBLIC_PAGES)))
             $page = $this->getPageManager()->get404($this->getLocaleLanguage()->getId());
 
         $this->template->page = $page;
@@ -102,5 +102,9 @@ class PagePresenter extends BasePresenter {
 
     public function createComponentAdminBar(string $name): \AdminBarControl {
         return new \AdminBarControl($this->page, $this, $name);
+    }
+
+    public function createComponentBreadcrumbs(string $name) {
+        return new \BreadCrumbsControl($this->getPage(), $this, $name);
     }
 }

@@ -31,11 +31,11 @@ interface IPageManager extends IManager {
     public function exists(int $globalId, ?int $languageId = null, bool $throw = false): bool;
 
     /**
-     * @param int $langId
+     * @param int|null $langId
      * @param int|null $type
      * @return array
      */
-    public function getAllPages(int $langId, ?int $type = self::TYPE_ALL): array;
+    public function getAllPages(?int $langId = null, ?int $type = self::TYPE_ALL): array;
 
     /**
      * @param int $globalId
