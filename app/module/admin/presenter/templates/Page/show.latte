@@ -121,6 +121,9 @@
                             {first}
                                 <td rowspan="{count($pages)}">
                                     <a class="action page-delete"
+                                       data-prompt="{_"admin.page.show.delete.confirm.text"}"
+                                       data-confirm="{_"admin.page.show.delete.confirm.yes"}"
+                                       data-cancel="{_"admin.page.show.delete.confirm.no"}"
                                        href="{plink delete adminModule\PagePresenter::ID_KEY=>$globalId}">
                                         <i class="fa fa-trash"></i>
                                     </a>
@@ -131,18 +134,21 @@
                 {/foreach}
                 </tbody>
             </table>
-            {control paginator}
         {else}
             {_"admin.page.show.not_found"}
         {/if}
+        {control paginator}
     </div>
     <script>
         _stack.push(function (di) {
             jQuery(document).ready(function ($) {
-                $("a.page-delete.action").click(function (e) {
-                    if (!window.confirm({_"admin.page.show.delete.confirm"}))
-                        e.preventDefault();
-                })
+               /* var select = $("select.selectmenu");
+                try {
+                    select.selectmenu("refresh")
+                } catch (Error) {
+                    console.info(Error)
+                    select.selectmenu()
+                }*/
             })
         })
     </script>

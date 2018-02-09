@@ -42,7 +42,10 @@
             <div id="controls" class="spacer">
                 {input submit}
                 <a id="page-delete" class="btn btn-primary delete"
-                   href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}">
+                   href="{plink Page:delete \adminModule\PagePresenter::ID_KEY=>$page->getGlobalId(),\adminModule\PagePresenter::LANGUAGE_KEY=>null}"
+                data-prompt="{_"admin.page.edit.action.delete.confirm.text"}"
+                data-confirm="{_"admin.page.edit.action.delete.confirm.yes"}"
+                data-cancel="{_"admin.page.edit.action.delete.confirm.no"}">
                     <i class="fa fa-trash"></i>
                     {_"admin.page.edit.action.delete.label"}
                 </a>
@@ -65,11 +68,6 @@
         _stack.push(function (di) {
             jQuery(document).ready(function ($) {
                 $("select").selectmenu();
-
-                $("#page-delete").click(function (e) {
-                    if (!confirm({_"admin.page.edit.action.delete.confirm"}))
-                        e.preventDefault();
-                });
 
                 window.Nette.validators.{\FormFactory::PAGE_EDIT_URL_NAME|noescape}_rule1 = function (elem, args, val) {
                     var urlContent = $("#url-content");

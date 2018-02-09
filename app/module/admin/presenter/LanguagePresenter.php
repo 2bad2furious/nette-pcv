@@ -120,6 +120,7 @@ class LanguagePresenter extends AdminPresenter {
                     $values[\FormFactory::LANGUAGE_EDIT_FAVICON_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_404]
                 );
+                $this->addSuccess("admin.language.edit.success");
             });
             $this->postGet("this");
         };

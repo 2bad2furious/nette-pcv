@@ -132,7 +132,7 @@ class PagePresenter extends AdminPresenter {
                 function (\PageWrapper $pageWrapper) {
                     return [
                         "text" => $pageWrapper->getGlobalId() . " - " . $this->translator->translate($pageWrapper->getTitle()),
-                        "href" => "[link pageId=" . $pageWrapper->getGlobalId() . " langId=" . $pageWrapper->getLanguageId() . "]",
+                        "href" => $pageWrapper->getShortcode(),
                     ];
                 }, $this->getPageManager()->getAllPages($page->getLanguageId()))
         );
