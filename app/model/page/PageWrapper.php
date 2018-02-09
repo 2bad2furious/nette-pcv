@@ -23,6 +23,7 @@
  * @method bool is404()
  * @method bool getDisplayTitle()
  * @method bool getDisplayBreadCrumbs()
+ * @method int[] getChildrenIds()
  */
 class PageWrapper {
     private $page;
@@ -34,6 +35,8 @@ class PageWrapper {
     private $mediaManager;
     private $favicon;
     private $logo;
+    private $parent;
+    private $children;
 
     /**
      * PageWrapper constructor.
@@ -104,8 +107,8 @@ class PageWrapper {
         return ($prependSlash ? "/" : "") . $this->getLanguage()->getCode() . "/" . $this->getUrl();
     }
 
-    public function isVisibile(): bool {
-        return $this->getStatus() === PageManager::STATUS_PUBLIC;
+    public function isVisible(): bool {
+        return $this->getStatus() === IPageManager::STATUS_PUBLIC;
     }
 
     /**
@@ -134,9 +137,13 @@ class PageWrapper {
         return ($prependSlash ? "/" : "") . $this->getLanguage()->getCode() . "/" . PageManager::PAGE_URL_PERMANENT . "/" . $this->getGlobalId();
     }
 
+    /**
+     * @return File|null
+     * @throws FileNotFoundById
+     */
     public function getImage(): ?File {
         if (!($imageId = $this->getImageId())) return null;
-        return $this->mediaManager->getById($imageId, FileManager::TYPE_IMAGE);
+        return $this->mediaManager->getById($imageId, FileManager::TYPE_IMAGE, false);
     }
 
     /**
@@ -192,5 +199,35 @@ class PageWrapper {
             $this->logo = ($favId) ? $this->mediaManager->getById($favId, IFileManager::TYPE_IMAGE, false) ?: false : false;
         }
         return $this->logo instanceof Image ? $this->favicon : null;
+    }
+
+    public function getShortcode() {
+        return "[link pageId=" . $this->getGlobalId() . " langId=" . $this->getLanguageId() . "]";
+    }
+
+    /**
+     * @return null|PageWrapper
+     * @throws LanguageByIdNotFound
+     */
+    public function getParent(): ?PageWrapper {
+        if ($this->isHomePage()) return null;
+        if ($this->parent === null) {
+            $this->parent =
+                ($p =
+                    $this->getParentId() === 0
+                        ? $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getLanguage()->getHomepageId())
+                        : $this->$this->pageManager->getByGlobalId($this->getLanguageId(), $this->getParentId(), false)
+                ) instanceof PageWrapper ? $p : false;
+        }
+        return $this->parent instanceof PageWrapper ? $this->parent : null;
+    }
+
+    public function getChildren(): array {
+        if (!is_array($this->children)) {
+            $this->children = array_map(function (int $id) {
+                return $this->pageManager->getByGlobalId($this->getLanguageId(), $id);
+            }, $this->getChildrenIds());
+        }
+        return $this->children;
     }
 }

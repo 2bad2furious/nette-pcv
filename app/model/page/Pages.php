@@ -58,7 +58,7 @@ abstract class APage {
     private $localStatus;
     private $displayTitle;
     private $displayBreadcrumbs;
-    private $children = [];
+    private $childrenIds = [];
 
     /**
      * APage constructor.
@@ -218,14 +218,14 @@ abstract class APage {
     }
 
     private function addChild(int $childrenId) {
-        $this->children[] = $childrenId;
+        $this->childrenIds[] = $childrenId;
     }
 
     /**
      * @return int[]
      */
-    public function getChildren(): array {
-        return $this->children;
+    public function getChildrenIds(): array {
+        return $this->childrenIds;
     }
 
     public abstract function getOgType(): string;
