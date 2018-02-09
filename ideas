@@ -31,3 +31,7 @@ settings form with length limitation
 add limits to sql queries where needed - performance boost
 
 addSuccess/Error/Warning add parameters
+
+tinymce?
+
+jquery ui memory-leak/initing everything on create and on remove remove
