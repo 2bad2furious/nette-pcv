@@ -104,9 +104,18 @@ _stack.push(function (di) {
                     linkAutoPrefix: '',
                     linkList: linkList
                 });
-                console.info(linkList)
             }
         });
+
+        addHanlders.push({
+            selector: ".fr-element a,.fr-view a",
+            handler: function (e) {
+                e.on("click", function (event) {
+                    event.preventDefault()
+                })
+            }
+        })
+
         removeHandlers.push({
             selector: "textarea.froala",
             handler: function (e) {
