@@ -1,15 +1,8 @@
 console.info("hello");
 _stack.push(function (di) {
     jQuery(document).ready(function ($) {
-        /*var oldJQueryEventTrigger = jQuery.event.trigger;
-        jQuery.event.trigger = function( event, data, elem, onlyHandlers ) {
-            console.log( event, data, elem, onlyHandlers );
-            oldJQueryEventTrigger( event, data, elem, onlyHandlers );
-        }*/
-
         var addHanlders = [];
         var removeHandlers = [];
-
 
         var selectMO = new MutationObserver(
             function (mutations) {
@@ -25,11 +18,10 @@ _stack.push(function (di) {
                             for (y = 0; y < addHanlders.length; y++) {
                                 var addHandler = addHanlders[y];
                                 var selector = addHandler.selector;
-                                var handler = addHandler.handler;
                                 try {
                                     var els = nodeAdded.find(selector);
                                     if (els.length)
-                                        handler(els);
+                                        addHandler.handler(els);
                                 } catch (e) {
                                     console.error(e)
                                 }
@@ -40,11 +32,10 @@ _stack.push(function (di) {
                             for (var y = 0; y < removeHandlers.length; y++) {
                                 var removeHandler = removeHandlers[y];
                                 var selector = removeHandler.selector;
-                                var handler = removeHandler.handler;
                                 try {
                                     var els = nodeDeleted.find(selector);
                                     if (els.length)
-                                        handler(els);
+                                        removeHandler.handler(els);
                                 } catch (e) {
                                     console.error(e);
                                 }
@@ -53,11 +44,9 @@ _stack.push(function (di) {
                     }
                 }
             }
-            )
-        ;
+        );
 
         var b = document.getElementById('body');
-        console.info(b);
         var body = $("body");
         selectMO.observe(
             b,
@@ -67,13 +56,6 @@ _stack.push(function (di) {
                 subtree: true
             }
         );
-
-        addHanlders.push({
-            selector: "fr-wrapper a",
-            handler: function (e) {
-                console.debug(e)
-            }
-        });
 
         addHanlders.push({
             selector: "textarea.froala",
@@ -107,14 +89,6 @@ _stack.push(function (di) {
             }
         });
 
-        addHanlders.push({
-            selector: ".fr-element a,.fr-view a",
-            handler: function (e) {
-                e.on("click", function (event) {
-                    event.preventDefault()
-                })
-            }
-        })
 
         removeHandlers.push({
             selector: "textarea.froala",
@@ -150,16 +124,14 @@ _stack.push(function (di) {
         addHanlders.push({
             selector: ".nittro-dialog-button",
             handler: function (e) {
-                e.addClass("btn")
+                e.addClass("btn");
                 $(e).each(function (i, value) {
-                    value = $(value)
-                    console.debug(value)
-                    console.debug(value.attr("data-action"))
+                    value = $(value);
                     if (value.attr("data-action") === '"confirm"')
                         value.addClass("delete")
                 })
             }
-        })
+        });
 
         body.on("selectmenuchange change", "select.openOnChange", function () {
             var selected = $(this).find("option:selected");
@@ -169,9 +141,14 @@ _stack.push(function (di) {
         });
 
 
+        body.on("click", ".fr-element a,.fr-view a", function (e) {
+            e.preventDefault();
+        });
+
         addHanlders.forEach(function (value) {
             try {
-                var els = $(value.selector);
+                console.debug(value)
+                var els = $(b).find(value.selector);
                 if (els.length)
                     value.handler(els);
             } catch (e) {
