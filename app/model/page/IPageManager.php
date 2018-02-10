@@ -33,9 +33,10 @@ interface IPageManager extends IManager {
     /**
      * @param int|null $langId
      * @param int|null $type
+     * @param int $orderBy
      * @return array
      */
-    public function getAllPages(?int $langId = null, ?int $type = self::TYPE_ALL): array;
+    public function getAllPages(?int $langId = null, ?int $type = self::TYPE_ALL, int $orderBy = self::ORDER_BY_ID): array;
 
     /**
      * @param int $globalId

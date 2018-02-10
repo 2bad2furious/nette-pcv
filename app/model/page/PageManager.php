@@ -12,10 +12,10 @@ class PageManager extends Manager implements IPageManager {
         MAIN_COLUMN_PARENT_ID = "parent_id",
 
         ORDER_TABLE = [
-        self::ORDER_BY_ID => self::MAIN_COLUMN_ID,
-        self::ORDER_BY_TITLE => self::LOCAL_COLUMN_TITLE,
-        self::ORDER_BY_PUBLISH_TIME => self::LOCAL_COLUMN_CREATED,
-        self::ORDER_BY_EDITED_TIME => self::LOCAL_COLUMN_LAST_EDITED,
+        self::ORDER_BY_ID => self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID,
+        self::ORDER_BY_TITLE => self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE,
+        self::ORDER_BY_PUBLISH_TIME => self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CREATED,
+        self::ORDER_BY_EDITED_TIME => self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LAST_EDITED,
     ],
 
         LOCAL_TABLE = "page_local",
@@ -84,7 +84,7 @@ class PageManager extends Manager implements IPageManager {
         return $exists;
     }
 
-    public function getAllPages(?int $languageId = null, ?int $type = self::TYPE_ALL): array {
+    public function getAllPages(?int $languageId = null, ?int $type = self::TYPE_ALL, int $orderBy = self::ORDER_BY_ID): array {
         $data = $this->getDatabase()->table(self::LOCAL_TABLE);
 
         if ($languageId > 0)
@@ -92,6 +92,8 @@ class PageManager extends Manager implements IPageManager {
 
         if ($type > 0)
             $data->where([self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE => $type]);
+
+        $data->order($this->getOrder($orderBy));
 
         $pages = [];
         while ($row = $data->fetch()) {
@@ -160,18 +162,14 @@ class PageManager extends Manager implements IPageManager {
             ->group(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)
             ->select("GROUP_CONCAT(" . self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG . " SEPARATOR '|') langIds")
             ->select(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID)
-            ->order(self::LOCAL_COLUMN_LANG)
-            ->order(self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID);
+            ->order(self::LOCAL_COLUMN_LANG);
 
         if (is_int($type)) $selection = $selection->where(self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE, $type);
 
-        $abs = abs($orderBy);
-        $dir = $orderBy > 0 ? "ASC" : "DESC";
 
-        $order_by_column = (isset(self::ORDER_TABLE[$abs])) ? self::ORDER_TABLE[$abs] : null;
-        if ($order_by_column !== self::MAIN_COLUMN_ID && $order_by_column !== null && $language instanceof Language) {
-            $selection->order(self::LOCAL_TABLE . "." . $order_by_column . " " . $dir);
-        } else $selection->order(self::MAIN_TABLE . "." . self::MAIN_COLUMN_ID . " " . $dir);
+        $order_by_column = $this->getOrder($orderBy);
+
+        $selection->order($order_by_column);
 
         if (is_string($search)) {
             $searchWheres = [];
@@ -687,5 +685,14 @@ class PageManager extends Manager implements IPageManager {
 
     public function getDefaultTitle(): string {
         return self::DEFAULT_TITLE;
+    }
+
+    private function getOrder(int $orderBy): string {
+        $abs = abs($orderBy);
+        $dir = $orderBy > 0 ? "ASC" : "DESC";
+        return ((isset(self::ORDER_TABLE[$abs]))
+                ? self::ORDER_TABLE[$abs]
+                : self::ORDER_TABLE[self::ORDER_BY_ID] //default order
+            ) . " " . $dir;
     }
 }
