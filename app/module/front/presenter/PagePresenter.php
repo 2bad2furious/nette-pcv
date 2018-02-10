@@ -92,10 +92,6 @@ class PagePresenter extends BasePresenter {
         return new HeaderPageControl($this->page, $this, $name);
     }
 
-    public function createComponentSectionPage(string $name): SectionPageControl {
-        return new SectionPageControl($this, $name);
-    }
-
     public function getPage(): \PageWrapper {
         return $this->page;
     }
