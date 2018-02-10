@@ -2,7 +2,7 @@
 body {
   padding: 0;
   margin: 0; }
-  body, body :not([class^="ui-"]):not([class^="fr-"]):not(.fa) {
+  body, body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]) {
     box-sizing: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
@@ -11,8 +11,12 @@ body {
     -o-transition: inherit;
     transition: inherit;
     text-decoration: inherit; }
-    body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not(input):not(textarea):not(select):not(option):not(body) {
+    body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]):not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit; }
+  body .nittro-dialog-content {
+    color: black; }
+  body .nittro-dialog-holder {
+    justify-content: center; }
   body:not(p, span, a) {
     display: block; }
   body:not(textarea) {
