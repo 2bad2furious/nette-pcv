@@ -1,18 +1,15 @@
-{var $arr = []}
-{var $p = $page}
-{while ($p = $p->getParent()) instanceof \PageWrapper}
-    {php $arr[] = $p}
-{/while}
-{php $arr[] = $page}
-
-{foreach $arr as $p}
-    {if $p->isVisible()}
-        <a href="{$p->getCompleteUrl(true)}">{$p->getTitle()}</a>
-    {else}
-        <span>{$p->getTitle()}</span>
-    {/if}
-    {if !$iterator->isLast()}
-        <span class="spacer"></span>
-        <i class="fa fa-chevron-right"></i>
-    {/if}
-{/foreach}
+<ol class="breadcrumb">
+    {foreach $path as $p}
+        <li class="breadcrumb-item" {last}aria-current="page"{/last}>
+            {if $p->isVisible()}
+                <a href="{$p->getCompleteUrl(true)}">{$p->getTitle()}</a>
+            {else}
+                <span>{$p->getTitle()}</span>
+            {/if}
+            {*{if !$iterator->isLast()}
+                <span class="spacer"></span>
+                <i class="fa fa-chevron-right"></i>
+            {/if}*}
+        </li>
+    {/foreach}
+</ol>

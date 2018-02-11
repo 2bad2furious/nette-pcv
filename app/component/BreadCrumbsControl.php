@@ -12,7 +12,16 @@ class BreadCrumbsControl extends BaseControl {
 
     public function render() {
         if ($this->page->getDisplayBreadCrumbs()) {
-            $this->template->page = $this->page;
+
+
+            $p = $this->page;
+
+            $path = [$p];
+            while (($p = $p->getParent()) instanceof PageWrapper) {
+                array_unshift($path, $p);
+            }
+
+            $this->template->path = $path;
             $this->template->render();
         }
     }
