@@ -202,7 +202,7 @@ class PageWrapper {
     }
 
     public function getShortcode() {
-        return "[link pageId=" . $this->getGlobalId() . " langId=" . $this->getLanguageId() . "]";
+        return "[link page_id=" . $this->getGlobalId() . " lang_id=" . $this->getLanguageId() . "]";
     }
 
     /**
@@ -216,7 +216,7 @@ class PageWrapper {
                 ($p =
                     $this->getParentId() === 0
                         ? $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getLanguage()->getHomepageId())
-                        : $this->$this->pageManager->getByGlobalId($this->getLanguageId(), $this->getParentId(), false)
+                        : $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getParentId(), false)
                 ) instanceof PageWrapper ? $p : false;
         }
         return $this->parent instanceof PageWrapper ? $this->parent : null;
