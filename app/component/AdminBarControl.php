@@ -8,7 +8,7 @@ class AdminBarControl extends BaseControl {
      */
     private $page;
 
-    public function __construct(PageWrapper $page, BasePresenter $presenter, $name) {
+    public function __construct(?PageWrapper $page, BasePresenter $presenter, $name) {
         parent::__construct($presenter, $name);
         $this->page = $page;
     }
@@ -26,10 +26,10 @@ class AdminBarControl extends BaseControl {
         $translator = $this->getPresenter()->translator;
         $this->template->admin_go_home_label = $translator->translate("go_admin");
 
-
-        $this->template->page = $this->page;
-        $this->template->admin_go_edit_label = $translator->translate("edit_page", null, [], null, $adminLocale);
-
+        if ($this->page instanceof PageWrapper) {
+            $this->template->page = $this->page;
+            $this->template->admin_go_edit_label = $translator->translate("edit_page", null, [], null, $adminLocale);
+        }
         $this->template->render();
     }
 }
