@@ -10,7 +10,7 @@ body {
     -ms-transition: inherit;
     -o-transition: inherit;
     transition: inherit;
-    text-decoration: inherit; }
+    /*    text-decoration: inherit;*/ }
     body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]):not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit; }
   body .nittro-dialog-content {
@@ -343,5 +343,7 @@ html {
       font-weight: bold; }
     html body td > input {
       width: 100%; }
+    html body .fr-view a, html body .fr-element a {
+      text-decoration: underline; }
 
 /*# sourceMappingURL=admin.css.map */

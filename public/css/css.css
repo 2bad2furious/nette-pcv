@@ -10,7 +10,7 @@ body {
     -ms-transition: inherit;
     -o-transition: inherit;
     transition: inherit;
-    text-decoration: inherit; }
+    /*    text-decoration: inherit;*/ }
     body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]):not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit; }
   body .nittro-dialog-content {
@@ -111,7 +111,6 @@ html {
       left: 0;
       padding: 10px;
       width: 100%;
-      background-color: rgba(255, 255, 255, 0.8);
       color: #273c75;
       border-bottom: 3px solid #8c7ae6; }
       html body header > input.header-toggler ~ label > i {
@@ -171,6 +170,12 @@ html {
           color: #4cd137; }
       html body main #content[data-page-id="11"] #what-is-this h2 {
         color: #fbc531; }
+    html body footer #footer-content {
+      margin: 0 auto;
+      padding: 15px;
+      width: 70vw; }
+      html body footer #footer-content #github-link:hover {
+        text-decoration: none; }
   html .nittro-transition-bar::before {
     background-color: #4cd137; }
 

@@ -434,6 +434,9 @@ html {
     td > input {
       width: 100%;
     }
+    .fr-view a,.fr-element a{
+      text-decoration: underline;
+    }
   }
 
 }

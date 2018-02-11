@@ -19,7 +19,7 @@ body {
     -ms-transition: inherit;
     -o-transition: inherit;
     transition: inherit;
-    text-decoration: inherit;
+/*    text-decoration: inherit;*/
 
     &:not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit;
