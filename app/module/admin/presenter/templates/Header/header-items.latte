@@ -49,8 +49,8 @@
                             <span class="header-item-custom-url">
                                 {_"admin.header.default.custom.url"}: <span>{$page->getUrl()}</span>
                             </span>
-                        {else}
-                            {if $page->isTitleCustom()}
+                        {elseif $page->isPage()}
+                            {if $page->hasCustomTitle()}
                                 <span class="header-item-page-custom-title">
                                 {_"admin.header.default.page.title"}: <span>{$page->getTitle()}</span>
                             </span>
