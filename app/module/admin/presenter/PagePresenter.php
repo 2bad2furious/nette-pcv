@@ -131,7 +131,9 @@ class PagePresenter extends AdminPresenter {
             array_map(
                 function (\PageWrapper $pageWrapper) {
                     return [
-                        "text" => $pageWrapper->getGlobalId() . " - " . $this->translator->translate($pageWrapper->getTitle()),
+                        "text" => $pageWrapper->isTitleDefault()
+                            ? $this->translator->translate($pageWrapper->getTitle())
+                            : $pageWrapper->getTitle(),
                         "href" => $pageWrapper->getShortcode(),
                     ];
                 }, $this->getPageManager()->getAllPages($page->getLanguageId(), \IPageManager::TYPE_ALL, \IPageManager::ORDER_BY_ID))
