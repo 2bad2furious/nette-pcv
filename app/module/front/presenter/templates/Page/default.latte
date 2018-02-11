@@ -58,6 +58,8 @@
             crossorigin="anonymous" defer></script>
     <script src="/libs/nittro/nittro.min.js" type="application/javascript" defer></script>
     <script src="/js/js.min.js" type="application/javascript" defer></script>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js" defer type="application/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
     {var $logo = $page->getFavicon()}
     {if $logo}
         <link rel="shortcut icon" href="/{$logo->getWholeSrc()}"/>
@@ -76,9 +78,9 @@
     {control header}
 </header>
 <main n:snippet="content">
-    <div n:snippet="breadcrumbs">
+    <nav aria-label="breadcrumb" n:snippet="breadcrumbs">
         {control breadcrumbs}
-    </div>
+    </nav>
     <div id="content"
             n:class="$page->isHomePage() ? homepage"
          data-language="{$page->getLanguage()->getCode()}"
@@ -92,6 +94,6 @@
         {control content}
     </div>
 </main>
-{*{control footerPage}*}
+{control footer}
 </body>
 </html>

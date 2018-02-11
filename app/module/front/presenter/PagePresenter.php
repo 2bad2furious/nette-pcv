@@ -6,6 +6,7 @@ use ArticlePageControl;
 use BasePresenter;
 use ContentControl;
 use HeaderPageControl;
+use IFileManager;
 use PageManager;
 use SectionPageControl;
 
@@ -21,6 +22,12 @@ class PagePresenter extends BasePresenter {
     }
 
     /**
+     * @var int
+     * @persistent
+     */
+    public $page_id;
+
+    /**
      * @throws \LanguageByCodeNotFound
      * @throws \LanguageByIdNotFound
      */
@@ -29,7 +36,9 @@ class PagePresenter extends BasePresenter {
         $language = $this->getLocaleLanguage()->getId();
 
         $this->page = $this->getPageManager()->getByUrl($language, (string)$url);
-        if ($this->page instanceof \PageWrapper && $this->page->isHomePage()) $this->redirect(301, "Home", [self::PARAM_URL => null]);
+        if ($this->page instanceof \PageWrapper && ($this->page->isHomePage() || $this->page->is404()))
+            $this->redirect(301, "home", [self::PARAM_URL => null]);
+
         $this->prepareTemplate();
     }
 
@@ -39,8 +48,12 @@ class PagePresenter extends BasePresenter {
      */
     public function actionPermanent() {
         $id = $this->getParameter(self::PARAM_ID);
+
         $this->page = $this->getPageManager()->getByGlobalId($this->getLocaleLanguage()->getId(), $id);
-        $this->prepareTemplate();
+        if (!$this->page instanceof \PageWrapper || $this->page->is404() || $this->page->isHomePage())
+            $this->redirect(302, "home", [self::PARAM_ID => null]);
+
+        $this->redirect(302, "default", [self::PARAM_URL => $this->page->getUrl(), self::PARAM_ID => null]);
     }
 
     /**
@@ -51,7 +64,7 @@ class PagePresenter extends BasePresenter {
         $page = $this->page;
 
         if (!$page instanceof \PageWrapper || (!$page->isVisible() && !$this->getUser()->isAllowed(\IPageManager::ACTION_SEE_NON_PUBLIC_PAGES)))
-            $page = $this->getPageManager()->get404($this->getLocaleLanguage()->getId());
+            $this->page = $page = $this->getPageManager()->get404($this->getLocaleLanguage()->getId());
 
         $this->template->page = $page;
         $this->payload->title = $page->getTitle();
@@ -68,7 +81,6 @@ class PagePresenter extends BasePresenter {
         $language = $this->getLocaleLanguage();
 
         $this->page = $this->getPageManager()->getByGlobalId($language->getId(), $language->getHomepageId());
-        dump($this->page, $language);
         $this->prepareTemplate();
     }
 
@@ -102,5 +114,9 @@ class PagePresenter extends BasePresenter {
 
     public function createComponentBreadcrumbs(string $name) {
         return new \BreadCrumbsControl($this->getPage(), $this, $name);
+    }
+
+    public function createComponentFooter(string $name): \FooterPageControl {
+        return new \FooterPageControl($this->getPage(), $this, $name);
     }
 }
