@@ -102,7 +102,6 @@ class HeaderWrapper {
      * @throws InvalidState
      */
     public function getUrl(): string {
-        dump($this);
         if ($this->isPage())
             return $this->getPage()->getCheckedUrl();
 
@@ -115,8 +114,12 @@ class HeaderWrapper {
      */
     public function getTitle(): string {
         if ($this->isPage())
-            return $this->getHeader()->getTitle() ?:
-                $this->getPage()->isTitleDefault() ? "" : $this->getPage()->getTitle(); //checking whether the title is set
+            return $this->hasCustomTitle()
+                ? $this->getHeader()->getTitle()
+                : ($this->getPage()->isTitleDefault()
+                    ? ""
+                    : $this->getPage()->getTitle()
+                ); //checking whether the title is set
 
         return $this->getHeader()->getTitle();
     }
@@ -150,7 +153,7 @@ class HeaderWrapper {
         return call_user_func_array([$this->getHeader(), $name], $arguments);
     }
 
-    public function isTitleCustom(): bool {
+    public function hasCustomTitle(): bool {
         return !!$this->getHeader()->getTitle();
     }
 
@@ -176,6 +179,6 @@ class HeaderWrapper {
      * @return bool
      */
     public function isOk(): bool {
-        return !$this->isPage() || ($this->getPage() instanceof PageWrapper && $this->getPage()->isVisibile());
+        return !$this->isPage() || ($this->getPage() instanceof PageWrapper && $this->getPage()->isVisible());
     }
 }
