@@ -24,16 +24,19 @@ class ShortcodeManager extends Manager implements IShortcodeManager {
                 new \Maiorano\Shortcodes\Library\SimpleShortcode(
                     "link",
                     [
-                        "pageId" => null,
-                        "landId" => null
+                        "page_id" => null,
+                        "lang_id" => null
                     ],
                     function (string $content, array $atts) use ($pm) {
-                        $pageId = (int)@$atts["pageId"];
-                        $langId = (int)@$atts["langId"];
+                        $pageId = (int)@$atts["page_id"];
+                        $langId = (int)@$atts["lang_id"];
+
+                        dump($pageId, $langId, $atts);
 
                         if (!$pageId || !$langId) return "";
 
                         $page = $pm->getByGlobalId($langId, $pageId, false);
+                        dump($page);
                         if ($page instanceof PageWrapper) return $page->getCompleteUrl(true);
                         return "";
                     }
@@ -41,4 +44,25 @@ class ShortcodeManager extends Manager implements IShortcodeManager {
             ]
         );
     }
+
+    public function runShortcode(string $content, array $tags = [], bool $deep = false): string {
+        $unwebalized = $this->unwebalizeLinks($content);
+        return $this->getRegistrar()->doShortcode($unwebalized, $tags, $deep);
+    }
+
+    private function unwebalizeLinks(string $content): string {
+        $links = $this->findShortcodeLinks($content);
+        foreach ($links as $link) {
+            dump($link, urldecode($link));
+            $content = str_replace($link, urldecode($link), $content);
+        }
+        return $content;
+    }
+
+    private function findShortcodeLinks(string $content): array {
+        preg_match_all("#\[(link)[^\[\]]*\]#", $content, $matches);
+        return $matches[0];
+    }
+
+
 }

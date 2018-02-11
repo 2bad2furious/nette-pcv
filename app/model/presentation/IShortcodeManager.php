@@ -7,5 +7,7 @@
  */
 
 interface IShortcodeManager extends IManager {
-    public function getRegistrar():\Maiorano\Shortcodes\Manager\ShortcodeManager;
+    public function getRegistrar(): \Maiorano\Shortcodes\Manager\ShortcodeManager;
+
+    public function runShortcode(string $content, array $tags = [], bool $deep = false): string;
 }

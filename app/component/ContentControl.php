@@ -1,8 +1,6 @@
 <?php
 
 
-use Maiorano\Shortcodes\Manager\ShortcodeManager;
-
 class ContentControl extends BaseControl {
 
     private $page;
@@ -15,7 +13,7 @@ class ContentControl extends BaseControl {
     /**
      */
     public function render() {
-        $m = $this->getShortCodeManager();
+        $m = $this->getRegistrar();
         $page = $this->page;
         $template = $this->createTemplate();
         $pm = $this->getPageManager();
@@ -25,10 +23,10 @@ class ContentControl extends BaseControl {
                     "posts", [
                     "limit" => 5,
                     "excerpt" => 200,
-                    "excerptEnd" => "...",
-                    "excerptMore" => "Read more.",
+                    "excerpt_end" => "...",
+                    "excerpt_more" => "Read more.",
                 ], function (string $content, array $atts) use ($page, $pm, $template) {
-                    dump($atts, $content);
+
                     $limit = (int)$atts['limit'] ?: 15;
                     $order = (int)$atts['order'] ?: IPageManager::ORDER_BY_ID;
 
@@ -40,20 +38,24 @@ class ContentControl extends BaseControl {
                     $template->posts = array_map(function (array $posts) {
                         return end($posts);
                     }, $arr);
-                    $template->excerptReadMore = $atts['excerptMore'];
+                    $template->excerptReadMore = $atts['excerpt_more'];
                     $template->excerpt = (int)$atts['excerpt'] ?: 200;
-                    $template->excerptEnd = $atts['excerptEnd'];
+                    $template->excerptEnd = $atts['excerpt_end'];
                     $template->render();
                 }));
-        }catch (\Maiorano\Shortcodes\Exceptions\RegisterException $ex){
+        } catch (\Maiorano\Shortcodes\Exceptions\RegisterException $ex) {
             \Tracy\Debugger::log($ex);
         }
-        echo $m->doShortcode($this->page->getContent());
+        $content = $this->page->getContent();
+        echo $this->getShortCodeManager()->runShortcode($content);
     }
 
-    private function getShortCodeManager(): ShortcodeManager {
+    private function getShortCodeManager(): IShortcodeManager {
         /** @var IShortcodeManager $sm */
-        $sm = $this->getPresenter()->context->getByType(\IShortcodeManager::class);
-        return $sm->getRegistrar();
+        return $this->getPresenter()->context->getByType(\IShortcodeManager::class);
+    }
+
+    private function getRegistrar(): \Maiorano\Shortcodes\Manager\ShortcodeManager {
+        return $this->getShortCodeManager()->getRegistrar();
     }
 }
