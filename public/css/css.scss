@@ -1,10 +1,11 @@
 @import "default";
+@import url('https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900&subset=latin-ext');
 
 $color1: "white";
 $color2: "black";
 
 $contentWidth: 70vw;
-$contentPadding: 15px;
+$contentPadding: 1em;
 //use body to overwrite it in specific
 
 //theme - styles that aren't specific to screen size and browser and stuff
@@ -19,6 +20,7 @@ html {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-size: 2em;
   //overflow-y: scroll;
 
   -webkit-transition: 0.1s all ease-out;
@@ -26,13 +28,17 @@ html {
   -ms-transition: 0.1s all ease-out;
   -o-transition: 0.1s all ease-out;
   transition: 0.1s all ease-out;
-  font-family: "Open Sans", sans-serif;
-
+  font-family: 'Catamaran', sans-serif;
   //mobile first
   body {
+    font-family: 'Catamaran', sans-serif;
     background-color: $color1;
     * {
       color: $color2;
+    }
+
+    &.nittro-transition-bar::before {
+      background-color: #440381;
     }
     #snippet--admin-header-bar {
       display: flex;
@@ -55,13 +61,14 @@ html {
     header {
       top: 0;
       left: 0;
-      padding: 10px;
+      padding: 0.25em;
       width: 100%;
       color: #273c75;
-      border-bottom: 3px solid #8c7ae6;
+      border-bottom: 0.1em solid #440381;
 
       & > input.header-toggler ~ label > i {
-        color: #8c7ae6;
+        vertical-align: middle;
+        color: #440381;
       }
 
       input.header-toggler {
@@ -84,13 +91,14 @@ html {
 
       }
       label {
+        margin: 0;
         &.small {
           i.expand, i.collapse {
             font-size: 1em;
           }
         }
         i.expand, i.collapse {
-          font-size: 2em;
+          font-size: 1em;
           @extend .link;
           @extend .big;
           @extend .scale;
@@ -118,7 +126,7 @@ html {
           li {
             //min-width: 320px;
             a, i {
-              font-size: 1.25em;
+              font-size: 0.75em;
               color: white;
             }
 
@@ -128,34 +136,97 @@ html {
       }
     }
     main {
+      #snippet--breadcrumbs {
+        font-size: 0.5em;
+        .breadcrumb {
+          border-radius: 0;
+          padding: 0.75em 1em;
+          margin-bottom: 0;
+        }
+      }
       #content {
         margin: 0 auto;
         padding: $contentPadding;
         width: $contentWidth;
         min-width: 320px;
-        &[data-page-id="11"] {
-          hr {
-            border-width: 2px;
-            &:nth-of-type(1) {
-              border-color: #9c88ff;
+        &[data-page-id="1"] {
+          padding: 0;
+          width: 100%;
+          .home-box {
+            width: 100%;
+            padding: 30px (100vw - $contentWidth)/2;
+            margin: 0 auto;
+            display: flex;
+
+            &#nadpis {
+              background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%),
+              linear-gradient(-45deg, #440381 100%, transparent 33%);
+              background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%),
+              linear-gradient(-45deg, #440381 100%, transparent 33%);
+              background: linear-gradient(-45deg, #ec368d 33%, transparent 0%),
+              linear-gradient(-45deg, #440381 100%, transparent 33%);
+
+              min-height: calc(100vh - 2.1rem + 1px); //0.1 + 2x0.25 + 1.5
+
+              .home-box-content {
+                background-color: transparent;
+                color: #f5f6fa;
+                align-self: center;
+                justify-self: center;
+              }
             }
-          }
-          h1, h2, h3 {
-            text-align: center;
-          }
-          #top {
-            text-align: center;
-            img {
-              height: auto;
-              width: auto;
+
+            &#proc {
+              padding: 2em;
+              .home-box-content {
+                > div {
+                  display: flex;
+                  flex-direction: row;
+                  flex-wrap: wrap;
+                  justify-content: space-between;
+                  .half-block {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-content: stretch;
+                    flex-wrap: wrap;
+                    overflow-wrap:break-word;
+                    flex-grow: 1;/* important AF*/
+                    flex-basis: 14.5em; /* this needs to be 1*card-basis + 2*card-margin */
+                    .card {
+                      flex: 1 13.5em;
+                      margin: 0.5em;
+                      .icon {
+                        text-align: center;
+                        padding: 0.1em 0;
+                        background-color: #440381;
+                        color: #e6efe9;
+                        font-size: 1.5em;
+                      }
+                      .content {
+                        padding: 0.5em 1em;
+                        h3 {
+                          font-size: 1.2em;
+                          color: #440381;
+                          font-weight: 600;
+                          margin-bottom: 0.2em;
+                          text-align: center;
+                        }
+                        p {
+                          font-size: 0.75em;
+                          text-align: center;
+                          margin-bottom: 0.2em;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
-            h1 {
-              color: #4cd137;
-            }
-          }
-          #what-is-this {
-            h2 {
-              color: #fbc531;
+
+            .home-box-content {
+              width: 100%;
+              padding: $contentPadding;
             }
           }
         }
@@ -180,8 +251,5 @@ html {
   /* use this instead of display:grid because of Edge - thank you, Microsoft*/
   @supports (grid-area: auto) {
 
-  }
-  .nittro-transition-bar::before {
-    background-color: #4cd137;
   }
 }

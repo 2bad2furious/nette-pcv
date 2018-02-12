@@ -1,8 +1,9 @@
 /*if just * was used, you could see the title and scripts xd lmao*/
-body {
+@import url("https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900&subset=latin-ext");
+html body {
   padding: 0;
   margin: 0; }
-  body, body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]) {
+  html body, html body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]) {
     box-sizing: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
@@ -11,71 +12,71 @@ body {
     -o-transition: inherit;
     transition: inherit;
     /*    text-decoration: inherit;*/ }
-    body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]):not(input):not(textarea):not(select):not(option):not(body) {
+    html body:not(input):not(textarea):not(select):not(option):not(body), html body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]):not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit; }
-  body .nittro-dialog-content {
+  html body .nittro-dialog-content {
     color: black; }
-  body .nittro-dialog-holder {
+  html body .nittro-dialog-holder {
     justify-content: center; }
-  body:not(p, span, a) {
+  html body:not(p, span, a) {
     display: block; }
-  body:not(textarea) {
+  html body:not(textarea) {
     transition: inherit; }
-  body textarea.oneline {
+  html body textarea.oneline {
     resize: none; }
-  body .center-all {
+  html body .center-all {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%); }
-  body .scale, html body header label i.expand, html body header label i.collapse {
+  html body .scale, html body header label i.expand, html body header label i.collapse {
     display: inline-block; }
-    body .scale.big:hover, html body header label i.expand:hover, html body header label i.collapse:hover, body .scale.big:hover *, html body header label i.expand:hover *, html body header label i.collapse:hover * {
+    html body .scale.big:hover, html body header label i.expand:hover, html body header label i.collapse:hover, html body .scale.big:hover *, html body header label i.expand:hover *, html body header label i.collapse:hover * {
       -webkit-transform: scale(1.3);
       -moz-transform: scale(1.3);
       -ms-transform: scale(1.3);
       -o-transform: scale(1.3);
       transform: scale(1.3); }
-    body .scale:not(.big):hover, html body header label i.expand:not(.big):hover, html body header label i.collapse:not(.big):hover, body .scale:not(.big):hover *, html body header label i.expand:not(.big):hover *, html body header label i.collapse:not(.big):hover * {
+    html body .scale:not(.big):hover, html body header label i.expand:not(.big):hover, html body header label i.collapse:not(.big):hover, html body .scale:not(.big):hover *, html body header label i.expand:not(.big):hover *, html body header label i.collapse:not(.big):hover * {
       -webkit-transform: scale(1.02);
       -moz-transform: scale(1.02);
       -ms-transform: scale(1.02);
       -o-transform: scale(1.02);
       transform: scale(1.02); }
-  body .link, html body header label i.expand, html body header label i.collapse {
+  html body .link, html body header label i.expand, html body header label i.collapse {
     padding: 2px;
     cursor: pointer; }
-  body .nice-button {
+  html body .nice-button {
     width: 60px;
     text-align: center;
     padding: 10px;
     background: #00a8ff;
     margin: 10px 0px; }
-    body .nice-button:hover {
+    html body .nice-button:hover {
       background-color: #0097e6; }
-  body #snippet--flashes {
+  html body #snippet--flashes {
     position: relative; }
-    body #snippet--flashes #flashes {
+    html body #snippet--flashes #flashes {
       list-style-type: none;
       padding: 20px 10px 20px; }
-      body #snippet--flashes #flashes li.nittro-flash {
+      html body #snippet--flashes #flashes li.nittro-flash {
         color: #f5f6fa; }
-        body #snippet--flashes #flashes li.nittro-flash::before {
+        html body #snippet--flashes #flashes li.nittro-flash::before {
           border: none; }
-        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
+        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
           background-color: #e84118; }
-        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
+        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
           background-color: #4cd137; }
-        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
+        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
           background-color: #00a8ff; }
-        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
+        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
           background-color: #fbc531; }
-      body #snippet--flashes #flashes:empty {
+      html body #snippet--flashes #flashes:empty {
         padding: 0;
         margin: 0; }
-        body #snippet--flashes #flashes:empty ~ #flash-closer {
+        html body #snippet--flashes #flashes:empty ~ #flash-closer {
           display: none; }
-    body #snippet--flashes #flash-closer {
+    html body #snippet--flashes #flash-closer {
       position: absolute;
       right: 10px;
       top: 20px; }
@@ -85,17 +86,21 @@ html {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-size: 2em;
   -webkit-transition: 0.1s all ease-out;
   -moz-transition: 0.1s all ease-out;
   -ms-transition: 0.1s all ease-out;
   -o-transition: 0.1s all ease-out;
   transition: 0.1s all ease-out;
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Catamaran', sans-serif;
   /* use this instead of display:grid because of Edge - thank you, Microsoft*/ }
   html body {
+    font-family: 'Catamaran', sans-serif;
     background-color: "white"; }
     html body * {
       color: "black"; }
+    html body.nittro-transition-bar::before {
+      background-color: #440381; }
     html body #snippet--admin-header-bar {
       display: flex;
       flex-direction: row;
@@ -109,12 +114,13 @@ html {
     html body header {
       top: 0;
       left: 0;
-      padding: 10px;
+      padding: 0.25em;
       width: 100%;
       color: #273c75;
-      border-bottom: 3px solid #8c7ae6; }
+      border-bottom: 0.1em solid #440381; }
       html body header > input.header-toggler ~ label > i {
-        color: #8c7ae6; }
+        vertical-align: middle;
+        color: #440381; }
       html body header input.header-toggler {
         display: none; }
         html body header input.header-toggler:checked ~ label > i.collapse {
@@ -127,12 +133,14 @@ html {
           height: initial; }
         html body header input.header-toggler:checked ~ nav, html body header input.header-toggler:checked ~ ul {
           width: initial; }
-      html body header label.small i.expand, html body header label.small i.collapse {
-        font-size: 1em; }
-      html body header label i.expand, html body header label i.collapse {
-        font-size: 2em;
-        cursor: pointer;
-        display: none; }
+      html body header label {
+        margin: 0; }
+        html body header label.small i.expand, html body header label.small i.collapse {
+          font-size: 1em; }
+        html body header label i.expand, html body header label i.collapse {
+          font-size: 1em;
+          cursor: pointer;
+          display: none; }
       html body header nav {
         height: 0;
         width: 0;
@@ -148,35 +156,84 @@ html {
           margin: 0;
           overflow: hidden; }
           html body header nav ul li a, html body header nav ul li i {
-            font-size: 1.25em;
+            font-size: 0.75em;
             color: white; }
+    html body main #snippet--breadcrumbs {
+      font-size: 0.5em; }
+      html body main #snippet--breadcrumbs .breadcrumb {
+        border-radius: 0;
+        padding: 0.75em 1em;
+        margin-bottom: 0; }
     html body main #content {
       margin: 0 auto;
-      padding: 15px;
+      padding: 1em;
       width: 70vw;
       min-width: 320px; }
-      html body main #content[data-page-id="11"] hr {
-        border-width: 2px; }
-        html body main #content[data-page-id="11"] hr:nth-of-type(1) {
-          border-color: #9c88ff; }
-      html body main #content[data-page-id="11"] h1, html body main #content[data-page-id="11"] h2, html body main #content[data-page-id="11"] h3 {
-        text-align: center; }
-      html body main #content[data-page-id="11"] #top {
-        text-align: center; }
-        html body main #content[data-page-id="11"] #top img {
-          height: auto;
-          width: auto; }
-        html body main #content[data-page-id="11"] #top h1 {
-          color: #4cd137; }
-      html body main #content[data-page-id="11"] #what-is-this h2 {
-        color: #fbc531; }
+      html body main #content[data-page-id="1"] {
+        padding: 0;
+        width: 100%; }
+        html body main #content[data-page-id="1"] .home-box {
+          width: 100%;
+          padding: 30px 15vw;
+          margin: 0 auto;
+          display: flex; }
+          html body main #content[data-page-id="1"] .home-box#nadpis {
+            background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
+            background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
+            background: linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
+            min-height: calc(100vh - 2.1rem + 1px); }
+            html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content {
+              background-color: transparent;
+              color: #f5f6fa;
+              align-self: center;
+              justify-self: center; }
+          html body main #content[data-page-id="1"] .home-box#proc {
+            padding: 2em; }
+            html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div {
+              display: flex;
+              flex-direction: row;
+              flex-wrap: wrap;
+              justify-content: space-between; }
+              html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-content: stretch;
+                flex-wrap: wrap;
+                overflow-wrap: break-word;
+                flex-grow: 1;
+                /* important AF*/
+                flex-basis: 14.5em;
+                /* this needs to be 1*card-basis + 2*card-margin */ }
+                html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card {
+                  flex: 1 13.5em;
+                  margin: 0.5em; }
+                  html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .icon {
+                    text-align: center;
+                    padding: 0.1em 0;
+                    background-color: #440381;
+                    color: #e6efe9;
+                    font-size: 1.5em; }
+                  html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content {
+                    padding: 0.5em 1em; }
+                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content h3 {
+                      font-size: 1.2em;
+                      color: #440381;
+                      font-weight: 600;
+                      margin-bottom: 0.2em;
+                      text-align: center; }
+                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content p {
+                      font-size: 0.75em;
+                      text-align: center;
+                      margin-bottom: 0.2em; }
+          html body main #content[data-page-id="1"] .home-box .home-box-content {
+            width: 100%;
+            padding: 1em; }
     html body footer #footer-content {
       margin: 0 auto;
-      padding: 15px;
+      padding: 1em;
       width: 70vw; }
       html body footer #footer-content #github-link:hover {
         text-decoration: none; }
-  html .nittro-transition-bar::before {
-    background-color: #4cd137; }
 
 /*# sourceMappingURL=css.css.map */
