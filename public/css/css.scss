@@ -6,6 +6,9 @@ $color2: "black";
 
 $contentWidth: 70vw;
 $contentPadding: 1em;
+
+$firstMediaTag: 46em;
+$secondMediaTag: 28em;
 //use body to overwrite it in specific
 
 html {
@@ -34,6 +37,7 @@ html {
       background-color: #440381;
     }
     #snippet--admin-header-bar {
+      font-size: 0.7em;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -129,7 +133,7 @@ html {
     }
     main {
       #snippet--breadcrumbs {
-        font-size: 0.5em;
+        font-size: 0.7em;
         .breadcrumb {
           border-radius: 0;
           padding: 0.75em 1em;
@@ -141,6 +145,29 @@ html {
         padding: $contentPadding;
         width: $contentWidth;
         min-width: 320px;
+
+        @media screen and(max-width: $firstMediaTag) {
+          width: 100%;
+          padding: 0.5em;
+        }
+
+        h1#default {
+          font-size: 1.75em;
+        }
+
+        h1 {
+          font-size: 1.75em;
+        }
+        h2 {
+          font-size: 1.5em;
+        }
+        h3 {
+          font-size: 1.325em;
+        }
+        h4 {
+          font-size: 1.17em;
+        }
+
         &[data-page-id="1"] {
           padding: 0;
           width: 100%;
@@ -149,6 +176,19 @@ html {
             padding: 30px (100vw - $contentWidth)/2;
             margin: 0 auto;
             display: flex;
+
+            .home-box-content {
+              width: 100%;
+              padding: $contentPadding;
+
+              @media screen and (max-width: $firstMediaTag) {
+                padding: 0;
+              }
+            }
+
+            @media screen and (max-width: $firstMediaTag) {
+              padding: 30px;
+            }
 
             &#nadpis, &#heading {
               background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%),
@@ -165,21 +205,42 @@ html {
                 color: #f5f6fa;
                 align-self: center;
                 justify-self: center;
+
+                h1 {
+                  font-size: 2.5em;
+                  @media screen and(max-width: $firstMediaTag) {
+                    font-size: 11vw;
+                  }
+                }
+                p {
+                  @media screen and(max-width: $firstMediaTag) {
+                    font-size: 6vw;
+                  }
+                }
               }
             }
 
             &#proc, &#why {
               padding: 2em;
+
+              @media screen and (max-width: $firstMediaTag) {
+                padding: 0.4em;
+              }
+
+              @media screen and (max-width: $secondMediaTag) {
+                padding: 0.4em 0;
+              }
               .home-box-content {
                 > div {
                   display: flex;
                   flex-direction: row;
                   flex-wrap: wrap;
-                  justify-content: space-between;
+                  justify-content: stretch;
+                  align-content: stretch;
                   .half-block {
                     display: flex;
                     flex-direction: row;
-                    justify-content: center;
+                    justify-content: stretch;
                     align-content: stretch;
                     flex-wrap: wrap;
                     overflow-wrap: break-word;
@@ -188,6 +249,11 @@ html {
                     .card {
                       flex: 1 13.5em;
                       margin: 0.5em;
+
+                      @media screen and (max-width: $firstMediaTag) {
+                        margin: 0.5em 0;
+                      }
+
                       .icon {
                         text-align: center;
                         padding: 0.1em 0;
@@ -197,6 +263,9 @@ html {
                       }
                       .content {
                         padding: 0.5em 1em;
+                        @media screen and (max-width: $firstMediaTag) {
+                          padding: 0.2em 0.6em;
+                        }
                         h3 {
                           font-size: 1.2em;
                           color: #440381;
@@ -215,10 +284,14 @@ html {
                 }
               }
             }
+            &#more-info, &#vice-info {
+              @media screen and (max-width: $secondMediaTag) {
+                padding: 0;
 
-            .home-box-content {
-              width: 100%;
-              padding: $contentPadding;
+                button {
+                  margin-bottom: 0.5em;
+                }
+              }
             }
           }
         }
@@ -257,6 +330,10 @@ html {
         }
       }
     }
+  }
+
+  @media screen and (max-width: 25em) {
+
   }
 
   //modern last

@@ -102,6 +102,7 @@ html {
     html body.nittro-transition-bar::before {
       background-color: #440381; }
     html body #snippet--admin-header-bar {
+      font-size: 0.7em;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -159,7 +160,7 @@ html {
             font-size: 0.75em;
             color: white; }
     html body main #snippet--breadcrumbs {
-      font-size: 0.5em; }
+      font-size: 0.7em; }
       html body main #snippet--breadcrumbs .breadcrumb {
         border-radius: 0;
         padding: 0.75em 1em;
@@ -169,6 +170,20 @@ html {
       padding: 1em;
       width: 70vw;
       min-width: 320px; }
+      @media screen and (max-width: 46em) {
+        html body main #content {
+          width: 100%;
+          padding: 0.5em; } }
+      html body main #content h1#default {
+        font-size: 1.75em; }
+      html body main #content h1 {
+        font-size: 1.75em; }
+      html body main #content h2 {
+        font-size: 1.5em; }
+      html body main #content h3 {
+        font-size: 1.325em; }
+      html body main #content h4 {
+        font-size: 1.17em; }
       html body main #content[data-page-id="1"] {
         padding: 0;
         width: 100%; }
@@ -177,6 +192,15 @@ html {
           padding: 30px 15vw;
           margin: 0 auto;
           display: flex; }
+          html body main #content[data-page-id="1"] .home-box .home-box-content {
+            width: 100%;
+            padding: 1em; }
+            @media screen and (max-width: 46em) {
+              html body main #content[data-page-id="1"] .home-box .home-box-content {
+                padding: 0; } }
+          @media screen and (max-width: 46em) {
+            html body main #content[data-page-id="1"] .home-box {
+              padding: 30px; } }
           html body main #content[data-page-id="1"] .home-box#nadpis, html body main #content[data-page-id="1"] .home-box#heading {
             background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
             background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
@@ -187,17 +211,32 @@ html {
               color: #f5f6fa;
               align-self: center;
               justify-self: center; }
+              html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
+                font-size: 2.5em; }
+                @media screen and (max-width: 46em) {
+                  html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
+                    font-size: 11vw; } }
+              @media screen and (max-width: 46em) {
+                html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content p, html body main #content[data-page-id="1"] .home-box#heading .home-box-content p {
+                  font-size: 6vw; } }
           html body main #content[data-page-id="1"] .home-box#proc, html body main #content[data-page-id="1"] .home-box#why {
             padding: 2em; }
+            @media screen and (max-width: 46em) {
+              html body main #content[data-page-id="1"] .home-box#proc, html body main #content[data-page-id="1"] .home-box#why {
+                padding: 0.4em; } }
+            @media screen and (max-width: 28em) {
+              html body main #content[data-page-id="1"] .home-box#proc, html body main #content[data-page-id="1"] .home-box#why {
+                padding: 0.4em 0; } }
             html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div {
               display: flex;
               flex-direction: row;
               flex-wrap: wrap;
-              justify-content: space-between; }
+              justify-content: stretch;
+              align-content: stretch; }
               html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block {
                 display: flex;
                 flex-direction: row;
-                justify-content: center;
+                justify-content: stretch;
                 align-content: stretch;
                 flex-wrap: wrap;
                 overflow-wrap: break-word;
@@ -208,6 +247,9 @@ html {
                 html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
                   flex: 1 13.5em;
                   margin: 0.5em; }
+                  @media screen and (max-width: 46em) {
+                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
+                      margin: 0.5em 0; } }
                   html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .icon, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .icon {
                     text-align: center;
                     padding: 0.1em 0;
@@ -216,6 +258,9 @@ html {
                     font-size: 1.5em; }
                   html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
                     padding: 0.5em 1em; }
+                    @media screen and (max-width: 46em) {
+                      html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
+                        padding: 0.2em 0.6em; } }
                     html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content h3, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content h3 {
                       font-size: 1.2em;
                       color: #440381;
@@ -226,9 +271,11 @@ html {
                       font-size: 0.75em;
                       text-align: center;
                       margin-bottom: 0.2em; }
-          html body main #content[data-page-id="1"] .home-box .home-box-content {
-            width: 100%;
-            padding: 1em; }
+          @media screen and (max-width: 28em) {
+            html body main #content[data-page-id="1"] .home-box#more-info, html body main #content[data-page-id="1"] .home-box#vice-info {
+              padding: 0; }
+              html body main #content[data-page-id="1"] .home-box#more-info button, html body main #content[data-page-id="1"] .home-box#vice-info button {
+                margin-bottom: 0.5em; } }
     html body footer {
       border-top: solid 0.1em #440381; }
       html body footer #footer-content {
