@@ -1,0 +1,2 @@
+INSERT INTO `cms-nette`.language (language_id, code, site_name, title_separator, ga, homepage_id, errorpage_id, favicon_id, logo_id, friendly) VALUES (1, 'en_US', 'Nette in english xd', ' | ', '', 1, 0, 0, 0, 'english US');
+INSERT INTO `cms-nette`.language (language_id, code, site_name, title_separator, ga, homepage_id, errorpage_id, favicon_id, logo_id, friendly) VALUES (2, 'cs_CZ', 'Nette in czech xd', '', '', 1, 0, 0, 0, 'čeština');

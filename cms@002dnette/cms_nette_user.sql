@@ -1,0 +1,1 @@
+INSERT INTO `cms-nette`.user (user_id, username, email, password, created, verified, role, current_language) VALUES (1, 'coolklokan', 'coolklokan@gmail.com', '$2y$10$4NZhgjQF6bnHsuzCoj2Zu.HcHOM7zC6nRhnqw6LZpdGFMyHyp5IBC', '2017-09-14 04:08:40', null, 5, 'en_US');
