@@ -94,6 +94,9 @@
                 <i class="fa fa-times"></i>
             </a>
         </div>
+        {if $page->getDisplayTitle()}
+            <h1 id="default">{$page->getTitle()}</h1>
+        {/if}
         {control content}
     </div>
 </main>
