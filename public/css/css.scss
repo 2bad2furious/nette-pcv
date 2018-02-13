@@ -8,13 +8,6 @@ $contentWidth: 70vw;
 $contentPadding: 1em;
 //use body to overwrite it in specific
 
-//theme - styles that aren't specific to screen size and browser and stuff
-body {
-  header {
-
-  }
-}
-
 html {
   /* inheritance */
   box-sizing: border-box;
@@ -53,7 +46,7 @@ html {
       }
       #logout {
         &:hover > i {
-          color: red;
+          color: #e63946;
         }
       }
     }
@@ -65,7 +58,6 @@ html {
       width: 100%;
       color: #273c75;
       border-bottom: 0.1em solid #440381;
-
       & > input.header-toggler ~ label > i {
         vertical-align: middle;
         color: #440381;
@@ -158,7 +150,7 @@ html {
             margin: 0 auto;
             display: flex;
 
-            &#nadpis {
+            &#nadpis, &#heading {
               background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%),
               linear-gradient(-45deg, #440381 100%, transparent 33%);
               background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%),
@@ -176,7 +168,7 @@ html {
               }
             }
 
-            &#proc {
+            &#proc, &#why {
               padding: 2em;
               .home-box-content {
                 > div {
@@ -190,8 +182,8 @@ html {
                     justify-content: center;
                     align-content: stretch;
                     flex-wrap: wrap;
-                    overflow-wrap:break-word;
-                    flex-grow: 1;/* important AF*/
+                    overflow-wrap: break-word;
+                    flex-grow: 1; /* important AF*/
                     flex-basis: 14.5em; /* this needs to be 1*card-basis + 2*card-margin */
                     .card {
                       flex: 1 13.5em;
@@ -233,14 +225,34 @@ html {
       }
     }
     footer {
+      border-top: solid 0.1em #440381;
       #footer-content {
         margin: 0 auto;
         padding: $contentPadding;
         width: $contentWidth;
+        p {
+          margin: 0;
+          button {
+            font-size: 0.8em;
+            i {
+              vertical-align: middle;;
+            }
+          }
 
-        #github-link {
-          &:hover {
-            text-decoration: none;
+          #github-link {
+            &:hover {
+              text-decoration: none;
+            }
+          }
+        }
+        #languageSwitch {
+          font-size: 0.7em;
+          button {
+            color: #e63946;
+            &.btn-close {
+              color: #e6efe9;
+              background-color: #e63946;
+            }
           }
         }
       }

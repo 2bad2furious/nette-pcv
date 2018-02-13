@@ -110,7 +110,7 @@ html {
       html body #snippet--admin-header-bar * {
         color: "white"; }
       html body #snippet--admin-header-bar #logout:hover > i {
-        color: red; }
+        color: #e63946; }
     html body header {
       top: 0;
       left: 0;
@@ -177,24 +177,24 @@ html {
           padding: 30px 15vw;
           margin: 0 auto;
           display: flex; }
-          html body main #content[data-page-id="1"] .home-box#nadpis {
+          html body main #content[data-page-id="1"] .home-box#nadpis, html body main #content[data-page-id="1"] .home-box#heading {
             background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
             background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
             background: linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
             min-height: calc(100vh - 2.1rem + 1px); }
-            html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content {
+            html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content, html body main #content[data-page-id="1"] .home-box#heading .home-box-content {
               background-color: transparent;
               color: #f5f6fa;
               align-self: center;
               justify-self: center; }
-          html body main #content[data-page-id="1"] .home-box#proc {
+          html body main #content[data-page-id="1"] .home-box#proc, html body main #content[data-page-id="1"] .home-box#why {
             padding: 2em; }
-            html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div {
+            html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div {
               display: flex;
               flex-direction: row;
               flex-wrap: wrap;
               justify-content: space-between; }
-              html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block {
+              html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block {
                 display: flex;
                 flex-direction: row;
                 justify-content: center;
@@ -205,35 +205,50 @@ html {
                 /* important AF*/
                 flex-basis: 14.5em;
                 /* this needs to be 1*card-basis + 2*card-margin */ }
-                html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card {
+                html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
                   flex: 1 13.5em;
                   margin: 0.5em; }
-                  html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .icon {
+                  html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .icon, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .icon {
                     text-align: center;
                     padding: 0.1em 0;
                     background-color: #440381;
                     color: #e6efe9;
                     font-size: 1.5em; }
-                  html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content {
+                  html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
                     padding: 0.5em 1em; }
-                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content h3 {
+                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content h3, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content h3 {
                       font-size: 1.2em;
                       color: #440381;
                       font-weight: 600;
                       margin-bottom: 0.2em;
                       text-align: center; }
-                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content p {
+                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content p, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content p {
                       font-size: 0.75em;
                       text-align: center;
                       margin-bottom: 0.2em; }
           html body main #content[data-page-id="1"] .home-box .home-box-content {
             width: 100%;
             padding: 1em; }
-    html body footer #footer-content {
-      margin: 0 auto;
-      padding: 1em;
-      width: 70vw; }
-      html body footer #footer-content #github-link:hover {
-        text-decoration: none; }
+    html body footer {
+      border-top: solid 0.1em #440381; }
+      html body footer #footer-content {
+        margin: 0 auto;
+        padding: 1em;
+        width: 70vw; }
+        html body footer #footer-content p {
+          margin: 0; }
+          html body footer #footer-content p button {
+            font-size: 0.8em; }
+            html body footer #footer-content p button i {
+              vertical-align: middle; }
+          html body footer #footer-content p #github-link:hover {
+            text-decoration: none; }
+        html body footer #footer-content #languageSwitch {
+          font-size: 0.7em; }
+          html body footer #footer-content #languageSwitch button {
+            color: #e63946; }
+            html body footer #footer-content #languageSwitch button.btn-close {
+              color: #e6efe9;
+              background-color: #e63946; }
 
 /*# sourceMappingURL=css.css.map */
