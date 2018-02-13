@@ -13,6 +13,7 @@ class HeaderPageControl extends BaseControl {
     public function render() {
         $this->template->page = $this->page;
         $this->template->header = $this->getHeaderManager()->getHeader($this->page->getLanguageId());
-        $this->template->render();
+        if ($this->template->header)
+            $this->template->render();
     }
 }
