@@ -4,6 +4,9 @@ session:
     expiration: 10 days
     identity: UserIdentity
 
+cache:
+    journal: Nette\Caching\Storages\SQLiteJournal("%tempDir%/cache/cacheJournal.s3db")
+    
 services:
     routerFactory: Router(%consoleMode%)
     router: @routerFactory::createRouter
@@ -26,8 +29,6 @@ services:
         factory: OneInstanceFileStorage("%tempDir%/cache",@cache.journal)
         #factory: Nette\Caching\Storages\SQLiteStorage("%tempDir%/cache/cache.s3db")
 
-cache:
-    journal: Nette\Caching\Storages\SQLiteJournal("%tempDir%/cache/cacheJournal.s3db")
 
 #application:
  #   mapping:
