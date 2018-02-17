@@ -93,12 +93,10 @@ CREATE TABLE page_local
   CONSTRAINT page_local_lang_url
   UNIQUE (lang_id, url),
   CONSTRAINT page_local_page
-  FOREIGN KEY (page_id) REFERENCES page (page_id)
+  FOREIGN KEY (page_id) REFERENCES page (page_id),
+  FULLTEXT content(content, title, url, description)
 )
   ENGINE = InnoDB;
-
-CREATE INDEX content
-  ON page_local (content, title, url, description);
 
 CREATE TABLE settings
 (
