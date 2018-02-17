@@ -294,7 +294,8 @@ html {
           font-size: 0.7em; }
           html body footer #footer-content #languageSwitch button {
             color: #e63946; }
-            html body footer #footer-content #languageSwitch button.btn-close {
+            html body footer #footer-content #languageSwitch button.btn.btn-close {
+              font-size: 0.75em;
               color: #e6efe9;
               background-color: #e63946; }
 

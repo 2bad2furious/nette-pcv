@@ -322,7 +322,8 @@ html {
           font-size: 0.7em;
           button {
             color: #e63946;
-            &.btn-close {
+            &.btn.btn-close {
+              font-size: 0.75em;
               color: #e6efe9;
               background-color: #e63946;
             }
