@@ -7,7 +7,6 @@
  */
 
 class OneInstanceFileStorage extends \Nette\Caching\Storages\FileStorage {
-
     private $storage = [];
 
     public function write($key, $data, array $dp) {
