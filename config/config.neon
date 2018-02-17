@@ -23,8 +23,9 @@ services:
 
     cacheStorage:
         #factory: Nette\Caching\Storages\NewMemcachedStorage
-        factory: OneInstanceFileStorage("%tempDir%/cache")
+        factory: OneInstanceFileStorage("%tempDir%/cache",@cache.journal)
         #factory: Nette\Caching\Storages\SQLiteStorage("%tempDir%/cache/cache.s3db")
+
 #application:
  #   mapping:
   #      admin: admin\presenter\*Presenter
