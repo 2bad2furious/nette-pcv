@@ -56,240 +56,259 @@ html {
     }
 
     header {
+      position: absolute;
       top: 0;
       left: 0;
-      padding: 0.25em;
       width: 100%;
-      color: #273c75;
-      border-bottom: 0.1em solid #440381;
-      & > input.header-toggler ~ label > i {
-        vertical-align: middle;
-        color: #440381;
-      }
 
-      input.header-toggler {
-        display: none;
-        &:checked ~ label > i.collapse {
-          display: initial;
-        }
-        &:not(:checked) ~ label > i.expand {
-          display: initial;
-        }
-        &:checked ~ nav {
-          height: 100%;
-        }
-        &:checked ~ ul {
-          height: initial;
-        }
-        &:checked ~ nav, &:checked ~ ul {
-          width: initial;
+      #header-content {
+        padding: 10px;
+        background-color: #440381;
+        color: white;
+
+        &[data-page-id="1"] {
+          background-color: rgba(0, 0, 0, 0.3);
         }
 
-      }
-      label {
-        margin: 0;
-        &.small {
+        & > input.header-toggler ~ label > i {
+          vertical-align: middle;;
+          //color: #440381;
+          //color: white;
+        }
+
+        input.header-toggler {
+          display: none;
+          &:checked ~ label > i.collapse {
+            display: initial;
+          }
+          &:not(:checked) ~ label > i.expand {
+            display: initial;
+          }
+          &:checked ~ nav {
+            height: 100%;
+          }
+          &:checked ~ ul {
+            height: initial;
+          }
+          &:checked ~ nav, &:checked ~ ul {
+            width: initial;
+          }
+
+        }
+        label {
+          margin: 0;
+          &.small {
+            i.expand, i.collapse {
+              font-size: 1em;
+            }
+          }
           i.expand, i.collapse {
             font-size: 1em;
+            @extend .link;
+            @extend .big;
+            @extend .scale;
+            cursor: pointer;
+            display: none;
           }
         }
-        i.expand, i.collapse {
-          font-size: 1em;
-          @extend .link;
-          @extend .big;
-          @extend .scale;
-          cursor: pointer;
-          display: none;
-        }
-      }
-      nav {
-        height: 0;
-        width: 0;
-        overflow: hidden;
-
-        & > ul {
-          height: initial !important;
-          width: initial !important;
-        }
-        ul {
-          list-style-type: none;
+        nav {
           height: 0;
           width: 0;
-          padding-left: 15px;
-          margin: 0;
           overflow: hidden;
+          & > ul {
+            height: initial !important;
+            width: initial !important;
+          }
+          ul {
+            list-style-type: none;
+            height: 0;
+            width: 0;
+            padding-left: 15px;
+            margin: 0;
+            overflow: hidden;
 
-          li {
-            //min-width: 320px;
-            a, i {
-              font-size: 0.75em;
-              color: white;
+            li {
+              //min-width: 320px;
+              a, i {
+                font-size: 0.75em;
+                color: white;
+              }
+
             }
 
           }
-
         }
+
       }
     }
     main {
-      #snippet--breadcrumbs {
-        font-size: 0.7em;
-        .breadcrumb {
-          border-radius: 0;
-          padding: 0.75em 1em;
-          margin-bottom: 0;
+      #content-wrapper {
+        padding-top: 2em;
+        &[data-page-id="1" ] {
+          padding-top: 0;
         }
-      }
-      #content {
-        margin: 0 auto;
-        padding: $contentPadding;
-        width: $contentWidth;
-        min-width: 320px;
+        #snippet--breadcrumbs {
+          font-size: 0.7em;
+          .breadcrumb {
+            border-radius: 0;
+            padding: 0.75em 1em;
+            margin-bottom: 0;
+          }
+        }
+        #content {
+          margin: 0 auto;
+          padding: $contentPadding;
+          //padding-top:
+          width: $contentWidth;
+          min-width: 320px;
 
-        @media screen and(max-width: $firstMediaTag) {
-          width: 100%;
-          padding: 0.5em;
-        }
-
-        h1#default {
-          font-size: 1.75em;
-        }
-
-        h1 {
-          font-size: 1.75em;
-        }
-        h2 {
-          font-size: 1.5em;
-        }
-        h3 {
-          font-size: 1.325em;
-        }
-        h4 {
-          font-size: 1.17em;
-        }
-
-        &[data-page-id="1"] {
-          padding: 0;
-          width: 100%;
-          .home-box {
+          @media screen and(max-width: $firstMediaTag) {
             width: 100%;
-            padding: 30px (100vw - $contentWidth)/2;
-            margin: 0 auto;
-            display: flex;
+            padding: 0.5em;
+          }
 
-            .home-box-content {
+          h1#default {
+            font-size: 1.75em;
+          }
+
+          h1 {
+            font-size: 1.75em;
+          }
+          h2 {
+            font-size: 1.5em;
+          }
+          h3 {
+            font-size: 1.325em;
+          }
+          h4 {
+            font-size: 1.17em;
+          }
+
+          &[data-page-id="1"] {
+            padding: 0;
+            width: 100%;
+            .home-box {
               width: 100%;
-              padding: $contentPadding;
-
-              @media screen and (max-width: $firstMediaTag) {
-                padding: 0;
-              }
-            }
-
-            @media screen and (max-width: $firstMediaTag) {
-              padding: 30px;
-            }
-
-            &#nadpis, &#heading {
-              background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%),
-              linear-gradient(-45deg, #440381 100%, transparent 33%);
-              background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%),
-              linear-gradient(-45deg, #440381 100%, transparent 33%);
-              background: linear-gradient(-45deg, #ec368d 33%, transparent 0%),
-              linear-gradient(-45deg, #440381 100%, transparent 33%);
-
-              min-height: calc(100vh - 2.1rem + 1px); //0.1 + 2x0.25 + 1.5
+              height: 100%;
+              padding: 4em (100vw - $contentWidth)/2;
+              //padding: 30px (100vw - $contentWidth)/2;
+              margin: 0 auto;
+              display: flex;
 
               .home-box-content {
-                background-color: transparent;
-                color: #f5f6fa;
-                align-self: center;
-                justify-self: center;
+                width: 100%;
+                padding: $contentPadding;
 
-                h1 {
-                  font-size: 2.5em;
-                  @media screen and(max-width: $firstMediaTag) {
-                    font-size: 11vw;
-                  }
-                }
-                p {
-                  @media screen and(max-width: $firstMediaTag) {
-                    font-size: 6vw;
-                  }
+                @media screen and (max-width: $firstMediaTag) {
+                  padding: 0;
                 }
               }
-            }
-
-            &#proc, &#why {
-              padding: 2em;
 
               @media screen and (max-width: $firstMediaTag) {
-                padding: 0.4em;
+                padding: 30px;
               }
 
-              @media screen and (max-width: $secondMediaTag) {
-                padding: 0.4em 0;
+              &#nadpis, &#heading {
+                background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%),
+                linear-gradient(-45deg, #440381 100%, transparent 33%);
+                background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%),
+                linear-gradient(-45deg, #440381 100%, transparent 33%);
+                background: linear-gradient(-45deg, #ec368d 33%, transparent 0%),
+                linear-gradient(-45deg, #440381 100%, transparent 33%);
+
+                min-height: 100vh; //0.1 + 2x0.25 + 1.5
+
+                .home-box-content {
+                  background-color: transparent;
+                  color: #f5f6fa;
+                  align-self: center;
+                  justify-self: center;
+
+                  h1 {
+                    font-size: 2.5em;
+                    @media screen and(max-width: $firstMediaTag) {
+                      font-size: 11vw;
+                    }
+                  }
+                  p {
+                    @media screen and(max-width: $firstMediaTag) {
+                      font-size: 6vw;
+                    }
+                  }
+                }
               }
-              .home-box-content {
-                > div {
-                  display: flex;
-                  flex-direction: row;
-                  flex-wrap: wrap;
-                  justify-content: stretch;
-                  align-content: stretch;
-                  .half-block {
+
+              &#proc, &#why {
+                padding: 2em;
+
+                @media screen and (max-width: $firstMediaTag) {
+                  padding: 0.4em;
+                }
+
+                @media screen and (max-width: $secondMediaTag) {
+                  padding: 0.4em 0;
+                }
+                .home-box-content {
+                  > div {
                     display: flex;
                     flex-direction: row;
+                    flex-wrap: wrap;
                     justify-content: stretch;
                     align-content: stretch;
-                    flex-wrap: wrap;
-                    overflow-wrap: break-word;
-                    flex-grow: 1; /* important AF*/
-                    flex-basis: 14.5em; /* this needs to be 1*card-basis + 2*card-margin */
-                    .card {
-                      flex: 1 13.5em;
-                      margin: 0.5em;
+                    .half-block {
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: stretch;
+                      align-content: stretch;
+                      flex-wrap: wrap;
+                      overflow-wrap: break-word;
+                      flex-grow: 1; /* important AF*/
+                      flex-basis: 14.5em; /* this needs to be 1*card-basis + 2*card-margin */
+                      .card {
+                        flex: 1 13.5em;
+                        margin: 0.5em;
 
-                      @media screen and (max-width: $firstMediaTag) {
-                        margin: 0.5em 0;
-                      }
-
-                      .icon {
-                        text-align: center;
-                        padding: 0.1em 0;
-                        background-color: #440381;
-                        color: #e6efe9;
-                        font-size: 1.5em;
-                      }
-                      .content {
-                        padding: 0.5em 1em;
                         @media screen and (max-width: $firstMediaTag) {
-                          padding: 0.2em 0.6em;
+                          margin: 0.5em 0;
                         }
-                        h3 {
-                          font-size: 1.2em;
-                          color: #440381;
-                          font-weight: 600;
-                          margin-bottom: 0.2em;
+
+                        .icon {
                           text-align: center;
+                          padding: 0.1em 0;
+                          background-color: #440381;
+                          color: #e6efe9;
+                          font-size: 1.5em;
                         }
-                        p {
-                          font-size: 0.75em;
-                          text-align: center;
-                          margin-bottom: 0.2em;
+                        .content {
+                          padding: 0.5em 1em;
+                          @media screen and (max-width: $firstMediaTag) {
+                            padding: 0.2em 0.6em;
+                          }
+                          h3 {
+                            font-size: 1.2em;
+                            color: #440381;
+                            font-weight: 600;
+                            margin-bottom: 0.2em;
+                            text-align: center;
+                          }
+                          p {
+                            font-size: 0.75em;
+                            text-align: center;
+                            margin-bottom: 0.2em;
+                          }
                         }
                       }
                     }
                   }
                 }
               }
-            }
-            &#more-info, &#vice-info {
-              @media screen and (max-width: $secondMediaTag) {
-                padding: 0;
+              &#more-info, &#vice-info {
+                @media screen and (max-width: $secondMediaTag) {
+                  padding: 0;
 
-                button {
-                  margin-bottom: 0.5em;
+                  button {
+                    margin-bottom: 0.5em;
+                  }
                 }
               }
             }
