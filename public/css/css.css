@@ -29,21 +29,21 @@ html body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%); }
-  html body .scale, html body header label i.expand, html body header label i.collapse {
+  html body .scale, html body header #header-content label i.expand, html body header #header-content label i.collapse {
     display: inline-block; }
-    html body .scale.big:hover, html body header label i.expand:hover, html body header label i.collapse:hover, html body .scale.big:hover *, html body header label i.expand:hover *, html body header label i.collapse:hover * {
+    html body .scale.big:hover, html body header #header-content label i.expand:hover, html body header #header-content label i.collapse:hover, html body .scale.big:hover *, html body header #header-content label i.expand:hover *, html body header #header-content label i.collapse:hover * {
       -webkit-transform: scale(1.3);
       -moz-transform: scale(1.3);
       -ms-transform: scale(1.3);
       -o-transform: scale(1.3);
       transform: scale(1.3); }
-    html body .scale:not(.big):hover, html body header label i.expand:not(.big):hover, html body header label i.collapse:not(.big):hover, html body .scale:not(.big):hover *, html body header label i.expand:not(.big):hover *, html body header label i.collapse:not(.big):hover * {
+    html body .scale:not(.big):hover, html body header #header-content label i.expand:not(.big):hover, html body header #header-content label i.collapse:not(.big):hover, html body .scale:not(.big):hover *, html body header #header-content label i.expand:not(.big):hover *, html body header #header-content label i.collapse:not(.big):hover * {
       -webkit-transform: scale(1.02);
       -moz-transform: scale(1.02);
       -ms-transform: scale(1.02);
       -o-transform: scale(1.02);
       transform: scale(1.02); }
-  html body .link, html body header label i.expand, html body header label i.collapse {
+  html body .link, html body header #header-content label i.expand, html body header #header-content label i.collapse {
     padding: 2px;
     cursor: pointer; }
   html body .nice-button {
@@ -113,169 +113,177 @@ html {
       html body #snippet--admin-header-bar #logout:hover > i {
         color: #e63946; }
     html body header {
+      position: absolute;
       top: 0;
       left: 0;
-      padding: 0.25em;
-      width: 100%;
-      color: #273c75;
-      border-bottom: 0.1em solid #440381; }
-      html body header > input.header-toggler ~ label > i {
-        vertical-align: middle;
-        color: #440381; }
-      html body header input.header-toggler {
-        display: none; }
-        html body header input.header-toggler:checked ~ label > i.collapse {
-          display: initial; }
-        html body header input.header-toggler:not(:checked) ~ label > i.expand {
-          display: initial; }
-        html body header input.header-toggler:checked ~ nav {
-          height: 100%; }
-        html body header input.header-toggler:checked ~ ul {
-          height: initial; }
-        html body header input.header-toggler:checked ~ nav, html body header input.header-toggler:checked ~ ul {
-          width: initial; }
-      html body header label {
-        margin: 0; }
-        html body header label.small i.expand, html body header label.small i.collapse {
-          font-size: 1em; }
-        html body header label i.expand, html body header label i.collapse {
-          font-size: 1em;
-          cursor: pointer;
+      width: 100%; }
+      html body header #header-content {
+        padding: 10px;
+        background-color: #440381;
+        color: white; }
+        html body header #header-content[data-page-id="1"] {
+          background-color: rgba(0, 0, 0, 0.3); }
+        html body header #header-content > input.header-toggler ~ label > i {
+          vertical-align: middle; }
+        html body header #header-content input.header-toggler {
           display: none; }
-      html body header nav {
-        height: 0;
-        width: 0;
-        overflow: hidden; }
-        html body header nav > ul {
-          height: initial !important;
-          width: initial !important; }
-        html body header nav ul {
-          list-style-type: none;
+          html body header #header-content input.header-toggler:checked ~ label > i.collapse {
+            display: initial; }
+          html body header #header-content input.header-toggler:not(:checked) ~ label > i.expand {
+            display: initial; }
+          html body header #header-content input.header-toggler:checked ~ nav {
+            height: 100%; }
+          html body header #header-content input.header-toggler:checked ~ ul {
+            height: initial; }
+          html body header #header-content input.header-toggler:checked ~ nav, html body header #header-content input.header-toggler:checked ~ ul {
+            width: initial; }
+        html body header #header-content label {
+          margin: 0; }
+          html body header #header-content label.small i.expand, html body header #header-content label.small i.collapse {
+            font-size: 1em; }
+          html body header #header-content label i.expand, html body header #header-content label i.collapse {
+            font-size: 1em;
+            cursor: pointer;
+            display: none; }
+        html body header #header-content nav {
           height: 0;
           width: 0;
-          padding-left: 15px;
-          margin: 0;
           overflow: hidden; }
-          html body header nav ul li a, html body header nav ul li i {
-            font-size: 0.75em;
-            color: white; }
-    html body main #snippet--breadcrumbs {
-      font-size: 0.7em; }
-      html body main #snippet--breadcrumbs .breadcrumb {
-        border-radius: 0;
-        padding: 0.75em 1em;
-        margin-bottom: 0; }
-    html body main #content {
-      margin: 0 auto;
-      padding: 1em;
-      width: 70vw;
-      min-width: 320px; }
-      @media screen and (max-width: 46em) {
-        html body main #content {
-          width: 100%;
-          padding: 0.5em; } }
-      html body main #content h1#default {
-        font-size: 1.75em; }
-      html body main #content h1 {
-        font-size: 1.75em; }
-      html body main #content h2 {
-        font-size: 1.5em; }
-      html body main #content h3 {
-        font-size: 1.325em; }
-      html body main #content h4 {
-        font-size: 1.17em; }
-      html body main #content[data-page-id="1"] {
-        padding: 0;
-        width: 100%; }
-        html body main #content[data-page-id="1"] .home-box {
-          width: 100%;
-          padding: 30px 15vw;
-          margin: 0 auto;
-          display: flex; }
-          html body main #content[data-page-id="1"] .home-box .home-box-content {
+          html body header #header-content nav > ul {
+            height: initial !important;
+            width: initial !important; }
+          html body header #header-content nav ul {
+            list-style-type: none;
+            height: 0;
+            width: 0;
+            padding-left: 15px;
+            margin: 0;
+            overflow: hidden; }
+            html body header #header-content nav ul li a, html body header #header-content nav ul li i {
+              font-size: 0.75em;
+              color: white; }
+    html body main #content-wrapper {
+      padding-top: 2em; }
+      html body main #content-wrapper[data-page-id="1"] {
+        padding-top: 0; }
+      html body main #content-wrapper #snippet--breadcrumbs {
+        font-size: 0.7em; }
+        html body main #content-wrapper #snippet--breadcrumbs .breadcrumb {
+          border-radius: 0;
+          padding: 0.75em 1em;
+          margin-bottom: 0; }
+      html body main #content-wrapper #content {
+        margin: 0 auto;
+        padding: 1em;
+        width: 70vw;
+        min-width: 320px; }
+        @media screen and (max-width: 46em) {
+          html body main #content-wrapper #content {
             width: 100%;
-            padding: 1em; }
-            @media screen and (max-width: 46em) {
-              html body main #content[data-page-id="1"] .home-box .home-box-content {
-                padding: 0; } }
-          @media screen and (max-width: 46em) {
-            html body main #content[data-page-id="1"] .home-box {
-              padding: 30px; } }
-          html body main #content[data-page-id="1"] .home-box#nadpis, html body main #content[data-page-id="1"] .home-box#heading {
-            background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
-            background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
-            background: linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
-            min-height: calc(100vh - 2.1rem + 1px); }
-            html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content, html body main #content[data-page-id="1"] .home-box#heading .home-box-content {
-              background-color: transparent;
-              color: #f5f6fa;
-              align-self: center;
-              justify-self: center; }
-              html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
-                font-size: 2.5em; }
-                @media screen and (max-width: 46em) {
-                  html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
-                    font-size: 11vw; } }
+            padding: 0.5em; } }
+        html body main #content-wrapper #content h1#default {
+          font-size: 1.75em; }
+        html body main #content-wrapper #content h1 {
+          font-size: 1.75em; }
+        html body main #content-wrapper #content h2 {
+          font-size: 1.5em; }
+        html body main #content-wrapper #content h3 {
+          font-size: 1.325em; }
+        html body main #content-wrapper #content h4 {
+          font-size: 1.17em; }
+        html body main #content-wrapper #content[data-page-id="1"] {
+          padding: 0;
+          width: 100%; }
+          html body main #content-wrapper #content[data-page-id="1"] .home-box {
+            width: 100%;
+            height: 100%;
+            padding: 4em 15vw;
+            margin: 0 auto;
+            display: flex; }
+            html body main #content-wrapper #content[data-page-id="1"] .home-box .home-box-content {
+              width: 100%;
+              padding: 1em; }
               @media screen and (max-width: 46em) {
-                html body main #content[data-page-id="1"] .home-box#nadpis .home-box-content p, html body main #content[data-page-id="1"] .home-box#heading .home-box-content p {
-                  font-size: 6vw; } }
-          html body main #content[data-page-id="1"] .home-box#proc, html body main #content[data-page-id="1"] .home-box#why {
-            padding: 2em; }
+                html body main #content-wrapper #content[data-page-id="1"] .home-box .home-box-content {
+                  padding: 0; } }
             @media screen and (max-width: 46em) {
-              html body main #content[data-page-id="1"] .home-box#proc, html body main #content[data-page-id="1"] .home-box#why {
-                padding: 0.4em; } }
-            @media screen and (max-width: 28em) {
-              html body main #content[data-page-id="1"] .home-box#proc, html body main #content[data-page-id="1"] .home-box#why {
-                padding: 0.4em 0; } }
-            html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div {
-              display: flex;
-              flex-direction: row;
-              flex-wrap: wrap;
-              justify-content: stretch;
-              align-content: stretch; }
-              html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block {
+              html body main #content-wrapper #content[data-page-id="1"] .home-box {
+                padding: 30px; } }
+            html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading {
+              background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
+              background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
+              background: linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
+              min-height: 100vh; }
+              html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content {
+                background-color: transparent;
+                color: #f5f6fa;
+                align-self: center;
+                justify-self: center; }
+                html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
+                  font-size: 2.5em; }
+                  @media screen and (max-width: 46em) {
+                    html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
+                      font-size: 11vw; } }
+                @media screen and (max-width: 46em) {
+                  html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content p, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content p {
+                    font-size: 6vw; } }
+            html body main #content-wrapper #content[data-page-id="1"] .home-box#proc, html body main #content-wrapper #content[data-page-id="1"] .home-box#why {
+              padding: 2em; }
+              @media screen and (max-width: 46em) {
+                html body main #content-wrapper #content[data-page-id="1"] .home-box#proc, html body main #content-wrapper #content[data-page-id="1"] .home-box#why {
+                  padding: 0.4em; } }
+              @media screen and (max-width: 28em) {
+                html body main #content-wrapper #content[data-page-id="1"] .home-box#proc, html body main #content-wrapper #content[data-page-id="1"] .home-box#why {
+                  padding: 0.4em 0; } }
+              html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div {
                 display: flex;
                 flex-direction: row;
-                justify-content: stretch;
-                align-content: stretch;
                 flex-wrap: wrap;
-                overflow-wrap: break-word;
-                flex-grow: 1;
-                /* important AF*/
-                flex-basis: 14.5em;
-                /* this needs to be 1*card-basis + 2*card-margin */ }
-                html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
-                  flex: 1 13.5em;
-                  margin: 0.5em; }
-                  @media screen and (max-width: 46em) {
-                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
-                      margin: 0.5em 0; } }
-                  html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .icon, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .icon {
-                    text-align: center;
-                    padding: 0.1em 0;
-                    background-color: #440381;
-                    color: #e6efe9;
-                    font-size: 1.5em; }
-                  html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
-                    padding: 0.5em 1em; }
+                justify-content: stretch;
+                align-content: stretch; }
+                html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block {
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: stretch;
+                  align-content: stretch;
+                  flex-wrap: wrap;
+                  overflow-wrap: break-word;
+                  flex-grow: 1;
+                  /* important AF*/
+                  flex-basis: 14.5em;
+                  /* this needs to be 1*card-basis + 2*card-margin */ }
+                  html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
+                    flex: 1 13.5em;
+                    margin: 0.5em; }
                     @media screen and (max-width: 46em) {
-                      html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
-                        padding: 0.2em 0.6em; } }
-                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content h3, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content h3 {
-                      font-size: 1.2em;
-                      color: #440381;
-                      font-weight: 600;
-                      margin-bottom: 0.2em;
-                      text-align: center; }
-                    html body main #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content p, html body main #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content p {
-                      font-size: 0.75em;
+                      html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
+                        margin: 0.5em 0; } }
+                    html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .icon, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .icon {
                       text-align: center;
-                      margin-bottom: 0.2em; }
-          @media screen and (max-width: 28em) {
-            html body main #content[data-page-id="1"] .home-box#more-info, html body main #content[data-page-id="1"] .home-box#vice-info {
-              padding: 0; }
-              html body main #content[data-page-id="1"] .home-box#more-info button, html body main #content[data-page-id="1"] .home-box#vice-info button {
-                margin-bottom: 0.5em; } }
+                      padding: 0.1em 0;
+                      background-color: #440381;
+                      color: #e6efe9;
+                      font-size: 1.5em; }
+                    html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
+                      padding: 0.5em 1em; }
+                      @media screen and (max-width: 46em) {
+                        html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
+                          padding: 0.2em 0.6em; } }
+                      html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content h3, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content h3 {
+                        font-size: 1.2em;
+                        color: #440381;
+                        font-weight: 600;
+                        margin-bottom: 0.2em;
+                        text-align: center; }
+                      html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content p, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content p {
+                        font-size: 0.75em;
+                        text-align: center;
+                        margin-bottom: 0.2em; }
+            @media screen and (max-width: 28em) {
+              html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info {
+                padding: 0; }
+                html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info button, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info button {
+                  margin-bottom: 0.5em; } }
     html body footer {
       border-top: solid 0.1em #440381; }
       html body footer #footer-content {

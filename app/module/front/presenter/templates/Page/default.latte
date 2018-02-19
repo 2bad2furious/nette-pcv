@@ -49,7 +49,8 @@
     {/if}
     <link rel="stylesheet" type="text/css" href="/css/css.css">
     <link rel="stylesheet" type="text/css" href="/libs/nittro/nittro.css"/>
-    <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900&amp;subset=latin-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900&amp;subset=latin-ext"
+          rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
           integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <script type="text/javascript">var _stack = [];</script>
@@ -78,26 +79,34 @@
     </div>
 {/if}
 <header n:snippet="header">
-    {control header}
-</header>
-<main n:snippet="content">
-    <nav aria-label="breadcrumb" n:snippet="breadcrumbs">
-        {control breadcrumbs}
-    </nav>
-    <div id="content"
-            n:class="$page->isHomePage() ? homepage"
+    <div id="header-content"
          data-language="{$page->getLanguage()->getCode()}"
          data-page-id="{$page->getGlobalId()}">
-        <div n:snippet="flashes">
-            <ul n:flashes></ul>
-            <a n:href="clearFlashes!" id="flash-closer" data-history="false">
-                <i class="fa fa-times"></i>
-            </a>
-        </div>
-        {if $page->getDisplayTitle()}
-            <h1 id="default">{$page->getTitle()}</h1>
-        {/if}
-        {control content}
+        {control header}
+    </div>
+</header>
+<main n:snippet="content">
+    <div id="content-wrapper" n:class="$page->isHomePage() ? homepage"
+            data-language="{$page->getLanguage()->getCode()}"
+            data-page-id="{$page->getGlobalId()}">
+        <nav aria-label="breadcrumb" n:snippet="breadcrumbs">
+            {control breadcrumbs}
+        </nav>
+        <article id="content"
+                n:class="$page->isHomePage() ? homepage"
+                 data-language="{$page->getLanguage()->getCode()}"
+                 data-page-id="{$page->getGlobalId()}">
+            <div n:snippet="flashes">
+                <ul n:flashes></ul>
+                <a n:href="clearFlashes!" id="flash-closer" data-history="false">
+                    <i class="fa fa-times"></i>
+                </a>
+            </div>
+            {if $page->getDisplayTitle()}
+                <h1 id="default">{$page->getTitle()}</h1>
+            {/if}
+            {control content}
+        </article>
     </div>
 </main>
 {control footer}
