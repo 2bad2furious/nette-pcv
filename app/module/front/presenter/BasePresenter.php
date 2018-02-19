@@ -41,7 +41,6 @@ abstract class BasePresenter extends Presenter {
     public function startup() {
         $this->invalidLinkMode = self::INVALID_LINK_EXCEPTION;
         $this->checkRefererAndDisallowAjax();
-        $this->setDefaultSnippets(["content","header", "admin-header-bar"]);
         parent::startup();
     }
 

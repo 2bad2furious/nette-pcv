@@ -22,7 +22,9 @@ class PagePresenter extends BasePresenter {
             ($this->getUser()->isLoggedIn()
                 ? ["admin-header-bar"]
                 : []
-            ));
+            )
+        );
+        dump($this->getUser()->isLoggedIn());
         parent::startup();
     }
 
