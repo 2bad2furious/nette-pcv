@@ -112,56 +112,67 @@ html {
         color: "white"; }
       html body #snippet--admin-header-bar #logout:hover > i {
         color: #e63946; }
-    html body header {
+    html body header #header-content {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%; }
-      html body header #header-content {
-        padding: 10px;
-        background-color: #440381;
-        color: white; }
-        html body header #header-content[data-page-id="1"] {
+      background-color: #440381;
+      height: 2em;
+      width: 100%;
+      color: white; }
+      html body header #header-content[data-page-id="1"] {
+        background-color: transparent; }
+        html body header #header-content[data-page-id="1"] nav {
           background-color: rgba(0, 0, 0, 0.3); }
-        html body header #header-content > input.header-toggler ~ label > i {
-          vertical-align: middle; }
-        html body header #header-content input.header-toggler {
+      html body header #header-content > input.header-toggler ~ label > i {
+        vertical-align: middle; }
+      html body header #header-content input.header-toggler {
+        display: none; }
+        html body header #header-content input.header-toggler:checked ~ label > i.collapse {
+          display: initial; }
+        html body header #header-content input.header-toggler:not(:checked) ~ label > i.expand {
+          display: initial; }
+        html body header #header-content input.header-toggler:checked ~ nav {
+          padding-top: 1.4em;
+          height: auto;
+          width: 100% !important; }
+        html body header #header-content input.header-toggler:checked ~ ul {
+          height: initial; }
+        html body header #header-content input.header-toggler:checked ~ nav, html body header #header-content input.header-toggler:checked ~ ul {
+          width: initial; }
+      html body header #header-content label {
+        line-height: 1;
+        position: absolute;
+        top: 0.5em;
+        left: 0.5em;
+        margin: 0;
+        z-index: 3; }
+        html body header #header-content label.small i.expand, html body header #header-content label.small i.collapse {
+          font-size: 1em; }
+        html body header #header-content label i.expand, html body header #header-content label i.collapse {
+          font-size: 1em;
+          cursor: pointer;
           display: none; }
-          html body header #header-content input.header-toggler:checked ~ label > i.collapse {
-            display: initial; }
-          html body header #header-content input.header-toggler:not(:checked) ~ label > i.expand {
-            display: initial; }
-          html body header #header-content input.header-toggler:checked ~ nav {
-            height: 100%; }
-          html body header #header-content input.header-toggler:checked ~ ul {
-            height: initial; }
-          html body header #header-content input.header-toggler:checked ~ nav, html body header #header-content input.header-toggler:checked ~ ul {
-            width: initial; }
-        html body header #header-content label {
-          margin: 0; }
-          html body header #header-content label.small i.expand, html body header #header-content label.small i.collapse {
-            font-size: 1em; }
-          html body header #header-content label i.expand, html body header #header-content label i.collapse {
-            font-size: 1em;
-            cursor: pointer;
-            display: none; }
-        html body header #header-content nav {
+      html body header #header-content nav {
+        z-index: 2;
+        height: 0;
+        width: 0;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #440381; }
+        html body header #header-content nav > ul {
+          height: initial !important;
+          width: initial !important; }
+        html body header #header-content nav ul {
+          list-style-type: none;
           height: 0;
           width: 0;
+          padding-left: 15px;
+          margin: 0;
           overflow: hidden; }
-          html body header #header-content nav > ul {
-            height: initial !important;
-            width: initial !important; }
-          html body header #header-content nav ul {
-            list-style-type: none;
-            height: 0;
-            width: 0;
-            padding-left: 15px;
-            margin: 0;
-            overflow: hidden; }
-            html body header #header-content nav ul li a, html body header #header-content nav ul li i {
-              font-size: 0.75em;
-              color: white; }
+          html body header #header-content nav ul li a, html body header #header-content nav ul li i {
+            font-size: 0.75em;
+            color: white; }
     html body main #content-wrapper {
       padding-top: 2em; }
       html body main #content-wrapper[data-page-id="1"] {
