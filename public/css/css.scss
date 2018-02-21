@@ -89,8 +89,9 @@ html {
             display: initial;
           }
           &:checked ~ nav {
-            padding-top: 1.4em;
+            padding-top: $headerHeight;
             padding-left: $headerLabelPosition;
+            padding-bottom: 0.5em;
             height: auto;
             width: 100% !important;
           }

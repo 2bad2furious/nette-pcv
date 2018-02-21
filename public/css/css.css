@@ -131,8 +131,9 @@ html {
         html body header #header-content input.header-toggler:not(:checked) ~ label > i.expand {
           display: initial; }
         html body header #header-content input.header-toggler:checked ~ nav {
-          padding-top: 1.4em;
+          padding-top: 2em;
           padding-left: 0.5em;
+          padding-bottom: 0.5em;
           height: auto;
           width: 100% !important; }
         html body header #header-content input.header-toggler:checked ~ ul {
