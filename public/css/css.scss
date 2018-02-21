@@ -159,7 +159,7 @@ html {
       }
     }
     main {
-      min-height: calc(100vh - 4.10625);
+      min-height: calc(100vh - 4.10625em);
       #content-wrapper {
         padding-top: $headerHeight;
         &[data-page-id="1" ] {
