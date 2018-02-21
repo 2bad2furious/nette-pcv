@@ -174,7 +174,7 @@ html {
             font-size: 0.75em;
             color: white; }
     html body main {
-      min-height: calc(100vh - 4.0125em); }
+      min-height: calc(100vh - 4.0125em - 1px); }
       html body main #content-wrapper {
         padding-top: 2em; }
         html body main #content-wrapper[data-page-id="1"] {
