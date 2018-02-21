@@ -132,6 +132,7 @@ html {
           display: initial; }
         html body header #header-content input.header-toggler:checked ~ nav {
           padding-top: 1.4em;
+          padding-left: 0.5em;
           height: auto;
           width: 100% !important; }
         html body header #header-content input.header-toggler:checked ~ ul {
@@ -167,7 +168,7 @@ html {
           list-style-type: none;
           height: 0;
           width: 0;
-          padding-left: 15px;
+          padding-left: 1em;
           margin: 0;
           overflow: hidden; }
           html body header #header-content nav ul li a, html body header #header-content nav ul li i {

@@ -90,6 +90,7 @@ html {
           }
           &:checked ~ nav {
             padding-top: 1.4em;
+            padding-left: $headerLabelPosition;
             height: auto;
             width: 100% !important;
           }
@@ -140,7 +141,7 @@ html {
             list-style-type: none;
             height: 0;
             width: 0;
-            padding-left: 15px;
+            padding-left: 1em;
             margin: 0;
             overflow: hidden;
 
