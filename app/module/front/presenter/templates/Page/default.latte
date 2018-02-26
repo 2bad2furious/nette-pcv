@@ -87,8 +87,8 @@
 </header>
 <main n:snippet="content">
     <div id="content-wrapper" n:class="$page->isHomePage() ? homepage"
-            data-language="{$page->getLanguage()->getCode()}"
-            data-page-id="{$page->getGlobalId()}">
+         data-language="{$page->getLanguage()->getCode()}"
+         data-page-id="{$page->getGlobalId()}">
         <nav aria-label="breadcrumb" n:snippet="breadcrumbs">
             {control breadcrumbs}
         </nav>
@@ -110,7 +110,7 @@
     </div>
 </main>
 <footer n:snippet="footer">
-{control footer}
+    {control footer}
 </footer>
 </body>
 </html>
