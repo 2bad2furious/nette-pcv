@@ -434,22 +434,22 @@ class HeaderManager extends Manager implements IHeaderManager {
 
     public function moveLeft(int $headerId) {
         if (!$this->canBeMovedLeft($headerId)) throw new InvalidArgumentException("Header $headerId cannot be moved left");
-        $header = $this->getPlainById($headerId);
-        $parent = $this->getPlainById($header->getParentId());
+        $currentToBeMoved = $this->getPlainById($headerId);
+        $currentParent = $this->getPlainById($currentToBeMoved->getParentId());
 
-        $this->runInTransaction(function () use ($parent, $header) {
-            $this->uncache($header->getId());
-            $this->uncache($parent->getId());
+        $this->runInTransaction(function () use ($currentParent, $currentToBeMoved) {
+            $this->uncache($currentToBeMoved->getId());
+            $this->uncache($currentParent->getId());
 
             $this->getDatabase()->table(self::TABLE)
-                ->wherePrimary($header->getId())
+                ->wherePrimary($currentToBeMoved->getId())
                 ->update([
-                    self::COLUMN_PARENT_ID => $parent->getParentId(),
-                    self::COLUMN_POSITION  => $parent->getPosition() + 1,
+                    self::COLUMN_PARENT_ID => $currentParent->getParentId(),
+                    self::COLUMN_POSITION  => $currentParent->getPosition() + 1,
                 ]);
 
-            $this->adjustPositionsAround($header);
-            $this->adjustPositionsAround($parent);
+            $this->adjustPositionsAround($currentToBeMoved);
+            $this->adjustPositionsAround($currentParent);
         });
     }
 
