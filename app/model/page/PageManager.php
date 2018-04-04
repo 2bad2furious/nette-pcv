@@ -188,7 +188,7 @@ class PageManager extends Manager implements IPageManager {
                 }, $explosion)),];
             if ($values) {
                 $whereData[self::MAIN_TABLE . "." . self::MAIN_COLUMN_ID] = $values;
-                $whereData[self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID] = $values;
+                //$whereData[self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID] = $values; filtering by localId isn't really UX friendly since they don't know it
             }
 
             $selection = $selection->whereOr($whereData);
