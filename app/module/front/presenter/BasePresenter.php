@@ -95,7 +95,7 @@ abstract class BasePresenter extends Presenter {
      * @throws Exception
      */
     protected function onBadRole(array $allowedRoles, int $currentRole) {
-        $this->redirect(302,":admin:Home:"); //TODO change on actual role differentiating
+        $this->redirect(302,":admin:Default:"); //TODO change on actual role differentiating
         //throw new Exception("Bad rights xd");
     }
 
