@@ -33,6 +33,11 @@ abstract class BasePresenter extends Presenter {
         $this->checkCurrentIdentity();
         $this->checkRoles();
         parent::checkRequirements($element);
+
+        if ($this->getUser()->isLoggedIn()) {
+            \Tracy\Debugger::$showBar = true;
+            \Tracy\Debugger::enable();
+        }
     }
 
     /**
@@ -95,7 +100,7 @@ abstract class BasePresenter extends Presenter {
      * @throws Exception
      */
     protected function onBadRole(array $allowedRoles, int $currentRole) {
-        $this->redirect(302,":admin:Default:"); //TODO change on actual role differentiating
+        $this->redirect(302, ":admin:Default:"); //TODO change on actual role differentiating
         //throw new Exception("Bad rights xd");
     }
 

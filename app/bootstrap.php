@@ -3,14 +3,14 @@ $configurator = new Nette\Configurator;
 
 //$configurator->setDebugMode("localhost");
 
-$configurator->setDebugMode([
+/*$configurator->setDebugMode([
     "localhost",
     "127.0.0.1",
     "192.168.1.54",
     "192.168.1.59",
     "192.168.6.7"
-]);
-//$configurator->setDebugMode(false);
+]);*/
+$configurator->setDebugMode(false);
 
 
 // Enable Tracy for error visualisation & logging
