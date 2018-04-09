@@ -10,7 +10,7 @@ $configurator = new Nette\Configurator;
     "192.168.1.59",
     "192.168.6.7"
 ]);*/
-$configurator->setDebugMode(false);
+//$configurator->setDebugMode(false);
 
 
 // Enable Tracy for error visualisation & logging
