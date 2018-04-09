@@ -148,9 +148,13 @@ html {
 
             li {
               //min-width: 320px;
+              position: relative;
               a, i {
                 font-size: 0.75em;
                 color: white;
+              }
+              label {
+                position: static;
               }
 
             }

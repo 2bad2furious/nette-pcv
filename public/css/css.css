@@ -172,9 +172,13 @@ html {
           padding-left: 1em;
           margin: 0;
           overflow: hidden; }
-          html body header #header-content nav ul li a, html body header #header-content nav ul li i {
-            font-size: 0.75em;
-            color: white; }
+          html body header #header-content nav ul li {
+            position: relative; }
+            html body header #header-content nav ul li a, html body header #header-content nav ul li i {
+              font-size: 0.75em;
+              color: white; }
+            html body header #header-content nav ul li label {
+              position: static; }
     html body main {
       min-height: calc(100vh - 4.10625em); }
       html body main #content-wrapper {
