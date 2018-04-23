@@ -450,11 +450,11 @@ class FormFactory extends Manager {
         $form = $this->createNewAdminForm();
         $form->addMultiUpload(
             self::MEDIA_UPLOAD_NAME,
-            "admin.media.default.upload.label");//TODO limit types by MIME
+            "admin.file.default.upload.label");//TODO limit types by MIME
 
         $form->addSubmit(
             "submit",
-            "admin.media.default.upload.label");
+            "admin.file.default.upload.label");
         return $form;
     }
 

@@ -285,13 +285,21 @@ settings:
     default:
         title: ""
     edit:
+        save: "Save"
         language:
             label: "Default language"
         logo:
             no: "No logo"
             label: "Logo"
         title:
+            length: "Title should be at most %d characters long."
             label: ""
+        separator:
+            label: "Title separator"
+            length: "Title separator should be at most %d characters long"
+        ga:
+            label: "Google Analytics"
+            length: "Google Analytics should be at most %d characters long"
 
     clean:
         label: "Clean the caches"
@@ -321,7 +329,12 @@ accounts:
             4: "Admin"
             5: "Super Admin"
 
-
+file:
+    title: "File Managing"
+    default:
+        title: ""
+        upload:
+            label: "Upload"
 slider:
     title: "Slider Managing"
     add:
