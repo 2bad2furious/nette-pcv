@@ -1,1 +1,0 @@
-INSERT INTO `cms-nette`.slider (slider_id, title, lang_id) VALUES (1, 'Hi', null);
