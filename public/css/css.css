@@ -300,9 +300,21 @@ html {
                           margin-bottom: 0.2em; }
               @media screen and (max-width: 28em) {
                 html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info {
-                  padding: 0; }
-                  html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info button, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info button {
-                    margin-bottom: 0.5em; } }
+                  padding: 0;
+                  max-width: 100%;
+                  height: auto; } }
+              html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info button, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info button {
+                margin-bottom: 0.5em; }
+              html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace {
+                flex-direction: column;
+                padding: 4em 10px; }
+                html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace .home-box-content {
+                  padding: 10px 15vw; }
+                html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace a.link-image {
+                  width: 100%; }
+                  html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace a.link-image img {
+                    max-width: 100%;
+                    margin: 50px 0; }
     html body footer {
       border-top: solid 0.1em #440381; }
       html body footer #footer-content {

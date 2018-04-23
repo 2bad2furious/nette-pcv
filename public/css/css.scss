@@ -330,8 +330,25 @@ html {
                 @media screen and (max-width: $secondMediaTag) {
                   padding: 0;
 
-                  button {
-                    margin-bottom: 0.5em;
+                  max-width: 100%;
+                  height: auto;
+                }
+                button {
+                  margin-bottom: 0.5em;
+                }
+              }
+
+              &#specifikace {
+                flex-direction: column;
+                padding: 4em 10px;
+                .home-box-content {
+                  padding:10px 15vw;
+                }
+                a.link-image {
+                  width: 100%;
+                  img {
+                    max-width: 100%;
+                    margin: 50px 0;
                   }
                 }
               }
