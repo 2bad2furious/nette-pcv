@@ -11,7 +11,7 @@ $configurator = new Nette\Configurator;
     "192.168.6.7"
 ]);*/
 //$configurator->setDebugMode(false);
-
+\Tracy\Debugger::$maxDepth = 5;
 
 // Enable Tracy for error visualisation & logging
 $configurator->enableTracy(__DIR__ . '/../log');
