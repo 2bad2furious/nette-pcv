@@ -115,10 +115,10 @@ class LanguagePresenter extends AdminPresenter {
                     $values[\FormFactory::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_SITE_TITLE_NAME],
                     $values[\FormFactory::LANGUAGE_EDIT_TITLE_SEPARATOR_NAME],
-                    $values[\FormFactory::LANGUAGE_EDIT_LOGO_NAME],
-                    $values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE],
-                    $values[\FormFactory::LANGUAGE_EDIT_FAVICON_NAME],
-                    $values[\FormFactory::LANGUAGE_EDIT_404]
+                    $values[\FormFactory::LANGUAGE_EDIT_LOGO_NAME] ?: null,
+                    $values[\FormFactory::LANGUAGE_EDIT_HOMEPAGE] ?: null,
+                    $values[\FormFactory::LANGUAGE_EDIT_FAVICON_NAME] ?: null,
+                    $values[\FormFactory::LANGUAGE_EDIT_404] ?: null
                 );
                 $this->addSuccess("admin.language.edit.success");
             });

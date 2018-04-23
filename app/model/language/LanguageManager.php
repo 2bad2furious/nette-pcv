@@ -118,21 +118,28 @@ class LanguageManager extends Manager implements ILanguageManager {
      * @param string $ga
      * @param string $title
      * @param string $separator
-     * @param int $logoId
-     * @param int $homePageId
-     * @param int $faviconId
-     * @param int $error404page
+     * @param int|null $logoId
+     * @param int|null $homePageId
+     * @param int|null $faviconId
+     * @param int|null $error404page
+     * @throws FileNotFoundById
      * @throws LanguageByIdNotFound
      * @throws Throwable
      */
-    public function edit(int $languageId, string $friendly, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page) {
+    public function edit(int $languageId, string $friendly, string $ga, string $title, string $separator, ?int $logoId, ?int $homePageId, ?int $faviconId, ?int $error404page) {
         $language = $this->getById($languageId);
 
-        if ($logoId !== 0)
+        if (!is_null($logoId))
             $this->getMediaManager()->getById($logoId, FileManager::TYPE_IMAGE);
 
-        if ($error404page !== 0)
+        if (!is_null($error404page))
+            $this->getPageManager()->exists($error404page,$language->getId());
+
+        if (!is_null($faviconId))
             $this->getMediaManager()->getById($faviconId, FileManager::TYPE_IMAGE);
+
+        if (!is_null($homePageId))
+            $this->getPageManager()->exists($homePageId,$language->getId());
 
         if (mb_strlen($ga) > self::COLUMN_GA_LENGTH)
             throw new InvalidArgumentException("Google Analytics code must be at most " . self::COLUMN_GA_LENGTH . " long");
@@ -145,12 +152,6 @@ class LanguageManager extends Manager implements ILanguageManager {
 
         if (mb_strlen($separator) > self::COLUMN_TITLE_SEPARATOR_LENGTH)
             throw new InvalidArgumentException("Separator must be at most " . self::COLUMN_TITLE_SEPARATOR_LENGTH . " long");
-
-        if ($homePageId)
-            $this->getPageManager()->exists($homePageId, $languageId);
-
-        if ($error404page)
-            $this->getPageManager()->exists($error404page, $languageId);
 
         $this->uncache($language);
 

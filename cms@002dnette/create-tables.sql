@@ -28,15 +28,27 @@ CREATE TABLE language
   title_separator VARCHAR(20)  NOT NULL,
   ga              VARCHAR(15)  NOT NULL
   COMMENT 'Google Analytics',
-  homepage_id     INT UNSIGNED NOT NULL,
-  errorpage_id    INT UNSIGNED NOT NULL,
-  favicon_id      INT UNSIGNED NOT NULL,
-  logo_id         INT UNSIGNED NOT NULL,
+  homepage_id     INT UNSIGNED NULL,
+  errorpage_id    INT UNSIGNED NULL,
+  favicon_id      INT UNSIGNED NULL,
+  logo_id         INT UNSIGNED NULL,
   friendly        VARCHAR(25)  NOT NULL,
   CONSTRAINT language_language_code_uindex
   UNIQUE (code)
 )
   ENGINE = InnoDB;
+
+CREATE INDEX language_page_page_id_fk
+  ON language (homepage_id);
+
+CREATE INDEX language_page_page_id_fk_2
+  ON language (errorpage_id);
+
+CREATE INDEX language_media_media_id_fk_2
+  ON language (favicon_id);
+
+CREATE INDEX language_media_media_id_fk
+  ON language (logo_id);
 
 CREATE TABLE media
 (
@@ -54,6 +66,14 @@ CREATE TABLE media
 
 CREATE INDEX media_language_language_id_fk
   ON media (lang_id);
+
+ALTER TABLE language
+  ADD CONSTRAINT language_media_media_id_fk_2
+FOREIGN KEY (favicon_id) REFERENCES media (media_id);
+
+ALTER TABLE language
+  ADD CONSTRAINT language_media_media_id_fk
+FOREIGN KEY (logo_id) REFERENCES media (media_id);
 
 CREATE TABLE page
 (
@@ -74,6 +94,14 @@ CREATE INDEX page_page_page_id_fk
 ALTER TABLE header
   ADD CONSTRAINT header_page_page_id_fk
 FOREIGN KEY (page_id) REFERENCES page (page_id);
+
+ALTER TABLE language
+  ADD CONSTRAINT language_page_page_id_fk
+FOREIGN KEY (homepage_id) REFERENCES page (page_id);
+
+ALTER TABLE language
+  ADD CONSTRAINT language_page_page_id_fk_2
+FOREIGN KEY (errorpage_id) REFERENCES page (page_id);
 
 CREATE TABLE page_content_change
 (
@@ -185,9 +213,14 @@ CREATE TABLE tag_local
   CONSTRAINT tag_local_tag_id_uindex
   UNIQUE (tag_id, lang_id),
   CONSTRAINT tag_local_name_uindex
-  UNIQUE (name)
+  UNIQUE (name),
+  CONSTRAINT tag_local_language_language_id_fk
+  FOREIGN KEY (lang_id) REFERENCES language (language_id)
 )
   ENGINE = InnoDB;
+
+CREATE INDEX tag_local_language_language_id_fk
+  ON tag_local (lang_id);
 
 CREATE TABLE tag_page
 (

@@ -71,7 +71,7 @@ interface ILanguageManager extends IManager {
      * @throws LanguageByIdNotFound
      * @throws Throwable
      */
-    public function edit(int $languageId,string $friendly, string $ga, string $title, string $separator, int $logoId, int $homePageId, int $faviconId, int $error404page);
+    public function edit(int $languageId,string $friendly, string $ga, string $title, string $separator, ?int $logoId, ?int $homePageId, ?int $faviconId, ?int $error404page);
 
     /**
      * @param int $id
