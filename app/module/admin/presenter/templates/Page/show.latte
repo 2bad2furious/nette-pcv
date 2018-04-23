@@ -77,7 +77,7 @@
         {foreach adminModule\PagePresenter::TYPES as $type_val}
             {continueIf $type_val == adminModule\PagePresenter::TYPE_ALL}
             <a href="{plink create adminModule\PagePresenter::TYPE_KEY=>$type_val}"
-               class="create_new">{_"admin.page.show.create.{$type_val}"}</a>
+               class="create_new"><button class="btn btn-success">{_"admin.page.show.create.{$type_val}"}</button></a>
         {/foreach}
     </div>
     <div id="pages">
