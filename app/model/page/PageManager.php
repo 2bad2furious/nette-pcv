@@ -322,7 +322,7 @@ class PageManager extends Manager implements IPageManager {
                 return $this->getDatabase()->table(self::MAIN_TABLE)->insert([
                     self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE      => $type,
                     self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS    => self::STATUS_DRAFT,
-                    self::MAIN_TABLE . "." . self::MAIN_COLUMN_PARENT_ID => 0,
+                    self::MAIN_TABLE . "." . self::MAIN_COLUMN_PARENT_ID => null,
                 ])->getPrimary();
             });
 
