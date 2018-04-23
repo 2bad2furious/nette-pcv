@@ -7,9 +7,17 @@ CREATE TABLE header
   parent_id INT UNSIGNED NULL,
   url       TEXT         NULL,
   title     VARCHAR(60)  NULL,
-  position  INT UNSIGNED NOT NULL
+  position  INT UNSIGNED NOT NULL,
+  CONSTRAINT header_header_header_id_fk
+  FOREIGN KEY (parent_id) REFERENCES header (header_id)
 )
   ENGINE = InnoDB;
+
+CREATE INDEX header_page_page_id_fk
+  ON header (page_id);
+
+CREATE INDEX header_header_header_id_fk
+  ON header (parent_id);
 
 CREATE TABLE language
 (
@@ -38,9 +46,14 @@ CREATE TABLE media
   lang_id  INT UNSIGNED    NOT NULL,
   name     VARCHAR(60)     NOT NULL,
   src      VARCHAR(255)    NOT NULL,
-  alt      VARCHAR(255)    NULL
+  alt      VARCHAR(255)    NULL,
+  CONSTRAINT media_language_language_id_fk
+  FOREIGN KEY (lang_id) REFERENCES language (language_id)
 )
   ENGINE = InnoDB;
+
+CREATE INDEX media_language_language_id_fk
+  ON media (lang_id);
 
 CREATE TABLE page
 (
@@ -49,12 +62,18 @@ CREATE TABLE page
   global_status TINYINT(1)   NULL,
   parent_id     INT UNSIGNED NULL,
   type          TINYINT(1)   NULL
-  COMMENT '1 for page, 0 for post'
+  COMMENT '1 for page, 0 for post',
+  CONSTRAINT page_page_page_id_fk
+  FOREIGN KEY (parent_id) REFERENCES page (page_id)
 )
   ENGINE = InnoDB;
 
 CREATE INDEX page_page_page_id_fk
   ON page (parent_id);
+
+ALTER TABLE header
+  ADD CONSTRAINT header_page_page_id_fk
+FOREIGN KEY (page_id) REFERENCES page (page_id);
 
 CREATE TABLE page_content_change
 (
@@ -67,6 +86,9 @@ CREATE TABLE page_content_change
   after_content TEXT                                NOT NULL
 )
   ENGINE = InnoDB;
+
+CREATE INDEX page_content_change_page_local_page_local_id_fk
+  ON page_content_change (page_local_id);
 
 CREATE TABLE page_local
 (
@@ -85,7 +107,7 @@ CREATE TABLE page_local
   last_edited         TIMESTAMP DEFAULT '0000-00-00 00:00:00' NOT NULL,
   author              INT UNSIGNED                            NOT NULL
   COMMENT 'user_id
-	',
+		',
   display_title       TINYINT                                 NOT NULL,
   display_breadcrumbs TINYINT                                 NOT NULL,
   CONSTRAINT `page_id-lang`
@@ -94,20 +116,30 @@ CREATE TABLE page_local
   UNIQUE (lang_id, url),
   CONSTRAINT page_local_page
   FOREIGN KEY (page_id) REFERENCES page (page_id),
+  CONSTRAINT page_local_language_language_id_fk
+  FOREIGN KEY (lang_id) REFERENCES language (language_id),
   FULLTEXT content(content, title, url, description)
 )
   ENGINE = InnoDB;
+
+CREATE INDEX content
+  ON page_local (content, title, url, description);
+
+CREATE INDEX page_local_user_user_id_fk
+  ON page_local (author);
+
+ALTER TABLE page_content_change
+  ADD CONSTRAINT page_content_change_page_local_page_local_id_fk
+FOREIGN KEY (page_local_id) REFERENCES page_local (page_local_id);
 
 CREATE TABLE settings
 (
   settings_id INT UNSIGNED AUTO_INCREMENT
     PRIMARY KEY,
-  `option`    VARCHAR(60)  NOT NULL,
-  value       TEXT         NOT NULL,
-  lang_id     INT UNSIGNED NOT NULL
-  COMMENT 'if 0 => global',
+  `option`    VARCHAR(60) NOT NULL,
+  value       TEXT        NOT NULL,
   CONSTRAINT settings_settings_lang_option
-  UNIQUE (`option`, lang_id)
+  UNIQUE (`option`)
 )
   ENGINE = InnoDB;
 
@@ -122,14 +154,26 @@ CREATE TABLE slide
 )
   ENGINE = InnoDB;
 
+CREATE INDEX slide_slider_slider_id_fk
+  ON slide (slider_id);
+
 CREATE TABLE slider
 (
   slider_id INT UNSIGNED AUTO_INCREMENT
     PRIMARY KEY,
   title     VARCHAR(60)  NOT NULL,
-  lang_id   INT UNSIGNED NOT NULL
+  lang_id   INT UNSIGNED NULL,
+  CONSTRAINT slider_language_language_id_fk
+  FOREIGN KEY (lang_id) REFERENCES language (language_id)
 )
   ENGINE = InnoDB;
+
+CREATE INDEX slider_language_language_id_fk
+  ON slider (lang_id);
+
+ALTER TABLE slide
+  ADD CONSTRAINT slide_slider_slider_id_fk
+FOREIGN KEY (slider_id) REFERENCES slider (slider_id);
 
 CREATE TABLE tag_local
 (
@@ -152,9 +196,16 @@ CREATE TABLE tag_page
   tag_id      INT UNSIGNED NULL,
   page_id     INT UNSIGNED NULL,
   CONSTRAINT tag_page_page_id_uindex
-  UNIQUE (page_id, tag_id)
+  UNIQUE (page_id, tag_id),
+  CONSTRAINT tag_page_tag_local_tag_id_fk
+  FOREIGN KEY (tag_id) REFERENCES tag_local (tag_id),
+  CONSTRAINT tag_page_page_page_id_fk
+  FOREIGN KEY (page_id) REFERENCES page (page_id)
 )
   ENGINE = InnoDB;
+
+CREATE INDEX tag_page_tag_local_tag_id_fk
+  ON tag_page (tag_id);
 
 CREATE TABLE user
 (
@@ -171,4 +222,8 @@ CREATE TABLE user
   UNIQUE (username)
 )
   ENGINE = InnoDB;
+
+ALTER TABLE page_local
+  ADD CONSTRAINT page_local_user_user_id_fk
+FOREIGN KEY (author) REFERENCES user (user_id);
 

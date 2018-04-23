@@ -12,10 +12,10 @@ class PageManager extends Manager implements IPageManager {
         MAIN_COLUMN_PARENT_ID = "parent_id",
 
         ORDER_TABLE = [
-        self::ORDER_BY_ID => self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID,
-        self::ORDER_BY_TITLE => self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE,
+        self::ORDER_BY_ID           => self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID,
+        self::ORDER_BY_TITLE        => self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE,
         self::ORDER_BY_PUBLISH_TIME => self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CREATED,
-        self::ORDER_BY_EDITED_TIME => self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LAST_EDITED,
+        self::ORDER_BY_EDITED_TIME  => self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LAST_EDITED,
     ],
 
         LOCAL_TABLE = "page_local",
@@ -119,8 +119,8 @@ class PageManager extends Manager implements IPageManager {
 
         $pages = $this->getDatabase()->table(self::LOCAL_TABLE)->where(
             [self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID . " NOT ?" => $invalidGlobalIds,
-                self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $languageId,
-                self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE => $allowedTypes]
+             self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG               => $languageId,
+             self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE                 => $allowedTypes]
         );
 
         $parents = [];
@@ -183,9 +183,9 @@ class PageManager extends Manager implements IPageManager {
             }
 
             $whereData = ["MATCH(" . self::LOCAL_SEARCH . ") AGAINST (? IN BOOLEAN MODE)" =>
-                implode(" ", array_map(function (string $item) {
-                    return "%" . $item . "%";
-                }, $explosion)),];
+                              implode(" ", array_map(function (string $item) {
+                                  return "%" . $item . "%";
+                              }, $explosion)),];
             if ($values) {
                 $whereData[self::MAIN_TABLE . "." . self::MAIN_COLUMN_ID] = $values;
                 //$whereData[self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID] = $values; filtering by localId isn't really UX friendly since they don't know it
@@ -297,7 +297,7 @@ class PageManager extends Manager implements IPageManager {
         $data = $this->getDatabase()->table(self::LOCAL_TABLE)
             ->where([
                 self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $languageId,
-                self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL => $url,
+                self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL  => $url,
             ]);
         if (is_int($localId))
             $data = $data->where([self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID . " != " => $localId]);
@@ -320,8 +320,8 @@ class PageManager extends Manager implements IPageManager {
         return $this->runInTransaction(function () use ($type, $languages) {
             $id = $this->runInTransaction(function () use ($type, $languages) {
                 return $this->getDatabase()->table(self::MAIN_TABLE)->insert([
-                    self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE => $type,
-                    self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS => self::STATUS_DRAFT,
+                    self::MAIN_TABLE . "." . self::MAIN_COLUMN_TYPE      => $type,
+                    self::MAIN_TABLE . "." . self::MAIN_COLUMN_STATUS    => self::STATUS_DRAFT,
                     self::MAIN_TABLE . "." . self::MAIN_COLUMN_PARENT_ID => 0,
                 ])->getPrimary();
             });
@@ -366,7 +366,7 @@ class PageManager extends Manager implements IPageManager {
      * @throws PageNotFound
      * @throws Throwable
      */
-    public function update(int $pageId, int $langId, ?int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId, bool $displayTitle, bool $displayBreadCrumbs) {
+    public function update(int $pageId, int $langId, ?int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, ?int $imageId, bool $displayTitle, bool $displayBreadCrumbs) {
 
         $page = $this->getPlainById($pageId, $langId);
 
@@ -379,7 +379,7 @@ class PageManager extends Manager implements IPageManager {
         if (!in_array($globalVisibility, self::STATUSES))
             throw new InvalidArgumentException("Global visiblity $globalVisibility is not in " . implode("|", self::STATUSES));
 
-        $parentOk = $parentId === 0 || is_null($parentId);
+        $parentOk = is_null($parentId);
         if (!$parentOk)
             foreach ($this->getViableParents($page->getGlobalId(), $page->getLanguageId()) as $possibleParent) {
                 if ($possibleParent->getGlobalId() === $parentId) {
@@ -399,8 +399,8 @@ class PageManager extends Manager implements IPageManager {
         if (!preg_match("#^" . self::LOCAL_URL_CHARSET_FOR_ADMIN . "$#", $url))
             throw new Exception("URL not the right pattern: " . self::LOCAL_URL_CHARSET);
 
-        $image = $imageId === 0 ? null : $this->getMediaManager()->getById($imageId, FileManager::TYPE_IMAGE);
-        if ($imageId !== 0 && !$image instanceof Image)
+        $image = is_null($imageId) ? null : $this->getMediaManager()->getById($imageId, FileManager::TYPE_IMAGE);
+        if (!is_null($imageId) && !$image instanceof Image)
             throw new InvalidArgumentException("Image not found");
 
         //uncache
@@ -439,15 +439,15 @@ class PageManager extends Manager implements IPageManager {
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_ID => $page->getLocalId(),
                 ])
                 ->update([
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL => $url,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE => $title,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DESCRIPTION => $description,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT => $content,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_IMAGE => $imageId,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS => $localVisibility,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_TITLE => $displayTitle,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL                 => $url,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE               => $title,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DESCRIPTION         => $description,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_CONTENT             => $content,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_IMAGE               => $imageId,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS              => $localVisibility,
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_TITLE       => $displayTitle,
                     self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_BREADCRUMBS => $displayBreadCrumbs,
-                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LAST_EDITED => new \Nette\Utils\DateTime(),
+                    self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LAST_EDITED         => new \Nette\Utils\DateTime(),
                 ]);
 
 
@@ -456,9 +456,9 @@ class PageManager extends Manager implements IPageManager {
 
             if ($content !== $page->getContent()) {
                 $this->getDatabase()->table(self::CHANGES_TABLE)->insert([
-                    self::CHANGE_LOCAL_COLUMN_ID => $page->getLocalId(),
-                    self::CHANGE_AUTHOR_ID => $this->getUser()->getId(),
-                    self::CHANGE_COLUMN_PRE_CONTENT => $page->getContent(),
+                    self::CHANGE_LOCAL_COLUMN_ID      => $page->getLocalId(),
+                    self::CHANGE_AUTHOR_ID            => $this->getUser()->getId(),
+                    self::CHANGE_COLUMN_PRE_CONTENT   => $page->getContent(),
                     self::CHANGE_COLUMN_AFTER_CONTENT => $newPage->getContent(),
                 ]);
             }
@@ -470,7 +470,7 @@ class PageManager extends Manager implements IPageManager {
         });
 
 
-        //force header and other shit to update
+        //listeners to update
         $this->trigger(self::TRIGGER_PAGE_EDITED, $newPage);
     }
 
@@ -572,7 +572,7 @@ class PageManager extends Manager implements IPageManager {
     private function getPlainFromDbByGlobalId(int $id, int $languageId) {
         return $this->getPlainFromDb([
             self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID => $id,
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $languageId,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG    => $languageId,
         ]);
     }
 
@@ -584,7 +584,7 @@ class PageManager extends Manager implements IPageManager {
     private function getPlainFromDbByUrl(string $url, int $languageId) {
         return $this->getPlainFromDb([
             self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $languageId,
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL => $url,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL  => $url,
         ]);
     }
 
@@ -629,7 +629,7 @@ class PageManager extends Manager implements IPageManager {
         $unique = self::RANDOM_URL_PREFIX . sha1(uniqid());
 
         if (!$this->getDatabase()->table(self::LOCAL_TABLE)->where([
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL => $unique,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL  => $unique,
             self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $language->getId(),
         ])->fetch()) return $unique; /* if !exists */
 
@@ -672,13 +672,13 @@ class PageManager extends Manager implements IPageManager {
 
     private function addLocal(Language $language, int $globalId, string $url) {
         return $this->getDatabase()->table(self::LOCAL_TABLE)->insert([
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS => self::STATUS_DRAFT,
-            self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID => $globalId,
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG => $language->getId(),
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE => self::DEFAULT_TITLE,
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL => $url,
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_AUTHOR => $this->getUser()->getIdentity()->getId(),
-            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_TITLE => true,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_STATUS              => self::STATUS_DRAFT,
+            self::LOCAL_TABLE . "." . self::LOCAL_MAIN_COLUMN_ID             => $globalId,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_LANG                => $language->getId(),
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_TITLE               => self::DEFAULT_TITLE,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_URL                 => $url,
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_AUTHOR              => $this->getUser()->getIdentity()->getId(),
+            self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_TITLE       => true,
             self::LOCAL_TABLE . "." . self::LOCAL_COLUMN_DISPLAY_BREADCRUMBS => true,
         ])->getPrimary();
     }

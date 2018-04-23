@@ -26,7 +26,7 @@ class Header {
      * @param int $parentId
      * @param array $childrenIds
      */
-    public function __construct(int $id, ?string $title, ?string $url, int $position, ?int $pageId, int $languageId, int $parentId, array $childrenIds) {
+    public function __construct(int $id, ?string $title, ?string $url, int $position, ?int $pageId, int $languageId, ?int $parentId, array $childrenIds) {
         $this->id = $id;
         $this->title = $title;
         $this->url = $url;
@@ -87,9 +87,9 @@ class Header {
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getParentId(): int {
+    public function getParentId(): ?int {
         return $this->parentId;
     }
 

@@ -107,7 +107,7 @@ class LanguageManager extends Manager implements ILanguageManager {
      * @throws LanguageByIdNotFound
      */
     public function getDefaultLanguage(): Language {
-        $setting = $this->getSettingsManager()->get(self::SETTINGS_DEFAULT_LANGUAGE, null);
+        $setting = $this->getSettingsManager()->get(self::SETTINGS_DEFAULT_LANGUAGE);
         $languageId = (int)$setting->getValue();
         return $this->getById($languageId);
     }
@@ -198,13 +198,13 @@ class LanguageManager extends Manager implements ILanguageManager {
         $this->uncacheCode($code);//uncached new code
 
 
-        $faviconId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_FAVICON, null)->getValue();
+        $faviconId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_FAVICON)->getValue();
 
-        $logoId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_LOGO, null)->getValue();
+        $logoId = (int)$this->getSettingsManager()->get(PageManager::SETTINGS_LOGO)->getValue();
 
-        $ga = $this->getSettingsManager()->get(PageManager::SETTINGS_GOOGLE_ANALYTICS, null)->getValue();
+        $ga = $this->getSettingsManager()->get(PageManager::SETTINGS_GOOGLE_ANALYTICS)->getValue();
 
-        $separator = $this->getSettingsManager()->get(PageManager::SETTINGS_TITLE_SEPARATOR, null)->getValue();
+        $separator = $this->getSettingsManager()->get(PageManager::SETTINGS_TITLE_SEPARATOR)->getValue();
 
         $id = $this->runInTransaction(function () use ($code, $title, $friendly, $faviconId, $logoId, $ga, $separator) {
             $id = $this->getDatabase()->table(self::TABLE)->insert([

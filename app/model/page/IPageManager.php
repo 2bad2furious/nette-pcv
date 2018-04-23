@@ -108,7 +108,7 @@ interface IPageManager extends IManager {
      * @param bool $displayBreadCrumbs
      * @return mixed
      */
-    public function update(int $pageId, int $langId, ?int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, int $imageId, bool $displayTitle, bool $displayBreadCrumbs);
+    public function update(int $pageId, int $langId, ?int $parentId, string $title, string $description, string $url, int $globalVisibility, int $localVisibility, string $content, ?int $imageId, bool $displayTitle, bool $displayBreadCrumbs);
 
     public function delete(int $globalId);
 

@@ -122,6 +122,7 @@ class HeaderManager extends Manager implements IHeaderManager {
                     self::COLUMN_LANG      => $languageId,
                     self::COLUMN_PARENT_ID => $parentId,
                     self::COLUMN_PAGE_URL  => $url,
+                    self::COLUMN_PAGE_ID   => null,
                 ])->getPrimary();
 
             $this->uncache($headerId);
@@ -166,6 +167,7 @@ class HeaderManager extends Manager implements IHeaderManager {
                 ->update([
                     self::COLUMN_TITLE    => $title,
                     self::COLUMN_PAGE_URL => $url,
+                    self::COLUMN_PAGE_ID  => null,
                 ]);
         });
     }
@@ -256,7 +258,7 @@ class HeaderManager extends Manager implements IHeaderManager {
     private function getRootChildrenIds(int $langId): array {
         $data = $this->getDatabase()->table(self::TABLE)
             ->where([
-                self::COLUMN_PARENT_ID => 0,
+                self::COLUMN_PARENT_ID => null,
                 self::COLUMN_LANG      => $langId,
             ])->select(self::COLUMN_ID)
             ->order(self::COLUMN_POSITION)
@@ -291,12 +293,12 @@ class HeaderManager extends Manager implements IHeaderManager {
         $this->getCache()->remove($key);
     }
 
-    public function changeParentOrPosition(int $headerId, int $parentHeaderId, int $position) {
+    public function changeParentOrPosition(int $headerId, ?int $parentHeaderId, int $position) {
         if ($headerId === $parentHeaderId) throw new InvalidArgumentException("$headerId: Ids are the same");
 
         $header = $this->getPlainById($headerId);
 
-        if ($parentHeaderId !== 0) {
+        if (!is_null($parentHeaderId)) {
             $parent = $this->getPlainById($parentHeaderId);
 
             if ($parent->getLanguageId() !== $header->getLanguageId()) throw new InvalidArgumentException("Parent is not of the same language; {$parent->getLanguageId()} !== {$header->getLanguageId()}");
@@ -364,8 +366,8 @@ class HeaderManager extends Manager implements IHeaderManager {
         });
     }
 
-    public function canChangeParent(int $headerId, int $parentHeaderId): bool {
-        if ($parentHeaderId === 0) return true;
+    public function canChangeParent(int $headerId, ?int $parentHeaderId): bool {
+        if (is_null($parentHeaderId)) return true;
         if ($headerId === $parentHeaderId) return false;
         $parentWrapper = $this->getPlainById($parentHeaderId);
         return $this->canChangeParent($headerId, $parentWrapper->getParentId());
@@ -418,7 +420,7 @@ class HeaderManager extends Manager implements IHeaderManager {
     public function canBeMovedDown(int $headerId): bool {
         $header = $this->getPlainById($headerId);
 
-        if ($header->getParentId() !== 0) $where = [self::COLUMN_PARENT_ID => $header->getParentId()];
+        if (!is_null($header->getParentId())) $where = [self::COLUMN_PARENT_ID => $header->getParentId()];
         else $where = [self::COLUMN_PARENT_ID => 0, self::COLUMN_LANG => $header->getLanguageId()];
 
         $where = $where + [self::COLUMN_POSITION . " > " => $header->getPosition()];

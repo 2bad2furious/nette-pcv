@@ -6,7 +6,7 @@
  * @method int getPageId()
  * @method int getPosition()
  * @method int getLanguageId()
- * @method int getParentId()
+ * @method int|null getParentId()
  * @method int[] getChildrenIds()
  */
 class HeaderWrapper {
@@ -134,7 +134,10 @@ class HeaderWrapper {
         if ($this->isPage())
             return $this->getPage()->getCompleteUrl($prependSlash);
 
-        return ($prependSlash ? "/" : "") . $this->getLanguage()->getCode() . "/" . $this->getUrl();
+        if (!$this->isUrlAbsolute())
+            return ($prependSlash ? "/" : "") . $this->getLanguage()->getCode() . "/" . $this->getUrl();
+
+        return $this->getUrl();
     }
 
     public function getType(): int {
@@ -142,6 +145,7 @@ class HeaderWrapper {
     }
 
     public function isPage(): bool {
+        dump($this->getId(), !!$this->getPageId());
         return $this->getType() === Header::TYPE_PAGE;
     }
 
@@ -179,6 +183,11 @@ class HeaderWrapper {
      * @return bool
      */
     public function isOk(): bool {
+        dump($this->getHeader()->getId(), $this->isPage());
         return !$this->isPage() || ($this->getPage() instanceof PageWrapper && $this->getPage()->isVisible());
+    }
+
+    private function isUrlAbsolute(): bool {
+        return !!preg_match("#^(http)|\##",$this->getUrl());
     }
 }

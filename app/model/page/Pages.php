@@ -30,7 +30,7 @@ abstract class APage {
      * @param array $childrenIds
      * @return APage
      */
-    public static function factory(int $type, int $globalId, int $localId, int $parentId, int $langId, string $title, string $url, string $description, string $content, int $authorId, DateTime $created, DateTime $edited, int $imageId, int $globalStatus, int $localStatus, bool $displayTitle, bool $displayBreadcrumbs, array $childrenIds): APage {
+    public static function factory(int $type, int $globalId, int $localId, ?int $parentId, int $langId, string $title, string $url, string $description, string $content, int $authorId, DateTime $created, DateTime $edited, int $imageId, int $globalStatus, int $localStatus, bool $displayTitle, bool $displayBreadcrumbs, array $childrenIds): APage {
         $className = APage::CLASS_BY_TYPE[$type];
 
         return new $className($globalId, $localId, $parentId, $langId, $title, $url, $description, $content, $authorId, $created, $edited, $imageId, $globalStatus, $localStatus, $displayTitle, $displayBreadcrumbs, $childrenIds);
@@ -64,7 +64,7 @@ abstract class APage {
      * APage constructor.
      * @param int $globalId
      * @param int $localId
-     * @param int $parentId
+     * @param int|null $parentId
      * @param int $langId
      * @param string $title
      * @param string $url
@@ -80,7 +80,7 @@ abstract class APage {
      * @param bool $displayBreadcrumbs
      * @param int[] $childrenIds
      */
-    public function __construct(int $globalId, int $localId, int $parentId, int $langId, string $title, string $url, string $description, string $content, int $authorId, DateTime $created, DateTime $edited, int $imageId, int $globalStatus, int $localStatus, bool $displayTitle, bool $displayBreadcrumbs, array $childrenIds) {
+    public function __construct(int $globalId, int $localId, ?int $parentId, int $langId, string $title, string $url, string $description, string $content, int $authorId, DateTime $created, DateTime $edited, int $imageId, int $globalStatus, int $localStatus, bool $displayTitle, bool $displayBreadcrumbs, array $childrenIds) {
         $this->globalId = $globalId;
         $this->localId = $localId;
         $this->parentId = $parentId;
@@ -118,9 +118,10 @@ abstract class APage {
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getParentId(): int {
+    public function getParentId(): ?int {
+        dump($this->parentId);
         return $this->parentId;
     }
 

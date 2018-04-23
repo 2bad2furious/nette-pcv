@@ -214,7 +214,7 @@ class PageWrapper {
         if ($this->parent === null) {
             $this->parent =
                 ($p =
-                    $this->getParentId() === 0
+                    $this->getParentId() === null
                         ? $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getLanguage()->getHomepageId())
                         : $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getParentId(), false)
                 ) instanceof PageWrapper ? $p : false;
@@ -229,5 +229,9 @@ class PageWrapper {
             }, $this->getChildrenIds());
         }
         return $this->children;
+    }
+
+    public function getTagValues(): string {
+        return "";
     }
 }

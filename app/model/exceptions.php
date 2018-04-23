@@ -36,10 +36,9 @@ class SettingNotFound extends NotFound {
     private $option;
     private $languageId;
 
-    public function __construct(string $option, int $languageId, Throwable $previous = null) {
+    public function __construct(string $option, Throwable $previous = null) {
         $this->option = $option;
-        $this->languageId = $languageId;
-        parent::__construct("Setting $option - $languageId not found", $previous);
+        parent::__construct("Setting $option not found", $previous);
     }
 
     public function getOption(): string {

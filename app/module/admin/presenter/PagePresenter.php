@@ -26,10 +26,10 @@ class PagePresenter extends AdminPresenter {
         DEFAULT_VISIBILITY = self::VISIBILITY_ALL,
 
         VISIBILITY_TABLE = [
-        self::VISIBILITY_ALL => PageManager::STATUS_ALL,
-        self::VISIBILITY_PUBLIC => PageManager::STATUS_PUBLIC,
+        self::VISIBILITY_ALL     => PageManager::STATUS_ALL,
+        self::VISIBILITY_PUBLIC  => PageManager::STATUS_PUBLIC,
         self::VISIBILITY_DELETED => PageManager::STATUS_DELETED,
-        self::VISIBILITY_DRAFT => PageManager::STATUS_DRAFT,
+        self::VISIBILITY_DRAFT   => PageManager::STATUS_DRAFT,
     ],
 
         TYPE_KEY = "type",
@@ -41,7 +41,7 @@ class PagePresenter extends AdminPresenter {
         DEFAULT_TYPE = self::TYPE_ALL,
 
         TYPE_TABLE = [
-        self::TYPE_ALL => PageManager::TYPE_ALL,
+        self::TYPE_ALL  => PageManager::TYPE_ALL,
         self::TYPE_PAGE => PageManager::TYPE_PAGE,
         self::TYPE_POST => PageManager::TYPE_POST,
     ],
@@ -102,9 +102,9 @@ class PagePresenter extends AdminPresenter {
     public function actionCreate() {
         $globalId = $this->getPageManager()->addEmpty(self::TYPE_TABLE[$this->getParameter(self::TYPE_KEY)]);
         $args = [
-            self::ID_KEY => $globalId,
-            self::TYPE_KEY => null,
-            self::EDIT_LANGUAGE_KEY => $this->getLanguage()
+            self::ID_KEY            => $globalId,
+            self::TYPE_KEY          => null,
+            self::EDIT_LANGUAGE_KEY => $this->getLanguage(),
         ];
         if (!$this->getLanguageManager()->getByCode((string)$args[self::EDIT_LANGUAGE_KEY], false) instanceof \Language)
             $args[self::EDIT_LANGUAGE_KEY] = $this->getLanguageManager()->getDefaultLanguage()->getCode();
@@ -227,14 +227,14 @@ class PagePresenter extends AdminPresenter {
                 $this->getPageManager()->update(
                     $page->getGlobalId(),
                     $page->getLanguageId(),
-                    @$values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_PARENT_NAME],
+                    ($parentId = $values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_PARENT_NAME]) == 0 ? null : $parentId,
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_TITLE_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_DESCRIPTION_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_URL_NAME],
                     $values[\FormFactory::PAGE_EDIT_GLOBAL_CONTAINER][\FormFactory::PAGE_EDIT_GLOBAL_VISIBILITY_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_LOCAL_VISIBILITY_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_CONTENT_NAME],
-                    $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_IMAGE_NAME],
+                    ($imgId = $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_IMAGE_NAME]) == 0 ? null : $imgId,
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_DISPLAY_TITLE_NAME],
                     $values[\FormFactory::PAGE_EDIT_LOCAL_CONTAINER][\FormFactory::PAGE_EDIT_DISPLAY_BREADCRUMBS]
                 );

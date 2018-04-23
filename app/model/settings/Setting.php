@@ -10,23 +10,17 @@ class Setting {
 
     /** @var string */
     private $value;
-    /**
-     * @var int
-     */
-    private $languageId;
 
     /**
      * Setting constructor.
      * @param int $id
-     * @param int $languageId
      * @param string $option
      * @param string $value
      */
-    public function __construct(int $id, int $languageId, string $option, string $value) {
+    public function __construct(int $id, string $option, string $value) {
         $this->id = $id;
         $this->option = $option;
         $this->value = $value;
-        $this->languageId = $languageId;
     }
 
     /**
@@ -51,9 +45,9 @@ class Setting {
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getLanguageId(): int {
+    public function getLanguageId(): ?int {
         return $this->languageId;
     }
 

@@ -344,7 +344,7 @@ class FormFactory extends Manager {
         $lm = $this->getLanguageManager();
         $form = $this->createNewAdminForm();
 
-        $siteTitle = $sm->get(PageManager::SETTINGS_SITE_NAME, null)->getValue();
+        $siteTitle = $sm->get(PageManager::SETTINGS_SITE_NAME)->getValue();
         $form->addText(
             self::SETTINGS_EDIT_DEFAULT_SITE_TITLE,
             "admin.settings.edit.title.label")
@@ -352,7 +352,7 @@ class FormFactory extends Manager {
             ->setRequired(false)
             ->setDefaultValue($siteTitle);
 
-        $titleSeparator = $sm->get(PageManager::SETTINGS_TITLE_SEPARATOR, null)->getValue();
+        $titleSeparator = $sm->get(PageManager::SETTINGS_TITLE_SEPARATOR)->getValue();
         $form->addTextArea(
             self::SETTINGS_EDIT_TITLE_SEPARATOR,
             "admin.settings.edit.separator.label")
@@ -378,10 +378,10 @@ class FormFactory extends Manager {
             self::SETTINGS_EDIT_LOGO,
             "admin.settings.edit.logo.label",
             [0 => $this->getTranslator()->translate("admin.settings.edit.logo.no")] + $images);
-        if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO, null)->getValue()))
+        if ($logoId = intval($sm->get(PageManager::SETTINGS_LOGO)->getValue()))
             $logo->setDefaultValue($logoId);
 
-        $ga = $sm->get(PageManager::SETTINGS_GOOGLE_ANALYTICS, null)->getValue();
+        $ga = $sm->get(PageManager::SETTINGS_GOOGLE_ANALYTICS)->getValue();
         $form->addText(
             self::SETTINGS_EDIT_DEFAULT_GOOGLE_ANALYTICS,
             "admin.settings.edit.ga.label")

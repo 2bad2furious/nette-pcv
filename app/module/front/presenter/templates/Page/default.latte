@@ -28,7 +28,7 @@
         <meta property="article:modified_time" content="{$page->getEdited()}"/>
         <meta property="article:tag" content="{$page->getTagValues()}"/>
     {/if}
-    <link rel="canonical" href="{$baseUrl}/{$page->getPermanentUrl()}"/>
+    <link rel="canonical" href="{$baseUrl}{$page->getPermanentUrl()}"/>
 
     {if $page->getGA()}
         <script>

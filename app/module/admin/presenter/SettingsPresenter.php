@@ -58,7 +58,7 @@ class SettingsPresenter extends AdminPresenter {
         $form->onSuccess[] = function (Form $form) {
             $values = $form->getValues(true);
             foreach (self::TABLE as $k => $v) {
-                $this->getSettingsManager()->set($v, $values[$k], null);
+                $this->getSettingsManager()->set($v, $values[$k]);
             }
             $this->addSuccess("admin.settings.edit.success");
             $this->redirect(302, "this");
