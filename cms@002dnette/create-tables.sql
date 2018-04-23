@@ -150,9 +150,6 @@ CREATE TABLE page_local
 )
   ENGINE = InnoDB;
 
-CREATE INDEX content
-  ON page_local (content, title, url, description);
-
 CREATE INDEX page_local_user_user_id_fk
   ON page_local (author);
 
