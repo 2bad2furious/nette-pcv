@@ -296,14 +296,14 @@ class FormFactory extends Manager {
         $form->addSelect(self::LANGUAGE_EDIT_LOGO_NAME,
             "admin.language.edit.logo.label",
             [0 => $this->getTranslator()->translate("admin.language.edit.logo.no")] + $images)
-            ->setDefaultValue($language->getLogoId());
+            ->setDefaultValue((int)$language->getLogoId());
 
 
         $form->addSelect(
             self::LANGUAGE_EDIT_FAVICON_NAME,
             "admin.language.edit.favicon.label",
             [0 => $this->getTranslator()->translate("admin.language.edit.favicon.no")] + $images)
-            ->setDefaultValue($language->getFaviconId());
+            ->setDefaultValue((int)$language->getFaviconId());
 
         $form->addText(self::LANGUAGE_EDIT_GOOGLE_ANALYTICS_NAME, "admin.language.edit.ga.label")
             ->addRule(Form::MAX_LENGTH, "admin.language.edit.ga.length")
@@ -320,7 +320,7 @@ class FormFactory extends Manager {
         );
 
 
-        $homePageSelection->setDefaultValue($language->getHomepageId());
+        $homePageSelection->setDefaultValue((int)$language->getHomepageId());
 
         $form->addSelect(
             self::LANGUAGE_EDIT_404,
@@ -328,7 +328,7 @@ class FormFactory extends Manager {
             [0 => $this->getTranslator()->translate("admin.language.edit.404.no")] + array_map(function (PageWrapper $pageWrapper) {
                 return $pageWrapper->getGlobalId() . " - " . $pageWrapper->getTitle();
             }, $allPages)
-        );
+        )->setDefaultValue((int)$language->getErrorpageId());
 
 
         $form->addSubmit("submit", "admin.language.edit.submit");

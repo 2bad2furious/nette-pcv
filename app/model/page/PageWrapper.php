@@ -195,8 +195,8 @@ class PageWrapper {
      */
     public function getLogo(): ?Image {
         if ($this->logo === null) {
-            $favId = $this->getLanguage()->getLogoId();
-            $this->logo = ($favId) ? $this->mediaManager->getById($favId, IFileManager::TYPE_IMAGE, false) ?: false : false;
+            $logoId = $this->getLanguage()->getLogoId();
+            $this->logo = ($logoId) ? $this->mediaManager->getById($logoId, IFileManager::TYPE_IMAGE, false) ?: false : false;
         }
         return $this->logo instanceof Image ? $this->favicon : null;
     }
@@ -214,10 +214,13 @@ class PageWrapper {
         if ($this->parent === null) {
             $this->parent =
                 ($p =
-                    $this->getParentId() === null
+                    ($this->getParentId() === null && !is_null($this->getLanguage()->getHomepageId())
                         ? $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getLanguage()->getHomepageId())
                         : $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getParentId(), false)
-                ) instanceof PageWrapper ? $p : false;
+                    )
+                ) instanceof PageWrapper
+                    ? $p
+                    : false;
         }
         return $this->parent instanceof PageWrapper ? $this->parent : null;
     }

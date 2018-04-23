@@ -13,6 +13,7 @@ class Language {
     private $homepage_id;
     private $errorpage_id;
 
+
     /**
      * Language constructor.
      * @param int $id
@@ -21,12 +22,12 @@ class Language {
      * @param string $siteName
      * @param string $titleSeparator
      * @param string $ga
-     * @param int $logo_id
-     * @param int $favicon_id
-     * @param int $homepage_id
-     * @param int $errorpage_id
+     * @param int|null $logo_id
+     * @param int|null $favicon_id
+     * @param int|null $homepage_id
+     * @param int|null $errorpage_id
      */
-    public function __construct(int $id, string $code, string $friendly, string $siteName, string $titleSeparator, string $ga, int $logo_id, int $favicon_id, int $homepage_id, int $errorpage_id) {
+    public function __construct(int $id, string $code, string $friendly, string $siteName, string $titleSeparator, string $ga, ?int $logo_id, ?int $favicon_id, ?int $homepage_id, ?int $errorpage_id) {
         $this->id = $id;
         $this->code = $code;
         $this->friendly = $friendly;
@@ -82,30 +83,30 @@ class Language {
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getLogoId(): int {
+    public function getLogoId(): ?int {
         return $this->logo_id;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getFaviconId(): int {
+    public function getFaviconId(): ?int {
         return $this->favicon_id;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getHomepageId(): int {
+    public function getHomepageId(): ?int {
         return $this->homepage_id;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getErrorpageId(): int {
+    public function getErrorpageId(): ?int {
         return $this->errorpage_id;
     }
 }
