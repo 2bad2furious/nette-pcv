@@ -1,0 +1,12 @@
+database:
+    default:
+        dsn: 'mysql:host=127.0.0.1;dbname=cms-nette-copy'
+        user: 'root'
+        password: ""
+        options:
+            charset: utf8
+            PDO::MYSQL_ATTR_COMPRESS = true
+
+        debugger: true # panel v Debugger baru
+        explain: true  # explain dotazů v Debugger baru
+        reflection: discovered # nebo conventional nebo název třídy
