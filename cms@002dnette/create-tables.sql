@@ -55,7 +55,7 @@ CREATE TABLE media
   media_id INT UNSIGNED AUTO_INCREMENT
     PRIMARY KEY,
   type     INT(3) UNSIGNED NOT NULL,
-  lang_id  INT UNSIGNED    NOT NULL,
+  lang_id  INT UNSIGNED    NULL,
   name     VARCHAR(60)     NOT NULL,
   src      VARCHAR(255)    NOT NULL,
   alt      VARCHAR(255)    NULL,
