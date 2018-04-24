@@ -110,6 +110,7 @@ class FileManager extends Manager implements IFileManager {
         $uploadDir = $wwwDir . "/" . self::UPLOAD_DIRECTORY;
         $fileUpload->move($uploadDir . "/" . $freeName);
 
+
         $file = $this->runInTransaction(function () use ($freeName, $type) {
             $id = $this->getDatabase()->table(self::TABLE)->insert([
                 self::COLUMN_SRC  => $freeName,

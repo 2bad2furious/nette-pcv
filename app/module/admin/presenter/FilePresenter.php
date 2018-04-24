@@ -6,6 +6,7 @@ namespace adminModule;
 
 use Nette\Application\UI\Form;
 use Nette\Http\FileUpload;
+use Tracy\Debugger;
 
 class FilePresenter extends AdminPresenter {
 
@@ -65,6 +66,7 @@ class FilePresenter extends AdminPresenter {
                     $this->getFileManager()->add($upload);
                     $successfuls[$index] = $upload;
                 }
+                Debugger::barDump($successfuls, $unsuccessfuls);
             });
             $this->postGet("this");
         };
