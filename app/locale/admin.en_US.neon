@@ -36,9 +36,21 @@ header:
             switcher:
                 label: "Type - page?"
     edit:
+        type:
+            switcher:
+                label: "Change type"
+            page:
+                label: "Page"
+            custom:
+                label: "Custom"
+
+
         success: "Page successfully edited"
         page:
             label: "Page"
+            submit: "Save"
+        custom:
+            submit: "Save"
         title:
             optional:
                 label: "Custom title"

@@ -441,7 +441,7 @@ class FormFactory extends Manager {
 
         $form->addSubmit(
             self::HEADER_SUBMIT_NAME,
-            "admin.header." . ($headerWrapper instanceof HeaderPage ? "edit" : "add") . ".page.submit");
+            "admin.header." . ($headerWrapper instanceof HeaderWrapper ? "edit" : "add") . ".custom.submit");
 
         return $form;
     }

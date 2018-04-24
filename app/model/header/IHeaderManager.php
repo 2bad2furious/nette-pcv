@@ -17,9 +17,9 @@ interface IHeaderManager {
      */
     public function getById(int $id, bool $throw = true):?HeaderWrapper;
 
-    public function addPage(int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper;
+    public function addPage(?int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper;
 
-    public function addCustom(int $parentId, int $languageId, string $title, string $url): HeaderWrapper;
+    public function addCustom(?int $parentId, int $languageId, string $title, string $url): HeaderWrapper;
 
     public function editPage(int $headerId, int $pageId, string $title);
 

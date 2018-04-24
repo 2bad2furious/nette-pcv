@@ -94,6 +94,7 @@ class Header {
     }
 
     public function getType(): int {
+        \Tracy\Debugger::barDump($this->getPageId());
         return is_int($this->getPageId()) ? self::TYPE_PAGE : self::TYPE_CUSTOM;
     }
 

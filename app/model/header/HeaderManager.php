@@ -72,8 +72,8 @@ class HeaderManager extends Manager implements IHeaderManager {
         return null;
     }
 
-    public function addPage(int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper {
-        if ($parentId !== 0) {
+    public function addPage(?int $parentId, int $languageId, int $pageId, string $title): HeaderWrapper {
+        if (!is_null($parentId)) {
             $header = $this->getPlainById($parentId);
             if ($header->getLanguageId() !== $languageId) throw new InvalidArgumentException("Languages are not the same; $languageId != {$header->getLanguageId()}");
         }
@@ -105,8 +105,8 @@ class HeaderManager extends Manager implements IHeaderManager {
 
     }
 
-    public function addCustom(int $parentId, int $languageId, string $title, string $url): HeaderWrapper {
-        if ($parentId !== 0) {
+    public function addCustom(?int $parentId, int $languageId, string $title, string $url): HeaderWrapper {
+        if (!is_null($parentId)) {
             $header = $this->getPlainById($parentId);
             if ($header->getLanguageId() !== $languageId) throw new InvalidArgumentException("Languages are not the same; $languageId != {$header->getLanguageId()}");
         }
@@ -325,8 +325,10 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     private function adjustPositionsAround(Header $wrapper) {
-        if ($wrapper->getParentId() === 0) $this->adjustPositionsUnderLang($wrapper->getLanguageId());
-        else $this->adjustPositionsUnderId($wrapper->getParentId());
+        if (is_null($wrapper->getParentId()))
+            $this->adjustPositionsUnderLang($wrapper->getLanguageId());
+        else
+            $this->adjustPositionsUnderId($wrapper->getParentId());
     }
 
     private function adjustPositionsUnderId(int $id) {
@@ -421,7 +423,7 @@ class HeaderManager extends Manager implements IHeaderManager {
         $header = $this->getPlainById($headerId);
 
         if (!is_null($header->getParentId())) $where = [self::COLUMN_PARENT_ID => $header->getParentId()];
-        else $where = [self::COLUMN_PARENT_ID => 0, self::COLUMN_LANG => $header->getLanguageId()];
+        else $where = [self::COLUMN_PARENT_ID => null, self::COLUMN_LANG => $header->getLanguageId()];
 
         $where = $where + [self::COLUMN_POSITION . " > " => $header->getPosition()];
 
@@ -456,7 +458,7 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     public function canBeMovedLeft(int $headerId): bool {
-        return $this->getPlainById($headerId)->getParentId() !== 0;
+        return !is_null($this->getPlainById($headerId)->getParentId());
     }
 
     public function moveRight(int $headerId) {

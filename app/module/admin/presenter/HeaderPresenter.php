@@ -8,6 +8,7 @@ use Language;
 use Nette\Application\Request;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
+use Tracy\Debugger;
 
 class HeaderPresenter extends AdminPresenter {
 
@@ -58,6 +59,9 @@ class HeaderPresenter extends AdminPresenter {
 
         $this->template->header = $this->getHeaderManager()->getHeader($this->getCurrentLanguage()->getId());
         $this->template->formType = $this->getFormType();
+
+        Debugger::barDump($this->template->formType);
+
         $this->template->id = $this->getIdParam();
 
 
@@ -142,7 +146,7 @@ class HeaderPresenter extends AdminPresenter {
         $form->onSuccess[] = function (Form $form, array $values) {
             $this->commonTryCall(function () use ($values) {
                 $this->getHeaderManager()->addPage(
-                    $this->getIdParam(),
+                    ($parentId = $this->getIdParam()) > 0 ? $parentId : null,
                     $this->getCurrentLanguage()->getId(),
                     $values[\FormFactory::HEADER_PAGE_NAME],
                     $values[\FormFactory::HEADER_TITLE_NAME]
@@ -166,7 +170,7 @@ class HeaderPresenter extends AdminPresenter {
         $form->onSuccess[] = function (Form $form, array $values) {
             $this->commonTryCall(function () use ($values) {
                 $this->getHeaderManager()->addCustom(
-                    $this->getIdParam(),
+                    ($parentId = $this->getIdParam()) > 0 ? $parentId : null,
                     $this->getCurrentLanguage()->getId(),
                     $values[\FormFactory::HEADER_TITLE_NAME],
                     $values[\FormFactory::HEADER_URL_NAME]
@@ -280,7 +284,7 @@ class HeaderPresenter extends AdminPresenter {
         }
 
         if (!$this->getHeaderManager()->canBeMovedRight($id)) {
-            $this->addError("admin.header.cannot");
+            $this->addError("admin.header.moveRight.cannot");
             return;
         }
 
@@ -346,7 +350,7 @@ class HeaderPresenter extends AdminPresenter {
 
 
     protected function setPageSubtitle(): string {
-        return "admin.".$this->getPresenterShortname().".default.title";
+        return "admin." . $this->getPresenterShortname() . ".default.title";
     }
 
 }
