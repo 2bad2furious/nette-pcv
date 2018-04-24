@@ -133,13 +133,13 @@ class LanguageManager extends Manager implements ILanguageManager {
             $this->getMediaManager()->getById($logoId, FileManager::TYPE_IMAGE);
 
         if (!is_null($error404page))
-            $this->getPageManager()->exists($error404page,$language->getId());
+            $this->getPageManager()->exists($error404page, $language->getId());
 
         if (!is_null($faviconId))
             $this->getMediaManager()->getById($faviconId, FileManager::TYPE_IMAGE);
 
         if (!is_null($homePageId))
-            $this->getPageManager()->exists($homePageId,$language->getId());
+            $this->getPageManager()->exists($homePageId, $language->getId());
 
         if (mb_strlen($ga) > self::COLUMN_GA_LENGTH)
             throw new InvalidArgumentException("Google Analytics code must be at most " . self::COLUMN_GA_LENGTH . " long");
@@ -212,10 +212,10 @@ class LanguageManager extends Manager implements ILanguageManager {
                 self::COLUMN_CODE            => $code,
                 self::COLUMN_FRIENDLY        => $friendly,
                 self::COLUMN_SITE_NAME       => $title,
-                self::COLUMN_ERRORPAGE       => 0,
-                self::COLUMN_HOMEPAGE        => 0,
-                self::COLUMN_FAVICON         => $faviconId,
-                self::COLUMN_LOGO            => $logoId,
+                self::COLUMN_ERRORPAGE       => null,
+                self::COLUMN_HOMEPAGE        => null,
+                self::COLUMN_FAVICON         => $faviconId > 0 ? $faviconId : null,
+                self::COLUMN_LOGO            => $logoId > 0 ? $logoId : null,
                 self::COLUMN_GA              => $ga,
                 self::COLUMN_TITLE_SEPARATOR => $separator,
             ])->getPrimary();
