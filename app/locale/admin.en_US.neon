@@ -99,6 +99,15 @@ language:
                  yes: "Delete"
                  no: "Cancel"
         add: "Add"
+    add:
+        title: "Add a new language"
+        submit: "Add"
+        code:
+            label: "Code (e.g. en_US)"
+            required: "Code is required"
+            length: "Code should be exactly %d characters long"
+            pattern: "Code should look like ab_CD"
+            not_available: "This code is already in use"
     edit:
         success: "Language edited."
         title: "Editing"

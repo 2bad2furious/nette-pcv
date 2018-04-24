@@ -204,23 +204,23 @@ class FormFactory extends Manager {
         $form = $this->createNewAdminForm();
         $form->addText(
             self::LANGUAGE_EDIT_CODE_NAME,
-            "admin.language.code.label")
+            "admin.language.add.code.label")
             ->addRule(
                 Form::REQUIRED,
-                "admin.language.edit.code.required")
+                "admin.language.add.code.required")
             ->addRule(
                 Form::MAX_LENGTH,
-                "admin.language.edit.code.length",
+                "admin.language.add.code.length",
                 5)
             ->addRule(
                 Form::PATTERN,
-                "admin.language.edit.code.pattern",
+                "admin.language.add.code.pattern",
                 LanguageManager::COLUMN_CODE_PATTERN)
             ->addRule(
                 function (TextInput $item): bool {
                     return !$this->getLanguageManager()->getByCode($item->getValue(), false) instanceof Language;
                 },
-                $message = "admin.language.edit.code.not_available",
+                $message = "admin.language.add.code.not_available",
                 $message);
 
         $form->addText(

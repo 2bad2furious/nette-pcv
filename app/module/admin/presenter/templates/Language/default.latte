@@ -51,7 +51,7 @@
     <script>
         jQuery(document).ready(function ($) {
             $("#{$control->getSnippetId("languages")}").on("click","a.language-delete",function (e) {
-                if (!confirm({_"admin.language.default.delete.confirm"}))
+                if (!confirm({_"admin.language.default.delete.confirm.text"}))
                     e.preventDefault();
             })
         })
