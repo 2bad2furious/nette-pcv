@@ -96,6 +96,8 @@ global:
 
 language:
     title: "Language managing"
+    delete:
+        success: "Language successfully deleted"
     default:
         title: ""
         search:

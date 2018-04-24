@@ -58,8 +58,8 @@ class FormFactory extends Manager {
         $container->addSelect(
             self::PAGE_EDIT_GLOBAL_VISIBILITY_NAME,
             "admin.page.edit.global.visibility.label",
-            [PageManager::STATUS_DRAFT => $this->getTranslator()->translate("admin.page.edit.global.visibility.draft"),
-                PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.global.visibility.public")]
+            [PageManager::STATUS_DRAFT  => $this->getTranslator()->translate("admin.page.edit.global.visibility.draft"),
+             PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.global.visibility.public")]
         )->setDefaultValue($page->getGlobalStatus());
 
         if ($page->isPage()) {
@@ -78,8 +78,8 @@ class FormFactory extends Manager {
         $container->addSelect(
             self::PAGE_EDIT_LOCAL_VISIBILITY_NAME,
             "admin.page.edit.local.visibility.label",
-            [PageManager::STATUS_DRAFT => $this->getTranslator()->translate("admin.page.edit.local.visibility.draft"),
-                PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.local.visibility.public")]
+            [PageManager::STATUS_DRAFT  => $this->getTranslator()->translate("admin.page.edit.local.visibility.draft"),
+             PageManager::STATUS_PUBLIC => $this->getTranslator()->translate("admin.page.edit.local.visibility.public")]
         )->setDefaultValue($page->getLocalStatus());
 
         $container->addText(
@@ -315,7 +315,10 @@ class FormFactory extends Manager {
             self::LANGUAGE_EDIT_HOMEPAGE,
             "admin.language.edit.homepage.label",
             [0 => $this->getTranslator()->translate("admin.language.edit.homepage.no")] + array_map(function (PageWrapper $page) {
-                return $page->getGlobalId() . " - " . $page->getTitle();
+                return $page->getGlobalId() . " - " .
+                    ($page->isTitleDefault()
+                        ? $this->getTranslator()->translate($page->getTitle())
+                        : $page->getTitle());
             }, $allPages)
         );
 
@@ -326,7 +329,9 @@ class FormFactory extends Manager {
             self::LANGUAGE_EDIT_404,
             "admin.language.edit.404.label",
             [0 => $this->getTranslator()->translate("admin.language.edit.404.no")] + array_map(function (PageWrapper $pageWrapper) {
-                return $pageWrapper->getGlobalId() . " - " . $pageWrapper->getTitle();
+                return $pageWrapper->getGlobalId() . " - " . ($pageWrapper->isTitleDefault()
+                        ? $this->getTranslator()->translate($pageWrapper->getTitle())
+                        : $pageWrapper->getTitle());
             }, $allPages)
         )->setDefaultValue((int)$language->getErrorpageId());
 
