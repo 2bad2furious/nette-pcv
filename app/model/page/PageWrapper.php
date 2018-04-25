@@ -214,9 +214,9 @@ class PageWrapper {
         if ($this->parent === null) {
             $this->parent =
                 ($p =
-                    ($this->getParentId() === null && !is_null($this->getLanguage()->getHomepageId())
+                    ($this->getParentId() === null && $this->getLanguage()->getHomepageId() > 0
                         ? $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getLanguage()->getHomepageId())
-                        : $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getParentId(), false)
+                        : $this->pageManager->getByGlobalId($this->getLanguageId(), (int)$this->getParentId(), false)
                     )
                 ) instanceof PageWrapper
                     ? $p
