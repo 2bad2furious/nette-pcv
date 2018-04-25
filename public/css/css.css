@@ -216,7 +216,7 @@ html {
             html body main #content-wrapper #content[data-page-id="1"] .home-box {
               width: 100%;
               height: 100%;
-              padding: 4em 15vw;
+              padding: 2em 15vw;
               margin: 0 auto;
               display: flex; }
               html body main #content-wrapper #content[data-page-id="1"] .home-box .home-box-content {
@@ -303,8 +303,6 @@ html {
                   padding: 0;
                   max-width: 100%;
                   height: auto; } }
-              html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info button, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info button {
-                margin-bottom: 0.5em; }
               html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace {
                 flex-direction: column;
                 padding: 4em 10px; }
@@ -331,6 +329,10 @@ html {
             text-decoration: none; }
         html body footer #footer-content #languageSwitch {
           font-size: 0.7em; }
+          html body footer #footer-content #languageSwitch .language {
+            display: block; }
+            html body footer #footer-content #languageSwitch .language.active {
+              font-weight: bold; }
           html body footer #footer-content #languageSwitch button {
             color: #e63946; }
             html body footer #footer-content #languageSwitch button.btn.btn-close {
