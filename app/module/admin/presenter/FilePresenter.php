@@ -54,6 +54,8 @@ class FilePresenter extends AdminPresenter {
         $form->onSuccess[] = function (Form $form, array $values) {
             $this->commonTryCall(function () use ($values) {
                 $uploads = $values[\FormFactory::MEDIA_UPLOAD_NAME];
+
+                Debugger::barDump($uploads);
                 $successfuls = $unsuccessfuls = [];
                 /** @var FileUpload $upload */
                 foreach ($uploads as $index => $upload) {
@@ -66,7 +68,8 @@ class FilePresenter extends AdminPresenter {
                     $this->getFileManager()->add($upload);
                     $successfuls[$index] = $upload;
                 }
-                Debugger::barDump($successfuls, $unsuccessfuls);
+                Debugger::barDump($successfuls);
+                Debugger::barDump($unsuccessfuls);
             });
             $this->postGet("this");
         };
