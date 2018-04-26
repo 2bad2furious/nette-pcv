@@ -60,8 +60,6 @@ class HeaderPresenter extends AdminPresenter {
         $this->template->header = $this->getHeaderManager()->getHeader($this->getCurrentLanguage()->getId());
         $this->template->formType = $this->getFormType();
 
-        Debugger::barDump($this->template->formType);
-
         $this->template->id = $this->getIdParam();
 
 

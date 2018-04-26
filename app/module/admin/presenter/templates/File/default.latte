@@ -9,7 +9,6 @@
         {foreach $files as $file}
             <div class="file-item">
                 <div class="preview">
-                    {dump $file}
                     {if $file->isImage()}
                         <img src="/uploads/{$file->getSrc()}">
                     {/if}

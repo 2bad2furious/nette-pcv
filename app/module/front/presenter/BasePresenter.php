@@ -223,7 +223,6 @@ abstract class BasePresenter extends Presenter {
                 trigger_error("Modules not the same");
                 $this->disallowAjax();
             }
-            //dump("start", $this->getHttpRequest(), $referer, $oldScript, $script, $request, $script->getBasePath(), $match, "end");
         }
     }
 

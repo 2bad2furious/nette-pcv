@@ -21,12 +21,12 @@ class ServiceLoader {
         /*
                 //INITING for listener-registration
                 $reflection = $this->getReflection();
-                //dump(Manager::getInitingClass());
+
                 foreach (self::CLASS_NAMES as $k => $v) {
-                dump($context->findByType($v));
+
                     if (!$reflection instanceof ReflectionClass) $reflection = $this->getReflection();
 
-                    dump($v, $reflection, ($reflection instanceof ReflectionClass && $reflection->implementsInterface($v)));
+
                     if (!$reflection instanceof ReflectionClass || !$reflection->implementsInterface($v))
                         $this->context->getByType($v);
                 }*/
