@@ -25,7 +25,7 @@ class PagePresenter extends BasePresenter {
                 : []
             )
         );
-        dump($this->getUser()->isLoggedIn());
+
         parent::startup();
     }
 

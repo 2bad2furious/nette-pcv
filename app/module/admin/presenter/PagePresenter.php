@@ -109,7 +109,6 @@ class PagePresenter extends AdminPresenter {
         if (!$this->getLanguageManager()->getByCode((string)$args[self::EDIT_LANGUAGE_KEY], false) instanceof \Language)
             $args[self::EDIT_LANGUAGE_KEY] = $this->getLanguageManager()->getDefaultLanguage()->getCode();
 
-        dump($args, $this->getParameter(self::EDIT_LANGUAGE_KEY), $globalId);
         $this->redirect(302, "edit", $args);
     }
 

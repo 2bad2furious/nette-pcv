@@ -31,12 +31,11 @@ class ShortcodeManager extends Manager implements IShortcodeManager {
                         $pageId = (int)@$atts["page_id"];
                         $langId = (int)@$atts["lang_id"];
 
-                        dump($pageId, $langId, $atts);
 
                         if (!$pageId || !$langId) return "";
 
                         $page = $pm->getByGlobalId($langId, $pageId, false);
-                        dump($page);
+
                         if ($page instanceof PageWrapper) return $page->getCompleteUrl(true);
                         return "";
                     }
@@ -53,7 +52,7 @@ class ShortcodeManager extends Manager implements IShortcodeManager {
     private function unwebalizeLinks(string $content): string {
         $links = $this->findShortcodeLinks($content);
         foreach ($links as $link) {
-            dump($link, urldecode($link));
+
             $content = str_replace($link, urldecode($link), $content);
         }
         return $content;

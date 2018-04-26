@@ -26,7 +26,6 @@ class FileManager extends Manager implements IFileManager {
 
     private static function getType(string $contentType): int {
         foreach (self::BY_TYPE as $type => $contentTypes) {
-            dump($type, $contentTypes, $contentType, in_array($contentType, $contentTypes));
             if (in_array($contentType, $contentTypes))
                 return $type;
         }
@@ -144,7 +143,7 @@ class FileManager extends Manager implements IFileManager {
         $firstDotPos = strpos($sanitizedName, ".") ?: $length - 1;
         $extension = substr($sanitizedName, $firstDotPos);
         $name = substr($sanitizedName, 0, $firstDotPos);
-        dump($name, $extension);
+
         if ($i) $name .= "-$i";
         if ($this->existsByName($finalName = $name . $extension)) {
             return $this->getFreeName($sanitizedName, $i + 1);

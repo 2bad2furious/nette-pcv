@@ -25,7 +25,7 @@ class AccountsPresenter extends AdminPresenter {
     }
 
     public function renderDefault() {
-        dump($this->template->getParameters());
+
         $this->template->accounts = $this->getAccountManager()->getAll($this->getRoles(), $this->getCurrentPage(), 5, $this->numOfPages);
 
         $this->checkPaging($this->getCurrentPage(), $this->numOfPages, self::PAGE_KEY);

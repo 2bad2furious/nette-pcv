@@ -434,7 +434,7 @@ class FormFactory extends Manager {
 
     public function createHeaderCustomEditForm(?HeaderWrapper $headerWrapper) {
         $form = $this->createNewAdminForm();
-        dump($headerWrapper);
+
         $title = $form->addText(self::HEADER_TITLE_NAME, "admin.header.edit.title.required.label")
             ->addRule(Form::REQUIRED, "admin.header.edit.title.required.required");
         if ($headerWrapper instanceof HeaderWrapper) $title->setDefaultValue((string)$headerWrapper->getTitle());

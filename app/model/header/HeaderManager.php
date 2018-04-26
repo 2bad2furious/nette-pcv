@@ -462,13 +462,11 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     public function moveRight(int $headerId) {
-        dump("moving right", $headerId);
+
         if (!$this->canBeMovedRight($headerId)) throw new InvalidArgumentException("Header $headerId cannot be moved right");
 
         $header = $this->getPlainById($headerId);
         $upperSibling = $this->getUpperSibling($headerId);
-
-        dump($upperSibling);
 
         $this->uncache($headerId);
         $this->uncache($upperSibling->getId());

@@ -219,7 +219,7 @@ abstract class BasePresenter extends Presenter {
         if ($this->isAjax() && $this->getReferer()) {
             $match = $this->getRefererRequest();
             if ($match instanceof Request && $this->isComingFromDifferentModule()) {
-                dump($this->getRefererRequest(), $this->getRequest());
+
                 trigger_error("Modules not the same");
                 $this->disallowAjax();
             }
@@ -233,8 +233,7 @@ abstract class BasePresenter extends Presenter {
      */
     protected function isComingFromThis(): bool {
         $match = $this->getRefererRequest();
-        dump($match);
-        dump($this->getRequest());
+
         return $match === $this->getRequest();
     }
 

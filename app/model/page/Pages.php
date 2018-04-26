@@ -121,7 +121,7 @@ abstract class APage {
      * @return int|null
      */
     public function getParentId(): ?int {
-        dump($this->parentId);
+
         return $this->parentId;
     }
 

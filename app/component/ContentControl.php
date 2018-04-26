@@ -32,8 +32,6 @@ class ContentControl extends BaseControl {
 
                     $arr = $pm->getFiltered(IPageManager::TYPE_POST, IPageManager::STATUS_PUBLIC, $page->getLanguage(), null, 1, $limit, $var, null, $order);
 
-                    dump($arr);
-
                     $template->setFile(__DIR__ . "/templates/posts_excerpt.latte");
                     $template->posts = array_map(function (array $posts) {
                         return end($posts);

@@ -145,7 +145,7 @@ class HeaderWrapper {
     }
 
     public function isPage(): bool {
-        dump($this->getId(), !!$this->getPageId());
+
         return $this->getType() === Header::TYPE_PAGE;
     }
 
@@ -183,7 +183,7 @@ class HeaderWrapper {
      * @return bool
      */
     public function isOk(): bool {
-        dump($this->getHeader()->getId(), $this->isPage());
+
         return !$this->isPage() || ($this->getPage() instanceof PageWrapper && $this->getPage()->isVisible());
     }
 
