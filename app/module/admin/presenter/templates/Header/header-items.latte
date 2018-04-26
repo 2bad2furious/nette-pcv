@@ -60,7 +60,7 @@
                             </span>
                             {/if}
                             <span class="header-item-page-page">
-                        {_"admin.header.default.page.page"}: <span class="header-item-page-id">{$page->getId()}</span>. <span
+                        {_"admin.header.default.page.page"}: {*<span class="header-item-page-id">{$page->getId()}</span>. *}<span
                                         class="header-item-page-title">
                                 {if $page->getPage()->isTitleDefault()}{else}{$page->getPage()->getTitle()}{/if}
                             </span>
