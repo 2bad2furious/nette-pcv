@@ -240,4 +240,10 @@ class PageWrapper {
     public function is404(): bool {
         return $this->getGlobalId() === $this->getLanguage()->getErrorpageId();
     }
+
+    public function getOtherTranslation(int $otherLangId): PageWrapper {
+        if ($otherLangId === $this->getLanguageId()) return $this;
+
+        return $otherTranslation = $this->pageManager->getByGlobalId($otherLangId, $this->getGlobalId(), true);
+    }
 }

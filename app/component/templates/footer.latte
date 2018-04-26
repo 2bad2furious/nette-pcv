@@ -21,8 +21,11 @@
                 </div>
                 <div class="modal-body">
                     {foreach $languages as $language}
+                        {var $otherTranslation = $page->getOtherTranslation($language->getId())}
                         <a class="language{if $language->getId() === $page->getLanguageId()} active{/if}"
-                           href="{if $page->is404()}{plink home locale=>$language->getCode()}{else}{plink permanent locale=>$language->getCode(),\frontModule\PagePresenter::PARAM_ID=>$page->getGlobalId()}{/if}"
+                           href="{if $otherTranslation->is404() || !$otherTranslation->isVisible()}
+{plink home locale=>$language->getCode()}{else}
+{plink default locale=>$language->getCode(),\frontModule\PagePresenter::PARAM_URL=>$otherTranslation->getUrl()}{/if}"
                            data-ajax="false">
                             {$language->getFriendly()}
                         </a>
