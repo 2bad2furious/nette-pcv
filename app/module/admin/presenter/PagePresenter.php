@@ -176,8 +176,12 @@ class PagePresenter extends AdminPresenter {
             $pm = $this->getPageManager();
             if ($pm->exists($deleteId = $this->getParameter(self::ID_KEY))) {
                 //TODO check if homepage and prevent
-                $pm->delete($deleteId);
-                $this->addSuccess("admin.page.delete.success");
+                try {
+                    $pm->delete($deleteId);
+                    $this->addSuccess("admin.page.delete.success");
+                } catch (\InvalidArgumentException $exception) {
+                    $this->addError("admin.page.delete.cannot");
+                }
             } else {
                 $this->addWarning("admin.page.delete.not_found");
             }

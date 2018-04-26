@@ -483,9 +483,8 @@ class PageManager extends Manager implements IPageManager {
         if (!$this->exists($globalId)) throw new InvalidArgumentException("Page not found");
 
         foreach ($this->getLanguageManager()->getAvailableLanguages() as $language) {
-            if ($language->getHomepageId() == $globalId)
+            if ($language->getHomepageId() == $globalId || $language->getErrorpageId() === $globalId)
                 throw new InvalidArgumentException("Is at least one homepage");
-
         }
 
         $parentId = $this->getParentOf($globalId);
