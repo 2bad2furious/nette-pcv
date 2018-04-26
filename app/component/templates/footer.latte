@@ -22,7 +22,7 @@
                 <div class="modal-body">
                     {foreach $languages as $language}
                         <a class="language{if $language->getId() === $page->getLanguageId()} active{/if}"
-                           href="{plink permanent locale=>$language->getCode(),\frontModule\PagePresenter::PARAM_ID=>$page->getGlobalId()}"
+                           href="{if $page->is404()}{plink home locale=>$language->getCode()}{else}{plink permanent locale=>$language->getCode(),\frontModule\PagePresenter::PARAM_ID=>$page->getGlobalId()}{/if}"
                            data-ajax="false">
                             {$language->getFriendly()}
                         </a>
