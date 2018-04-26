@@ -179,6 +179,7 @@ page:
     delete:
         success: "Page successfully deleted."
         not_found: "Page not found"
+        cannot: "Page cannot be deleted, it is used as homepage or 404"
     title: "Page Managing"
     show:
         title: ""
@@ -299,7 +300,10 @@ page:
         action:
             delete:
                 label: "Delete"
-                confirm: "This will delete all translations of this page/post"
+                confirm:
+                        text: "Are you sure? This will delete all translations of this page/post"
+                        yes: "Delete"
+                        no: "Cancel"
             edit: "Save"
             visit: "View the page"
 
