@@ -11,7 +11,7 @@
     <meta property="og:title" content="{$page->getTitle()}"/>
     <meta property="og:type" content="{$page->getOgType()}"/>
     {if !$page->is404()}
-        <meta property="og:url" content="{$baseUrl}/{$page->getPermanentUrl()}"/>
+        <meta property="og:url" content="{$baseUrl}{$page->getPermanentUrl()}"/>
         {if $image=$page->getImage()}
             <meta property="og:image" content="/{$image->getWholeSrc()}"/>{*
             {if $alt=$image->getAlt()}
@@ -103,7 +103,7 @@
                 </a>
             </div>
             {if $page->getDisplayTitle()}
-                <h1 id="default">{$page->getTitle()}</h1>
+                <h1 id="default">{if $page->isTitleDefault()}{_$page->getTitle()}{else}{$page->getTitle()}{/if}</h1>
             {/if}
             {control content}
         </article>
