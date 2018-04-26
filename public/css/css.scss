@@ -339,6 +339,9 @@ html {
                 }
               }
               &#more-info, &#vice-info {
+                $topBottomPadding: 0.5em;
+                padding-bottom: $topBottomPadding;
+                padding-top: $topBottomPadding;
                 @media screen and (max-width: $secondMediaTag) {
                   padding: 0;
 

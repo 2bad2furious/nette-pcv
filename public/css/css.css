@@ -298,11 +298,14 @@ html {
                           font-size: 0.75em;
                           text-align: center;
                           margin-bottom: 0.2em; }
-              @media screen and (max-width: 28em) {
-                html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info {
-                  padding: 0;
-                  max-width: 100%;
-                  height: auto; } }
+              html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info {
+                padding-bottom: 0.5em;
+                padding-top: 0.5em; }
+                @media screen and (max-width: 28em) {
+                  html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info {
+                    padding: 0;
+                    max-width: 100%;
+                    height: auto; } }
               html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace {
                 flex-direction: column;
                 padding: 4em 10px; }
