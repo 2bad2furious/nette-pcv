@@ -214,10 +214,6 @@ abstract class APage {
         return $this instanceof Post;
     }
 
-    public function is404(): bool {
-        return $this instanceof Page404;
-    }
-
     private function addChild(int $childrenId) {
         $this->childrenIds[] = $childrenId;
     }
@@ -267,7 +263,4 @@ class Post extends APage {
     public function getType(): string {
         return "post";
     }
-}
-
-class Page404 extends Page {
 }

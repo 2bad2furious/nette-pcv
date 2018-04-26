@@ -20,7 +20,6 @@
  * @method string getOgType()
  * @method bool isPost()
  * @method bool isPage()
- * @method bool is404()
  * @method bool getDisplayTitle()
  * @method bool getDisplayBreadCrumbs()
  * @method int[] getChildrenIds()
@@ -236,5 +235,9 @@ class PageWrapper {
 
     public function getTagValues(): string {
         return "";
+    }
+
+    public function is404(): bool {
+        return $this->getGlobalId() === $this->getLanguage()->getErrorpageId();
     }
 }
