@@ -11,6 +11,7 @@
     <meta property="og:title" content="{$page->getTitle()}"/>
     <meta property="og:type" content="{$page->getOgType()}"/>
     {if !$page->is404()}
+        <link rel="canonical" href="{$baseUrl}{$page->getPermanentUrl()}"/>
         <meta property="og:url" content="{$baseUrl}{$page->getPermanentUrl()}"/>
         {if $image=$page->getImage()}
             <meta property="og:image" content="/{$image->getWholeSrc()}"/>{*
@@ -28,7 +29,6 @@
         <meta property="article:modified_time" content="{$page->getEdited()}"/>
         <meta property="article:tag" content="{$page->getTagValues()}"/>
     {/if}
-    <link rel="canonical" href="{$baseUrl}{$page->getPermanentUrl()}"/>
 
     {if $page->getGA()}
         <script>
