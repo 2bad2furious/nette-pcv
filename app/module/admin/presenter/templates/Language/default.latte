@@ -35,25 +35,20 @@
                 <td>{$lang->getFriendly()}</td>
                 <td>
                     <a class="language-edit"
-                            href="{plink edit \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">
+                       href="{plink edit \adminModule\LanguagePresenter::ID_KEY=>$lang->getId()}">
                         <i class="fa fa-pencil"></i>
                     </a>
                 </td>
                 <td><a class="language-delete"
-                       href="{plink delete! $lang->getId()}">
-                    <i class="fa fa-trash"></i>
+                       href="{plink delete! $lang->getId()}"
+                       data-prompt="{_"admin.language.default.delete.confirm.text"}"
+                       data-confirm="{_"admin.language.default.delete.confirm.yes"}"
+                       data-cancel="{_"admin.language.default.delete.confirm.no"}">
+                        <i class="fa fa-trash"></i>
                     </a>
                 </td>
             </tr>
         {/foreach}
     </table>
     {control paginator}
-    <script>
-        jQuery(document).ready(function ($) {
-            $("#{$control->getSnippetId("languages")}").on("click","a.language-delete",function (e) {
-                if (!confirm({_"admin.language.default.delete.confirm.text"}))
-                    e.preventDefault();
-            })
-        })
-    </script>
 {/block}

@@ -71,9 +71,15 @@ header:
             title: "Custom title"
             page: "Page"
         deleteSelf:
-            confirm: "Are you sure? This will delete this link from header and move all its children to its place."
+            confirm:
+                text: "Are you sure? This will delete this link from header and move all its children to its place."
+                yes: "Delete"
+                no: "Cancel"
         deleteAll:
-            confirm: "Are you sure? This will delete this page and all its descendants."
+            confirm:
+                 text: "Are you sure? This will delete this page and all its descendants."
+                 yes: "Delete all"
+                 no: "Cancel"
         filter:
             language: "Language"
         title: ""
