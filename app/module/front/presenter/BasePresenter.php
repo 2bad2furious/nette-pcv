@@ -90,8 +90,12 @@ abstract class BasePresenter extends Presenter {
         }
     }
 
-    public function flashMessage($message, $type = 'info') {
-        return parent::flashMessage($this->translator->translate($message), $type);
+    public function flashMessage($message, $type = 'info', ?int $count = null, array $params = [], bool $translate = true) {
+        return parent::flashMessage(
+            $translate
+                ? $this->translator->translate($message, $count, $params)
+                : $message
+            , $type);
     }
 
     /**
@@ -155,16 +159,16 @@ abstract class BasePresenter extends Presenter {
         $this->addError(self::SOMETHING_WENT_WRONG);
     }
 
-    public function addSuccess(string $message) {
-        $this->flashMessage($message, 'success');
+    public function addSuccess($message, ?int $count = null, array $params = [], bool $translate = true) {
+        $this->flashMessage($message, 'success', $count, $params, $translate);
     }
 
-    public function addError(string $message) {
-        $this->flashMessage($message, 'error');
+    public function addError($message, ?int $count = null, array $params = [], bool $translate = true) {
+        $this->flashMessage($message, 'error', $count, $params, $translate);
     }
 
-    public function addWarning(string $message) {
-        $this->flashMessage($message, 'warning');
+    public function addWarning($message, ?int $count = null, array $params = [], bool $translate = true) {
+        $this->flashMessage($message, 'warning', $count, $params, $translate);
     }
 
     protected final function getServiceLoader(): ServiceLoader {
