@@ -455,7 +455,13 @@ class FormFactory extends Manager {
         $form = $this->createNewAdminForm();
         $form->addMultiUpload(
             self::MEDIA_UPLOAD_NAME,
-            "admin.file.default.upload.label");//TODO limit types by MIME
+            "admin.file.default.upload.label")
+            //->addRule(Form::MAX_POST_SIZE, "admin.file.error.max_post", $this->return_bytes(ini_get('post_max_size')))//this doesnt work xd
+                /* TODO change so that js validation and server-side validation messages are the same */
+            ->addRule(Form::MAX_FILE_SIZE, "admin.file.error.fe_1", $this->return_bytes(ini_get('upload_max_filesize')))//this doesnt work server-side
+            ->addRule(Form::REQUIRED, "admin.file.error.required", true);//TODO limit types by MIME
+
+        $form->addHidden('hidden')->setDefaultValue('1');
 
         $form->addSubmit(
             "submit",
@@ -480,5 +486,27 @@ class FormFactory extends Manager {
             }, $this->getLanguageManager()->getAvailableLanguages()));
         $form->addSubmit("submit", "admin.form.slider.add.submit");
         return $form;
+    }
+
+    /**
+     * taken from http://php.net/manual/en/function.ini-get.php
+     * @param string $val
+     * @return int|string
+     */
+    private function return_bytes(string $shorthand) {
+        $val = (int)trim($shorthand);
+        $last = strtolower($shorthand[strlen($shorthand) - 1]);
+
+        switch ($last) {
+            // The 'G' modifier is available since PHP 5.1.0
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+
+        return $val;
     }
 }

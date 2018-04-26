@@ -358,6 +358,12 @@ file:
         title: ""
         upload:
             label: "Upload"
+    error:
+        be_1: "File %fileName% is too large. Max filesize is %maxFileSize%"
+        fe_1: "File is too large. Max filesize is %s bytes"
+        max_post: "Total combined filesize should be at most %maxPostSize%"
+        required: "File is required."
+        too_long: "Filename is too long, %length% allowed"
 slider:
     title: "Slider Managing"
     add:
