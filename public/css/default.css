@@ -1,8 +1,8 @@
 /*if just * was used, you could see the title and scripts xd lmao*/
-body {
+html body {
   padding: 0;
   margin: 0; }
-  body, body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]) {
+  html body, html body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]) {
     box-sizing: inherit;
     font-family: inherit;
     -webkit-transition: inherit;
@@ -10,74 +10,84 @@ body {
     -ms-transition: inherit;
     -o-transition: inherit;
     transition: inherit;
-    text-decoration: inherit; }
-    body:not(input):not(textarea):not(select):not(option):not(body), body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]):not(input):not(textarea):not(select):not(option):not(body) {
+    /*    text-decoration: inherit;*/ }
+    html body:not(input):not(textarea):not(select):not(option):not(body), html body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]):not(input):not(textarea):not(select):not(option):not(body) {
       color: inherit; }
-  body .nittro-dialog-content {
+  html body .nittro-dialog-content {
     color: black; }
-  body .nittro-dialog-holder {
+  html body .nittro-dialog-holder {
     justify-content: center; }
-  body:not(p, span, a) {
+  html body:not(p, span, a) {
     display: block; }
-  body:not(textarea) {
+  html body:not(textarea) {
     transition: inherit; }
-  body textarea.oneline {
+  html body textarea.oneline {
     resize: none; }
-  body .center-all {
+  html body .center-all {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%); }
-  body .scale {
+  html body .scale {
     display: inline-block; }
-    body .scale.big:hover, body .scale.big:hover * {
+    html body .scale.big:hover, html body .scale.big:hover * {
       -webkit-transform: scale(1.3);
       -moz-transform: scale(1.3);
       -ms-transform: scale(1.3);
       -o-transform: scale(1.3);
       transform: scale(1.3); }
-    body .scale:not(.big):hover, body .scale:not(.big):hover * {
+    html body .scale:not(.big):hover, html body .scale:not(.big):hover * {
       -webkit-transform: scale(1.02);
       -moz-transform: scale(1.02);
       -ms-transform: scale(1.02);
       -o-transform: scale(1.02);
       transform: scale(1.02); }
-  body .link {
+  html body .link {
     padding: 2px;
     cursor: pointer; }
-  body .nice-button {
+  html body .nice-button {
     width: 60px;
     text-align: center;
     padding: 10px;
     background: #00a8ff;
     margin: 10px 0px; }
-    body .nice-button:hover {
+    html body .nice-button:hover {
       background-color: #0097e6; }
-  body #snippet--flashes {
+  html body #snippet--flashes {
     position: relative; }
-    body #snippet--flashes #flashes {
+    html body #snippet--flashes #flashes {
       list-style-type: none;
       padding: 20px 10px 20px; }
-      body #snippet--flashes #flashes li.nittro-flash {
+      html body #snippet--flashes #flashes li.nittro-flash {
         color: #f5f6fa; }
-        body #snippet--flashes #flashes li.nittro-flash::before {
+        html body #snippet--flashes #flashes li.nittro-flash::before {
           border: none; }
-        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
+        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
           background-color: #e84118; }
-        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
+        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
           background-color: #4cd137; }
-        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
+        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
           background-color: #00a8ff; }
-        body #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
+        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
           background-color: #fbc531; }
-      body #snippet--flashes #flashes:empty {
+      html body #snippet--flashes #flashes:empty {
         padding: 0;
         margin: 0; }
-        body #snippet--flashes #flashes:empty ~ #flash-closer {
+        html body #snippet--flashes #flashes:empty ~ #flash-closer {
           display: none; }
-    body #snippet--flashes #flash-closer {
+    html body #snippet--flashes #flash-closer {
       position: absolute;
       right: 10px;
       top: 20px; }
+  html body .cdropdown:hover .cdropdown-menu {
+    display: block; }
+  html body .cdropdown .cdropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 2; }
+    html body .cdropdown .cdropdown-menu .cdropdown-item {
+      display: block; }
+  html body .cdropdown .cdropdown-toggle {
+    position: relative; }
 
 /*# sourceMappingURL=default.css.map */

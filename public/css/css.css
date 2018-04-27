@@ -80,6 +80,16 @@ html body {
       position: absolute;
       right: 10px;
       top: 20px; }
+  html body .cdropdown:hover .cdropdown-menu {
+    display: block; }
+  html body .cdropdown .cdropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 2; }
+    html body .cdropdown .cdropdown-menu .cdropdown-item {
+      display: block; }
+  html body .cdropdown .cdropdown-toggle {
+    position: relative; }
 
 html {
   /* inheritance */

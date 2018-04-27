@@ -80,6 +80,16 @@ html body {
       position: absolute;
       right: 10px;
       top: 20px; }
+  html body .cdropdown:hover .cdropdown-menu {
+    display: block; }
+  html body .cdropdown .cdropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 2; }
+    html body .cdropdown .cdropdown-menu .cdropdown-item {
+      display: block; }
+  html body .cdropdown .cdropdown-toggle {
+    position: relative; }
 
 html {
   -webkit-transition: all 0.2s linear;
@@ -273,20 +283,23 @@ html {
               flex-direction: column;
               flex-wrap: wrap; }
         html body #snippet--content #contentWrapper.header-default #content ol.header-children, html body #snippet--content #contentWrapper.header-add #content ol.header-children, html body #snippet--content #contentWrapperheader-edit #content ol.header-children {
-          list-style-type: none; }
+          padding: 0 1.25rem; }
+          html body #snippet--content #contentWrapper.header-default #content ol.header-children:nth-child(-1), html body #snippet--content #contentWrapper.header-add #content ol.header-children:nth-child(-1), html body #snippet--content #contentWrapperheader-edit #content ol.header-children:nth-child(-1) {
+            margin-bottom: 0.75rem; }
+          html body #snippet--content #contentWrapper.header-default #content ol.header-children:nth-child(0), html body #snippet--content #contentWrapper.header-add #content ol.header-children:nth-child(0), html body #snippet--content #contentWrapperheader-edit #content ol.header-children:nth-child(0) {
+            margin-top: 0.75rem; }
           html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item {
-            margin: 10px 0; }
-            html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item > div, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item > div {
-              border: 1px solid #718093; }
-              html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item > div > div, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item > div > div {
-                padding: 5px; }
-                html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div.header-item-controls, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item > div > div.header-item-controls, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item > div > div.header-item-controls {
-                  background-color: #f5f6fa;
-                  border-bottom: 1px solid #dcdde1;
-                  display: flex;
-                  align-content: center; }
-                html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item > div > div.header-item-content > span, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item > div > div.header-item-content > span, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item > div > div.header-item-content > span {
-                  display: block; }
+            padding: 0; }
+            html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item .header-item-container, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item .header-item-container, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item .header-item-container {
+              padding: 0.75rem 1.25rem;
+              min-height: calc(2 * 0.75rem + 1.5em + 2 * 1px + 2 * 0.75rem); }
+              html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item .header-item-container .header-item-controls, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item .header-item-container .header-item-controls, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item .header-item-container .header-item-controls {
+                display: none; }
+                html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item .header-item-container .header-item-controls .list-group-item, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item .header-item-container .header-item-controls .list-group-item, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item .header-item-container .header-item-controls .list-group-item {
+                  float: left;
+                  border-radius: 0px; }
+              html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item .header-item-container:hover > .header-item-controls, html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item .header-item-container:focus > .header-item-controls, html body #snippet--content #contentWrapper.header-default #content ol.header-children li.header-item .header-item-container:active > .header-item-controls, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item .header-item-container:hover > .header-item-controls, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item .header-item-container:focus > .header-item-controls, html body #snippet--content #contentWrapper.header-add #content ol.header-children li.header-item .header-item-container:active > .header-item-controls, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item .header-item-container:hover > .header-item-controls, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item .header-item-container:focus > .header-item-controls, html body #snippet--content #contentWrapperheader-edit #content ol.header-children li.header-item .header-item-container:active > .header-item-controls {
+                display: block; }
         html body #snippet--content #contentWrapper.file-default .file-item .preview {
           width: 120px;
           height: 150px;
@@ -319,15 +332,17 @@ html {
     html body #content > .btn {
       align-self: flex-start; }
     html body .btn {
-      box-shadow: none !important;
+      margin-bottom: 0.4em;
+      /*box-shadow: none !important;
       margin: 0 3px;
       background-color: #353b48;
       border-color: #353b48;
       color: #f5f6fa !important;
-      display: inline-block; }
-      html body .btn:hover {
+      display: inline-block;
+      &:hover {
         background-color: #2f3640;
-        border-color: #2f3640; }
+        border-color: #2f3640;
+      }*/ }
       html body .btn.delete {
         background-color: #e84118;
         border-color: #e84118; }

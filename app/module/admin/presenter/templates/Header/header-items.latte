@@ -1,43 +1,66 @@
-<ol class="header-children" n:snippet="header-edit">
+<ol class="header-children list-group" n:snippet="header-edit">
     {define header}
         {foreach $header as $page}
-            <li data-id="{$page->getId()}" n:snippet="headerPage-{$page->getId()}" class="header-item">
-                <div>
-                    <div class="header-item-controls">
-                        <a data-id="{$page->getId()}" class="add" data-history="false"
+            <li data-id="{$page->getId()}" n:snippet="headerPage-{$page->getId()}" class="header-item list-group-item">
+                <div class="d-flex justify-content-between header-item-container">
+                    <div class="header-item-content">
+                        {if $page->isCustom()}
+                            <span class="header-item-custom-title">
+                                {_"admin.header.default.custom.title"}: <span>{$page->getTitle()}</span>
+                            </span>
+                            <br>
+                            <span class="header-item-custom-url">
+                                {_"admin.header.default.custom.url"}: <span>{$page->getUrl()}</span>
+                            </span>
+                        {elseif $page->isPage()}
+                            <span class="header-item-page-page">
+                        {_"admin.header.default.page.page"}
+                                : {*<span class="header-item-page-id">{$page->getId()}</span>. *}<span
+                                        class="header-item-page-title">
+                                {if $page->getPage()->isTitleDefault()}{else}{$page->getPage()->getTitle()}{/if}
+                            </span>
+                            {if $page->hasCustomTitle()}
+                                <br>
+                                <span class="header-item-page-custom-title">
+                                {_"admin.header.default.page.title"}: <span>{$page->getTitle()}</span>
+                            </span>
+                            {/if}
+                            </span>
+                        {/if}
+                    </div>
+                    <div class="header-item-controls list-inline">
+                        <a data-id="{$page->getId()}" class="add list-group-item" data-history="false"
                            href="{plink Header:add \adminModule\HeaderPresenter::ID_KEY=>$page->getId(),\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE}">
                             <i class="fa fa-plus"></i>
                         </a>
-                        <a data-id="{$page->getId()}" class="edit" data-history="false"
+                        <a data-id="{$page->getId()}" class="edit list-group-item" data-history="false"
                            href="{plink Header:edit \adminModule\HeaderPresenter::ID_KEY=>$page->getId(),\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::TYPES[$page->getType()]}">
                             <i class="fa fa-pencil"></i>
                         </a>
-                        <div class="header-item-move-controls">
-                            <a data-id="{$page->getId()}" class="moveLeft"
-                               data-history="false" n:href="moveLeft! $page->getId()">
-                                <i class="fa fa-caret-left"></i>
-                            </a>
-                            <a data-id="{$page->getId()}" class="moveUp" data-history="false"
-                                    n:href="moveUp! $page->getId()">
-                                <i class="fa fa-caret-up"></i>
-                            </a>
-                            <a data-id="{$page->getId()}" class="moveDown" data-history="false"
-                                    n:href="moveDown! $page->getId()">
-                                <i class="fa fa-caret-down"></i>
-                            </a>
-                            <a data-id="{$page->getId()}" class="moveRight"
-                               data-history="false" n:href="moveRight! $page->getId()">
-                                <i class="fa fa-caret-right"></i>
-                            </a>
-                        </div>
-                        <a data-id="{$page->getId()}" class="delete-self" data-history="false"
+                        <a data-id="{$page->getId()}" class="moveLeft list-group-item"
+                           data-history="false" n:href="moveLeft! $page->getId()">
+                            <i class="fa fa-caret-left"></i>
+                        </a>
+                        <a data-id="{$page->getId()}" class="moveUp list-group-item" data-history="false"
+                                n:href="moveUp! $page->getId()">
+                            <i class="fa fa-caret-up"></i>
+                        </a>
+                        <a data-id="{$page->getId()}" class="moveDown list-group-item" data-history="false"
+                                n:href="moveDown! $page->getId()">
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                        <a data-id="{$page->getId()}" class="moveRight list-group-item"
+                           data-history="false" n:href="moveRight! $page->getId()">
+                            <i class="fa fa-caret-right"></i>
+                        </a>
+                        <a data-id="{$page->getId()}" class="delete-self list-group-item" data-history="false"
                                 n:href="deleteSelf! $page->getId()"
                            data-prompt="{_"admin.header.default.deleteSelf.confirm.text"}"
                            data-confirm="{_"admin.header.default.deleteSelf.confirm.yes"}"
                            data-cancel="{_"admin.header.default.deleteSelf.confirm.no"}">
                             <i class="fa fa-trash-o"></i>
                         </a>
-                        <a data-id="{$page->getId()}" class="delete-all" data-history="false"
+                        <a data-id="{$page->getId()}" class="delete-all list-group-item" data-history="false"
                                 n:href="deleteAll! $page->getId()"
                            data-prompt="{_"admin.header.default.deleteAll.confirm.text"}"
                            data-confirm="{_"admin.header.default.deleteAll.confirm.yes"}"
@@ -45,30 +68,8 @@
                             <i class="fa fa-trash"></i>
                         </a>
                     </div>
-                    <div class="header-item-content">
-                        {if $page->isCustom()}
-                            <span class="header-item-custom-title">
-                                {_"admin.header.default.custom.title"}: <span>{$page->getTitle()}</span>
-                            </span>
-                            <span class="header-item-custom-url">
-                                {_"admin.header.default.custom.url"}: <span>{$page->getUrl()}</span>
-                            </span>
-                        {elseif $page->isPage()}
-                            {if $page->hasCustomTitle()}
-                                <span class="header-item-page-custom-title">
-                                {_"admin.header.default.page.title"}: <span>{$page->getTitle()}</span>
-                            </span>
-                            {/if}
-                            <span class="header-item-page-page">
-                        {_"admin.header.default.page.page"}: {*<span class="header-item-page-id">{$page->getId()}</span>. *}<span
-                                        class="header-item-page-title">
-                                {if $page->getPage()->isTitleDefault()}{else}{$page->getPage()->getTitle()}{/if}
-                            </span>
-                            </span>
-                        {/if}
-                    </div>
                 </div>
-                <ol class="header-children">
+                <ol class="header-children list-group">
                     {include header header=>$page->getChildren()}
                 </ol>
             </li>
