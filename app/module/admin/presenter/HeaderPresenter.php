@@ -84,7 +84,7 @@ class HeaderPresenter extends AdminPresenter {
         $id = $this->getIdParam();
 
         if ($id !== 0 && !$this->getHeaderManager()->exists($id, $this->getCurrentLanguage()->getId())) {
-            $this->addError("admin.header.add.not_found");
+            $this->addError("admin.header.not_found");
             $this->redirect(302, ":default");
         }
 
@@ -98,7 +98,7 @@ class HeaderPresenter extends AdminPresenter {
     public function actionEdit() {
         if (!$this->getHeaderManager()->exists($this->getIdParam(), $this->getCurrentLanguage()->getId())) {
 
-            $this->addError("admin.header.edit.not_found");
+            $this->addError("admin.header.not_found");
             $this->redirect(302, ":default");
         }
         $this->headerWrapper = $this->getHeaderManager()->getById($this->getIdParam());
@@ -115,8 +115,12 @@ class HeaderPresenter extends AdminPresenter {
      */
     public function handleChangeParent(string $id, string $parentId, string $position) {
         $headerId = (int)$id;
+
         $parentHeaderId = (int)$parentId;
+        $parentHeaderId = $parentHeaderId > 0 ? $parentHeaderId : null;
+
         $headerPosition = (int)$position;
+
 
         $this->commonTryCall(function () use ($headerId, $parentHeaderId, $id, $headerPosition) {
             if (!$id) $this->error("Id $id not correct");
@@ -128,7 +132,7 @@ class HeaderPresenter extends AdminPresenter {
             if (!$this->getHeaderManager()->exists($headerId, $curLang->getId()))
                 $this->error("HeaderId $id not found", IResponse::S400_BAD_REQUEST);
 
-            if ($parentHeaderId !== 0 && !$this->getHeaderManager()->exists($parentHeaderId, $curLang->getId()))
+            if (!is_null($parentHeaderId) && !$this->getHeaderManager()->exists($parentHeaderId, $curLang->getId()))
                 $this->error("ParentHeaderId $parentHeaderId not found", IResponse::S400_BAD_REQUEST);
 
             $this->getHeaderManager()->changeParentOrPosition($headerId, $parentHeaderId, $headerPosition);

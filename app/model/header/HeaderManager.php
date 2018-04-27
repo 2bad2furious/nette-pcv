@@ -281,7 +281,7 @@ class HeaderManager extends Manager implements IHeaderManager {
     }
 
     public function exists(int $id, ?int $langId = null): bool {
-        $header = $this->getPlainById($id);
+        $header = $this->getPlainById($id, false);
         if (!$header instanceof Header) return false;
 
         if (is_int($langId) && $header->getLanguageId() !== $langId) return false;

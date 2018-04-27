@@ -40,9 +40,9 @@ interface IHeaderManager {
 
     public function exists(int $id, ?int $langId = null): bool;
 
-    public function changeParentOrPosition(int $headerId, int $parentHeaderId, int $position);
+    public function changeParentOrPosition(int $headerId, ?int $parentHeaderId, int $position);
 
-    public function canChangeParent(int $headerId, int $parentHeaderId): bool;
+    public function canChangeParent(int $headerId, ?int $parentHeaderId): bool;
 
     public function moveUp(int $headerId);
 
