@@ -76,7 +76,8 @@ class PagePresenter extends BasePresenter {
         if (!$page instanceof \PageWrapper || (!$page->isVisible() && !$this->getUser()->isAllowed(\IPageManager::ACTION_SEE_NON_PUBLIC_PAGES)))
             $this->page = $page = $this->getPageManager()->get404($this->getLocaleLanguage()->getId());
 
-        $this->getHttpResponse()->setCode($page->is404() ? 404 : 200);
+        if (!$this->isAjax() && $page->is404())
+            $this->getHttpResponse()->setCode(404);
 
         $this->template->page = $page;
         $this->payload->title = $page->getTitle();
