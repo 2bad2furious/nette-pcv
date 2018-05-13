@@ -5,10 +5,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{$page->getCompleteTitle()}</title>
+    <title>{if $page->isTitleDefault()}{_$page->getTitle()}{else}{$page->getCompleteTitle()}{/if}</title>
     <meta name="description" content="{$page->getDescription()}"/>
 
-    <meta property="og:title" content="{$page->getTitle()}"/>
+    <meta property="og:title" content="{if $page->isTitleDefault()}{_$page->getTitle()}{else}{$page->getTitle()}{/if}"/>
     <meta property="og:type" content="{$page->getOgType()}"/>
     {if !$page->is404()}
         <link rel="canonical" href="{$baseUrl}{$page->getPermanentUrl()}"/>
