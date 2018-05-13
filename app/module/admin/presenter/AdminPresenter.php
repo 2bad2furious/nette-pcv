@@ -37,6 +37,7 @@ abstract class AdminPresenter extends BasePresenter {
         /* sets failed url to redirect to after login */
         $this->getCustomSession()->offsetSet("url", $this->getHttpRequest()->getUrl());
         $this->getUser()->logout(true);
+        $this->disallowAjax();
         $this->addError("Invalid role for selected action.");
         $this->redirect(302, "Default:Default");
     }
