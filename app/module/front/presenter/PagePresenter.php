@@ -80,7 +80,7 @@ class PagePresenter extends BasePresenter {
             $this->getHttpResponse()->setCode(404);
 
         $this->template->page = $page;
-        $this->payload->title = $page->getTitle();
+        $this->payload->title = $page->getCompleteTitle();
         $this->template->isLoggedIn = $this->getUser()->isLoggedIn();
         $this->template->setFile(__DIR__ . "/templates/Page/default.latte");
     }
