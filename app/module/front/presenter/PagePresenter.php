@@ -9,6 +9,7 @@ use HeaderPageControl;
 use IFileManager;
 use PageManager;
 use SectionPageControl;
+use Tracy\Debugger;
 
 class PagePresenter extends BasePresenter {
     const PARAM_URL = "url",
@@ -18,13 +19,15 @@ class PagePresenter extends BasePresenter {
     private $page;
 
     public function startup() {
-        $this->setDefaultSnippets(["content", "header", "footer"] +
-            ($this->getUser()->isLoggedIn()
-                ? ["admin-header-bar"]
-                : []
+        $this->setDefaultSnippets(
+            array_merge(
+                ["content", "header", "footer"],
+                ($this->getUser()->isLoggedIn()
+                    ? ["admin-header-bar"]
+                    : []
+                )
             )
         );
-        dump($this->getUser()->isLoggedIn());
         parent::startup();
     }
 
@@ -73,10 +76,12 @@ class PagePresenter extends BasePresenter {
         if (!$page instanceof \PageWrapper || (!$page->isVisible() && !$this->getUser()->isAllowed(\IPageManager::ACTION_SEE_NON_PUBLIC_PAGES)))
             $this->page = $page = $this->getPageManager()->get404($this->getLocaleLanguage()->getId());
 
+        if (!$this->isAjax() && $page->is404())
+            $this->getHttpResponse()->setCode(404);
+
         $this->template->page = $page;
         $this->payload->title = $page->getTitle();
         $this->template->isLoggedIn = $this->getUser()->isLoggedIn();
-        dump($this->template->isLoggedIn);
         $this->template->setFile(__DIR__ . "/templates/Page/default.latte");
     }
 

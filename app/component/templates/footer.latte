@@ -10,7 +10,7 @@
         </button>
     </p>
     <div class="modal fade" id="languageSwitch" tabindex="-1" role="dialog"
-         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+         aria-labelledby="language switcher" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -21,8 +21,11 @@
                 </div>
                 <div class="modal-body">
                     {foreach $languages as $language}
+                        {var $otherTranslation = $page->getOtherTranslation($language->getId())}
                         <a class="language{if $language->getId() === $page->getLanguageId()} active{/if}"
-                           href="{plink permanent locale=>$language->getCode(),\frontModule\PagePresenter::PARAM_ID=>$page->getGlobalId()}"
+                           href="{if $otherTranslation->is404() || !$otherTranslation->isVisible()}
+{plink home locale=>$language->getCode()}{else}
+{plink default locale=>$language->getCode(),\frontModule\PagePresenter::PARAM_URL=>$otherTranslation->getUrl()}{/if}"
                            data-ajax="false">
                             {$language->getFriendly()}
                         </a>

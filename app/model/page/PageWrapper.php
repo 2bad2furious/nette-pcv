@@ -20,7 +20,6 @@
  * @method string getOgType()
  * @method bool isPost()
  * @method bool isPage()
- * @method bool is404()
  * @method bool getDisplayTitle()
  * @method bool getDisplayBreadCrumbs()
  * @method int[] getChildrenIds()
@@ -214,9 +213,9 @@ class PageWrapper {
         if ($this->parent === null) {
             $this->parent =
                 ($p =
-                    ($this->getParentId() === null && !is_null($this->getLanguage()->getHomepageId())
+                    ($this->getParentId() === null && $this->getLanguage()->getHomepageId() > 0
                         ? $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getLanguage()->getHomepageId())
-                        : $this->pageManager->getByGlobalId($this->getLanguageId(), $this->getParentId(), false)
+                        : $this->pageManager->getByGlobalId($this->getLanguageId(), (int)$this->getParentId(), false)
                     )
                 ) instanceof PageWrapper
                     ? $p
@@ -236,5 +235,15 @@ class PageWrapper {
 
     public function getTagValues(): string {
         return "";
+    }
+
+    public function is404(): bool {
+        return $this->getGlobalId() === $this->getLanguage()->getErrorpageId();
+    }
+
+    public function getOtherTranslation(int $otherLangId): PageWrapper {
+        if ($otherLangId === $this->getLanguageId()) return $this;
+
+        return $otherTranslation = $this->pageManager->getByGlobalId($otherLangId, $this->getGlobalId(), true);
     }
 }

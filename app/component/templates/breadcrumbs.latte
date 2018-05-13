@@ -4,7 +4,7 @@
             {if $p->isVisible()}
                 <a href="{$p->getCompleteUrl(true)}">{$p->getTitle()}</a>
             {else}
-                <span>{$p->getTitle()}</span>
+                <span>{if $p->isTitleDefault()}{_$p->getTitle()}{else}{$p->getTitle()}{/if}</span>
             {/if}
             {*{if !$iterator->isLast()}
                 <span class="spacer"></span>

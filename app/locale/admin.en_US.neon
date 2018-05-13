@@ -71,9 +71,15 @@ header:
             title: "Custom title"
             page: "Page"
         deleteSelf:
-            confirm: "Are you sure? This will delete this link from header and move all its children to its place."
+            confirm:
+                text: "Are you sure? This will delete this link from header and move all its children to its place."
+                yes: "Delete"
+                no: "Cancel"
         deleteAll:
-            confirm: "Are you sure? This will delete this page and all its descendants."
+            confirm:
+                 text: "Are you sure? This will delete this page and all its descendants."
+                 yes: "Delete all"
+                 no: "Cancel"
         filter:
             language: "Language"
         title: ""
@@ -179,6 +185,7 @@ page:
     delete:
         success: "Page successfully deleted."
         not_found: "Page not found"
+        cannot: "Page cannot be deleted, it is used as homepage or 404"
     title: "Page Managing"
     show:
         title: ""
@@ -299,7 +306,10 @@ page:
         action:
             delete:
                 label: "Delete"
-                confirm: "This will delete all translations of this page/post"
+                confirm:
+                        text: "Are you sure? This will delete all translations of this page/post"
+                        yes: "Delete"
+                        no: "Cancel"
             edit: "Save"
             visit: "View the page"
 
@@ -358,6 +368,12 @@ file:
         title: ""
         upload:
             label: "Upload"
+    error:
+        be_1: "File %fileName% is too large. Max filesize is %maxFileSize%"
+        fe_1: "File is too large. Max filesize is %s bytes"
+        max_post: "Total combined filesize should be at most %maxPostSize%"
+        required: "File is required."
+        too_long: "Filename is too long, %length% allowed"
 slider:
     title: "Slider Managing"
     add:

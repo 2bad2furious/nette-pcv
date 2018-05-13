@@ -1,18 +1,11 @@
 {block content}
     {control languageEditForm}
     <a id="language-delete" class="btn delete"
-       href="{plink delete! $id}">
+       href="{plink delete! $id}"
+       data-prompt="{_"admin.language.edit.action.delete.confirm.text"}"
+       data-confirm="{_"admin.language.edit.action.delete.confirm.yes"}"
+       data-cancel="{_"admin.language.edit.action.delete.confirm.no"}">
         <i class="fa fa-trash"></i>
         {_"admin.language.edit.action.delete.label"}
     </a>
-    <script>
-        _stack.push(function (di) {
-            jQuery(document).ready(function ($) {
-                $("a#language-delete").click(function (e) {
-                    if (!confirm({_"admin.language.edit.action.delete.confirm.text"}))
-                        e.preventDefault();
-                })
-            })
-        })
-    </script>
 {/block}

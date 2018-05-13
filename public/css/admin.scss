@@ -1,5 +1,4 @@
 @import "default";
-
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:100,200,300,400,500,600,700,800,900&subset=latin-ext');
 
 $colorOnBackground: #f5f6fa;
@@ -294,25 +293,35 @@ html {
             }
 
             ol.header-children {
-              list-style-type: none;
+
+              padding: 0 1.25rem;
+
+              
+              &:nth-child(-1) {
+                margin-bottom: 0.75rem;
+              }
+              &:nth-child(0) {
+                margin-top: 0.75rem;
+              }
 
               li.header-item {
-                margin: 10px 0;
-                & > div {
-                  border: 1px solid #718093;
-                  & > div {
-                    padding: 5px;
-                    &.header-item-controls {
-                      background-color: #f5f6fa;
-                      border-bottom: 1px solid #dcdde1;
+                padding: 0;
 
-                      display: flex;
-                      align-content: center;
+                .header-item-container {
+                  padding: 0.75rem 1.25rem;
+                  // padding + item-line-height + item-border + item-padding
+                  min-height: calc(2 * 0.75rem + 1.5em + 2 * 1px + 2 * 0.75rem);
+                  .header-item-controls {
+                    display: none;
+                    .list-group-item {
+                      float: left;
+                      border-radius: 0px;
                     }
-                    &.header-item-content {
-                      & > span {
-                        display: block;
-                      }
+                  }
+
+                  &:hover, &:focus, &:active {
+                    & > .header-item-controls {
+                      display: block;
                     }
                   }
                 }
@@ -382,7 +391,8 @@ html {
       align-self: flex-start;
     }
     .btn {
-      box-shadow: none !important;
+      margin-bottom: 0.4em;
+      /*box-shadow: none !important;
       margin: 0 3px;
       background-color: #353b48;
       border-color: #353b48;
@@ -391,7 +401,7 @@ html {
       &:hover {
         background-color: #2f3640;
         border-color: #2f3640;
-      }
+      }*/
       &.delete {
         background-color: #e84118;
         border-color: #e84118;
@@ -436,7 +446,7 @@ html {
     td > input {
       width: 100%;
     }
-    .fr-view a,.fr-element a{
+    .fr-view a, .fr-element a {
       text-decoration: underline;
     }
   }

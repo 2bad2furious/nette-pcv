@@ -34,6 +34,13 @@ class FilePresenter extends AdminPresenter {
         }
     }
 
+    public function actionDefault() {
+        if ($this->getParameter("upload") && !$this->getSignalName()) {
+            $this->addError("admin.file.error.max_post", null, ["maxPostSize" => ini_get("post_max_size")]);
+            $this->redirect(302, "this", ["upload" => null]);
+        }
+    }
+
     /**
      * @throws \InvalidState
      */
@@ -46,6 +53,26 @@ class FilePresenter extends AdminPresenter {
     public function createComponentMediaUploadForm() {
         $form = $this->getFormFactory()->createMediaUploadForm();
 
+        $form->onValidate[] = function (Form $form) {
+
+            $uploads = $form->getValues()[\FormFactory::MEDIA_UPLOAD_NAME];
+            /** @var FileUpload $upload */
+            foreach ($uploads as $upload) {
+                $sanitizedName = $upload->getSanitizedName();
+                if (!$upload->isOk())
+                    $form->addError(
+                        $this->translator->translate("admin.file.error.be_{$upload->getError()}", null, [
+                            'fileName'    => $upload->getName(),
+                            'maxFileSize' => ini_get('upload_max_filesize')/*ini_get('post_max_size')*/,
+                        ]), false);
+
+                if (strlen($sanitizedName) > $this->getFileManager()->getMaxNameLength())
+                    $form->addError(
+                        $this->translator->translate("admin.file.error.too_long", null, [
+                            "length" => $this->getFileManager()->getMaxNameLength(),
+                        ]), false);
+            }
+        };
         /**
          * @param Form $form
          * @param FileUpload[] $values
@@ -54,23 +81,15 @@ class FilePresenter extends AdminPresenter {
         $form->onSuccess[] = function (Form $form, array $values) {
             $this->commonTryCall(function () use ($values) {
                 $uploads = $values[\FormFactory::MEDIA_UPLOAD_NAME];
-                $successfuls = $unsuccessfuls = [];
+
                 /** @var FileUpload $upload */
                 foreach ($uploads as $index => $upload) {
-                    $sanitizedName = $upload->getSanitizedName();
-                    if (strlen($sanitizedName) > $this->getFileManager()->getMaxNameLength()) {
-                        $unsuccessfuls[$index] = $upload;
-                        continue;
-                    }
-
                     $this->getFileManager()->add($upload);
-                    $successfuls[$index] = $upload;
                 }
-                Debugger::barDump($successfuls, $unsuccessfuls);
             });
-            $this->postGet("this");
+            $this->postGet("default", ["upload" => null]);
         };
-        return $form;
+        return $form->setAction($this->link("this", ["upload" => 1]));
     }
 
     /**

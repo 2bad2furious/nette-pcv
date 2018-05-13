@@ -123,6 +123,27 @@ html {
         top: 20px;
       }
     }
+    .cdropdown {
+      &:hover {
+        .cdropdown-menu {
+          display: block;
+        }
+      }
+      .cdropdown-menu {
+        display: none;
+        position: absolute;
+        z-index: 2;
 
+        .cdropdown-item {
+          display: block;
+        }
+      }
+
+      .cdropdown-toggle {
+        //~
+        position: relative;
+
+      }
+    }
   }
 }

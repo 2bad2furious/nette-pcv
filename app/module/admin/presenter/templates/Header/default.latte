@@ -1,5 +1,6 @@
 {block content}
-    <script src="/node_modules/nestedSortable/jquery.mjs.nestedSortable.js" type="application/javascript" defer></script>
+    <script src="/node_modules/nestedSortable/jquery.mjs.nestedSortable.js" type="application/javascript"
+            defer></script>
     <style>
         .ui-sortable-placeholder {
             background: black;
@@ -15,12 +16,13 @@
             </option>
         </select>
     </div>
-    {dump $header}
     <div>
         <div id="sortable-controls">
             <a n:href="add \adminModule\HeaderPresenter::ID_KEY=>0,\adminModule\HeaderPresenter::TYPE_KEY=>\adminModule\HeaderPresenter::DEFAULT_TYPE"
-                    class="add btn">
-                {_"admin.header.default.add"}
+                    class="add">
+                <button class="btn btn-light">
+                    {_"admin.header.default.add"}
+                </button>
             </a>
         </div>
         {snippet header-area}
@@ -130,14 +132,6 @@
 
                 $(nsSelector).on("click", "li a.expand", function (e) {
                     findLiParent($(this)).toggleClass('mjs-nestedSortable-expanded').toggleClass('mjs-nestedSortable-collapsed')
-                });
-
-                $(nsSelector).on("click", "li a.delete-self", function (e) {
-                    if (!window.confirm({_"admin.header.default.deleteSelf.confirm"})) e.preventDefault();
-                });
-
-                $(nsSelector).on("click", "li a.delete-all", function (e) {
-                    if (!window.confirm({_"admin.header.default.deleteAll.confirm"})) e.preventDefault();
                 });
             })
         })

@@ -42,6 +42,7 @@ class Router {
 
         $router[] = $frontRouteList = new RouteList("front");
         $router[] = $adminRouteList = new RouteList("admin");
+        $router[] = new Route("<" . frontModule\PagePresenter::PARAM_URL . " .+>", "front:NoLang:", Route::ONE_WAY);
         //the redirect should be done here
         $frontRouteList[] = new Route("", [
             "presenter" => "NoLang",
@@ -58,27 +59,27 @@ class Router {
         $availableAdminLangs = implode("|", \adminModule\AdminPresenter::ADMIN_LOCALES);
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action show>/<" . PagePresenter::TYPE_KEY . ">/<" . PagePresenter::VISIBILITY_KEY . ">/<" . PagePresenter::LANGUAGE_KEY . ">/<" . PagePresenter::HAS_TRANSLATION_KEY . "> ? <" . PagePresenter::PAGE_KEY . "><" . FormFactory::PAGE_SHOW_SEARCH_NAME . ">", [
-            "locale" => [
+            "locale"                           => [
                 Route::PATTERN => $availableAdminLangs,
             ],
-            PagePresenter::TYPE_KEY => [
-                Route::VALUE => PagePresenter::DEFAULT_TYPE,
+            PagePresenter::TYPE_KEY            => [
+                Route::VALUE   => PagePresenter::DEFAULT_TYPE,
                 Route::PATTERN => implode("|", PagePresenter::TYPES),
             ],
-            PagePresenter::VISIBILITY_KEY => [
-                Route::VALUE => PagePresenter::DEFAULT_VISIBILITY,
+            PagePresenter::VISIBILITY_KEY      => [
+                Route::VALUE   => PagePresenter::DEFAULT_VISIBILITY,
                 Route::PATTERN => implode("|", PagePresenter::VISIBILITIES),
             ],
-            PagePresenter::LANGUAGE_KEY => [
-                Route::VALUE => PagePresenter::DEFAULT_LANGUAGE,
+            PagePresenter::LANGUAGE_KEY        => [
+                Route::VALUE   => PagePresenter::DEFAULT_LANGUAGE,
                 Route::PATTERN => $languages . ($languages ? "|" : "") . PagePresenter::LANGUAGE_ALL,
             ],
-            PagePresenter::PAGE_KEY => [
-                Route::VALUE => 1,
+            PagePresenter::PAGE_KEY            => [
+                Route::VALUE   => 1,
                 Route::PATTERN => "\d",
             ],
             PagePresenter::HAS_TRANSLATION_KEY => [
-                Route::VALUE => null,
+                Route::VALUE   => null,
                 Route::PATTERN => "1|0",
             ],
         ]);
@@ -90,7 +91,7 @@ class Router {
         ]);
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter page>/<action edit>/<" . PagePresenter::ID_KEY . ">/<" . PagePresenter::EDIT_LANGUAGE_KEY . ">", [
-            PagePresenter::ID_KEY => [
+            PagePresenter::ID_KEY            => [
                 Route::PATTERN => "\d+",
             ],
             PagePresenter::EDIT_LANGUAGE_KEY => [
@@ -99,17 +100,17 @@ class Router {
         ]);
 
         $adminRouteList[] = new Route("admin/<locale $availableAdminLangs>/<presenter availability>/<" . \adminModule\AvailabilityPresenter::KEY . ">/<" . \adminModule\AvailabilityPresenter::LANGUAGE . "> ? <" . \adminModule\AvailabilityPresenter::VALUE . "><" . \adminModule\AvailabilityPresenter::ID . ">", [
-            \adminModule\AvailabilityPresenter::KEY => [
+            \adminModule\AvailabilityPresenter::KEY      => [
                 Route::PATTERN => implode("|", \adminModule\AvailabilityPresenter::KEYS),
             ],
             \adminModule\AvailabilityPresenter::LANGUAGE => [
                 Route::PATTERN => $languages,
             ],
-            \adminModule\AvailabilityPresenter::ID => [
+            \adminModule\AvailabilityPresenter::ID       => [
                 Route::OPTIONAL => 1,
-                Route::PATTERN => "\d+",
+                Route::PATTERN  => "\d+",
             ],
-            "action" => [
+            "action"                                     => [
                 Route::VALUE => "default",
             ],
         ]);
