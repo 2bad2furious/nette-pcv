@@ -51,7 +51,7 @@ trait TForm {
             $base->getControlPrototype()
                 ->setName("button")
                 ->setHtml($iconHtml . " " . $this->getTranslator()->translate($caption))
-                ->class("btn submit");
+                ->class("btn btn-success submit");
         }
         return $base;
     }
