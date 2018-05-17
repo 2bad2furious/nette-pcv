@@ -20,13 +20,7 @@ class PagePresenter extends BasePresenter {
 
     public function startup() {
         $this->setDefaultSnippets(
-            array_merge(
-                ["content", "header", "footer"],
-                ($this->getUser()->isLoggedIn()
-                    ? ["admin-header-bar"]
-                    : []
-                )
-            )
+            ["content", "header", "footer", "admin-header-bar"]
         );
         parent::startup();
     }
