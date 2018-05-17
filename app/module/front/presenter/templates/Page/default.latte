@@ -88,11 +88,14 @@
 <main n:snippet="content">
     <script>
         _stack.push(function () {
-            jQuery(document).ready(function ($) {
-                $("html, body").animate({
-                    scrollTop: 0
-                }, 200);
-            })
+            if (typeof notFirstRun !== "undefined") {
+                jQuery(document).ready(function ($) {
+                    $("html, body").animate({
+                        scrollTop: 0
+                    }, 200);
+                })
+            } else
+                notFirstRun = true;
         })
     </script>
     <div id="content-wrapper" n:class="$page->isHomePage() ? homepage"
