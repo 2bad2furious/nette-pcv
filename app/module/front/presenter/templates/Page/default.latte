@@ -73,11 +73,11 @@
     {/if}
 </head>
 <body class="nittro-transition-bar nittro-transition-auto">
-<div n:snippet="admin-header-bar">
-    {if $isLoggedIn}
+<div n:snippet="admin-header-bar">{*
+  *}{if $isLoggedIn}
         {control adminBar}
-    {/if}
-</div>
+    {/if}{*
+*}</div>
 <header n:snippet="header">
     <div id="header-content"
          data-language="{$page->getLanguage()->getCode()}"
