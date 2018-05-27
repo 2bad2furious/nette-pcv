@@ -2,94 +2,124 @@
 @import url("https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900&subset=latin-ext");
 html body {
   padding: 0;
-  margin: 0; }
-  html body, html body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]) {
-    box-sizing: inherit;
-    font-family: inherit;
-    -webkit-transition: inherit;
-    -moz-transition: inherit;
-    -ms-transition: inherit;
-    -o-transition: inherit;
-    transition: inherit;
-    /*    text-decoration: inherit;*/ }
-    html body:not(input):not(textarea):not(select):not(option):not(body), html body :not([class^="ui-"]):not([class^="fr-"]):not(.fa):not([class^="nittro-"]):not(input):not(textarea):not(select):not(option):not(body) {
-      color: inherit; }
-  html body .nittro-dialog-content {
-    color: black; }
-  html body .nittro-dialog-holder {
-    justify-content: center; }
-  html body:not(p, span, a) {
-    display: block; }
-  html body:not(textarea) {
-    transition: inherit; }
-  html body textarea.oneline {
-    resize: none; }
-  html body .center-all {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%); }
-  html body .scale, html body header #header-content label i.expand, html body header #header-content label i.collapse {
-    display: inline-block; }
-    html body .scale.big:hover, html body header #header-content label i.expand:hover, html body header #header-content label i.collapse:hover, html body .scale.big:hover *, html body header #header-content label i.expand:hover *, html body header #header-content label i.collapse:hover * {
-      -webkit-transform: scale(1.3);
-      -moz-transform: scale(1.3);
-      -ms-transform: scale(1.3);
-      -o-transform: scale(1.3);
-      transform: scale(1.3); }
-    html body .scale:not(.big):hover, html body header #header-content label i.expand:not(.big):hover, html body header #header-content label i.collapse:not(.big):hover, html body .scale:not(.big):hover *, html body header #header-content label i.expand:not(.big):hover *, html body header #header-content label i.collapse:not(.big):hover * {
-      -webkit-transform: scale(1.02);
-      -moz-transform: scale(1.02);
-      -ms-transform: scale(1.02);
-      -o-transform: scale(1.02);
-      transform: scale(1.02); }
-  html body .link, html body header #header-content label i.expand, html body header #header-content label i.collapse {
-    padding: 2px;
-    cursor: pointer; }
-  html body .nice-button {
-    width: 60px;
-    text-align: center;
-    padding: 10px;
-    background: #00a8ff;
-    margin: 10px 0px; }
-    html body .nice-button:hover {
-      background-color: #0097e6; }
-  html body #snippet--flashes {
-    position: relative; }
-    html body #snippet--flashes #flashes {
-      list-style-type: none;
-      padding: 20px 10px 20px; }
-      html body #snippet--flashes #flashes li.nittro-flash {
-        color: #f5f6fa; }
-        html body #snippet--flashes #flashes li.nittro-flash::before {
-          border: none; }
-        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
-          background-color: #e84118; }
-        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
-          background-color: #4cd137; }
-        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
-          background-color: #00a8ff; }
-        html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
-          background-color: #fbc531; }
-      html body #snippet--flashes #flashes:empty {
-        padding: 0;
-        margin: 0; }
-        html body #snippet--flashes #flashes:empty ~ #flash-closer {
-          display: none; }
-    html body #snippet--flashes #flash-closer {
-      position: absolute;
-      right: 10px;
-      top: 20px; }
-  html body .cdropdown:hover .cdropdown-menu {
-    display: block; }
-  html body .cdropdown .cdropdown-menu {
-    display: none;
-    position: absolute;
-    z-index: 2; }
-    html body .cdropdown .cdropdown-menu .cdropdown-item {
-      display: block; }
-  html body .cdropdown .cdropdown-toggle {
-    position: relative; }
+  margin: 0;
+}
+html body, html body :not([class^=ui-]):not([class^=fr-]):not(.fa):not([class^=nittro-]) {
+  box-sizing: inherit;
+  font-family: inherit;
+  -webkit-transition: inherit;
+  -moz-transition: inherit;
+  -ms-transition: inherit;
+  -o-transition: inherit;
+  transition: inherit;
+  /*    text-decoration: inherit;*/
+}
+html body:not(input):not(textarea):not(select):not(option):not(body), html body :not([class^=ui-]):not([class^=fr-]):not(.fa):not([class^=nittro-]):not(input):not(textarea):not(select):not(option):not(body) {
+  color: inherit;
+}
+html body .nittro-dialog-content {
+  color: black;
+}
+html body .nittro-dialog-holder {
+  justify-content: center;
+}
+html body:not(p, span, a) {
+  display: block;
+}
+html body:not(textarea) {
+  transition: inherit;
+}
+html body textarea.oneline {
+  resize: none;
+}
+html body .center-all {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+html body .scale, html body header #header-content label i.expand, html body header #header-content label i.collapse {
+  display: inline-block;
+}
+html body .scale.big:hover, html body header #header-content label i.expand:hover, html body header #header-content label i.collapse:hover, html body .scale.big:hover *, html body header #header-content label i.expand:hover *, html body header #header-content label i.collapse:hover * {
+  -webkit-transform: scale(1.3);
+  -moz-transform: scale(1.3);
+  -ms-transform: scale(1.3);
+  -o-transform: scale(1.3);
+  transform: scale(1.3);
+}
+html body .scale:not(.big):hover, html body header #header-content label i.expand:not(.big):hover, html body header #header-content label i.collapse:not(.big):hover, html body .scale:not(.big):hover *, html body header #header-content label i.expand:not(.big):hover *, html body header #header-content label i.collapse:not(.big):hover * {
+  -webkit-transform: scale(1.02);
+  -moz-transform: scale(1.02);
+  -ms-transform: scale(1.02);
+  -o-transform: scale(1.02);
+  transform: scale(1.02);
+}
+html body .link, html body header #header-content label i.expand, html body header #header-content label i.collapse {
+  padding: 2px;
+  cursor: pointer;
+}
+html body .nice-button {
+  width: 60px;
+  text-align: center;
+  padding: 10px;
+  background: #00a8ff;
+  margin: 10px 0px;
+}
+html body .nice-button:hover {
+  background-color: #0097e6;
+}
+html body #snippet--flashes {
+  position: relative;
+}
+html body #snippet--flashes #flashes {
+  list-style-type: none;
+  padding: 20px 10px 20px;
+}
+html body #snippet--flashes #flashes li.nittro-flash {
+  color: #f5f6fa;
+}
+html body #snippet--flashes #flashes li.nittro-flash::before {
+  border: none;
+}
+html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-error {
+  background-color: #e84118;
+}
+html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-success {
+  background-color: #4cd137;
+}
+html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-info {
+  background-color: #00a8ff;
+}
+html body #snippet--flashes #flashes li.nittro-flash.nittro-flash-warn {
+  background-color: #fbc531;
+}
+html body #snippet--flashes #flashes:empty {
+  padding: 0;
+  margin: 0;
+}
+html body #snippet--flashes #flashes:empty ~ #flash-closer {
+  display: none;
+}
+html body #snippet--flashes #flash-closer {
+  position: absolute;
+  right: 10px;
+  top: 20px;
+}
+html body .cdropdown:hover .cdropdown-menu {
+  display: block;
+}
+html body .cdropdown .cdropdown-menu {
+  display: none;
+  position: absolute;
+  z-index: 2;
+}
+html body .cdropdown .cdropdown-menu .cdropdown-item {
+  display: block;
+}
+html body .cdropdown .cdropdown-toggle {
+  position: relative;
+}
 
 html {
   /* inheritance */
@@ -102,255 +132,344 @@ html {
   -ms-transition: 0.1s all ease-out;
   -o-transition: 0.1s all ease-out;
   transition: 0.1s all ease-out;
-  font-family: 'Catamaran', sans-serif;
-  /* use this instead of display:grid because of Edge - thank you, Microsoft*/ }
-  html body {
-    font-family: 'Catamaran', sans-serif;
-    background-color: "white"; }
-    html body * {
-      color: "black"; }
-    html body.nittro-transition-bar::before {
-      background-color: #440381; }
-    html body #snippet--admin-header-bar {
-      font-size: 0.7em;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      background-color: "black";
-      padding: 10px; }
-      html body #snippet--admin-header-bar * {
-        color: "white"; }
-      html body #snippet--admin-header-bar #logout:hover > i {
-        color: #e63946; }
-    html body header #header-content {
-      position: absolute;
-      background-color: #440381;
-      height: 2em;
-      width: 100%;
-      color: white; }
-      html body header #header-content[data-page-id="1"] {
-        background-color: transparent; }
-        html body header #header-content[data-page-id="1"] nav {
-          background-color: rgba(0, 0, 0, 0.3); }
-      html body header #header-content > input.header-toggler ~ label > i {
-        vertical-align: middle; }
-      html body header #header-content input.header-toggler {
-        display: none; }
-        html body header #header-content input.header-toggler:checked ~ label > i.collapse {
-          display: initial; }
-        html body header #header-content input.header-toggler:not(:checked) ~ label > i.expand {
-          display: initial; }
-        html body header #header-content input.header-toggler:checked ~ nav {
-          padding-top: 2em;
-          padding-left: 0.5em;
-          padding-bottom: 0.5em;
-          height: auto;
-          width: 100% !important; }
-        html body header #header-content input.header-toggler:checked ~ ul {
-          height: initial; }
-        html body header #header-content input.header-toggler:checked ~ nav, html body header #header-content input.header-toggler:checked ~ ul {
-          width: initial; }
-      html body header #header-content label {
-        line-height: 1;
-        position: absolute;
-        top: 0.5em;
-        left: 0.5em;
-        margin: 0;
-        z-index: 3; }
-        html body header #header-content label.small i.expand, html body header #header-content label.small i.collapse {
-          font-size: 1em; }
-        html body header #header-content label i.expand, html body header #header-content label i.collapse {
-          font-size: 1em;
-          cursor: pointer;
-          display: none; }
-      html body header #header-content nav {
-        z-index: 2;
-        height: 0;
-        width: 0;
-        overflow: hidden;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: #440381; }
-        html body header #header-content nav > ul {
-          height: initial !important;
-          width: initial !important; }
-        html body header #header-content nav ul {
-          list-style-type: none;
-          height: 0;
-          width: 0;
-          padding-left: 1em;
-          margin: 0;
-          overflow: hidden; }
-          html body header #header-content nav ul li {
-            position: relative; }
-            html body header #header-content nav ul li a, html body header #header-content nav ul li i {
-              font-size: 0.75em;
-              color: white; }
-            html body header #header-content nav ul li label {
-              position: static; }
-    html body main {
-      min-height: calc(100vh - 4.10625em); }
-      html body main #content-wrapper {
-        padding-top: 2em; }
-        html body main #content-wrapper[data-page-id="1"] {
-          padding-top: 0; }
-        html body main #content-wrapper #snippet--breadcrumbs {
-          font-size: 0.7em; }
-          html body main #content-wrapper #snippet--breadcrumbs .breadcrumb {
-            border-radius: 0;
-            padding: 0.75em 1em;
-            margin-bottom: 0; }
-        html body main #content-wrapper #content {
-          margin: 0 auto;
-          padding: 1em;
-          width: 70vw;
-          min-width: 320px; }
-          @media screen and (max-width: 46em) {
-            html body main #content-wrapper #content {
-              width: 100%;
-              padding: 0.5em; } }
-          html body main #content-wrapper #content h1#default {
-            font-size: 1.75em; }
-          html body main #content-wrapper #content h1 {
-            font-size: 1.75em; }
-          html body main #content-wrapper #content h2 {
-            font-size: 1.5em; }
-          html body main #content-wrapper #content h3 {
-            font-size: 1.325em; }
-          html body main #content-wrapper #content h4 {
-            font-size: 1.17em; }
-          html body main #content-wrapper #content[data-page-id="1"] {
-            padding: 0;
-            width: 100%; }
-            html body main #content-wrapper #content[data-page-id="1"] .home-box {
-              width: 100%;
-              height: 100%;
-              padding: 2em 15vw;
-              margin: 0 auto;
-              display: flex; }
-              html body main #content-wrapper #content[data-page-id="1"] .home-box .home-box-content {
-                width: 100%;
-                padding: 1em; }
-                @media screen and (max-width: 46em) {
-                  html body main #content-wrapper #content[data-page-id="1"] .home-box .home-box-content {
-                    padding: 0; } }
-              @media screen and (max-width: 46em) {
-                html body main #content-wrapper #content[data-page-id="1"] .home-box {
-                  padding: 30px; } }
-              html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading {
-                background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
-                background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
-                background: linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
-                min-height: 100vh; }
-                html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content {
-                  background-color: transparent;
-                  color: #f5f6fa;
-                  align-self: center;
-                  justify-self: center; }
-                  html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
-                    font-size: 2.5em; }
-                    @media screen and (max-width: 46em) {
-                      html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
-                        font-size: 11vw; } }
-                  @media screen and (max-width: 46em) {
-                    html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content p, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content p {
-                      font-size: 6vw; } }
-              html body main #content-wrapper #content[data-page-id="1"] .home-box#proc, html body main #content-wrapper #content[data-page-id="1"] .home-box#why {
-                padding: 2em; }
-                @media screen and (max-width: 46em) {
-                  html body main #content-wrapper #content[data-page-id="1"] .home-box#proc, html body main #content-wrapper #content[data-page-id="1"] .home-box#why {
-                    padding: 0.4em; } }
-                @media screen and (max-width: 28em) {
-                  html body main #content-wrapper #content[data-page-id="1"] .home-box#proc, html body main #content-wrapper #content[data-page-id="1"] .home-box#why {
-                    padding: 0.4em 0; } }
-                html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div {
-                  display: flex;
-                  flex-direction: row;
-                  flex-wrap: wrap;
-                  justify-content: stretch;
-                  align-content: stretch; }
-                  html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: stretch;
-                    align-content: stretch;
-                    flex-wrap: wrap;
-                    overflow-wrap: break-word;
-                    flex-grow: 1;
-                    /* important AF*/
-                    flex-basis: 14.5em;
-                    /* this needs to be 1*card-basis + 2*card-margin */ }
-                    html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
-                      flex: 1 13.5em;
-                      margin: 0.5em; }
-                      @media screen and (max-width: 46em) {
-                        html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
-                          margin: 0.5em 0; } }
-                      html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .icon, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .icon {
-                        text-align: center;
-                        padding: 0.1em 0;
-                        background-color: #440381;
-                        color: #e6efe9;
-                        font-size: 1.5em; }
-                      html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
-                        padding: 0.5em 1em; }
-                        @media screen and (max-width: 46em) {
-                          html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
-                            padding: 0.2em 0.6em; } }
-                        html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content h3, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content h3 {
-                          font-size: 1.2em;
-                          color: #440381;
-                          font-weight: 600;
-                          margin-bottom: 0.2em;
-                          text-align: center; }
-                        html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content p, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content p {
-                          font-size: 0.75em;
-                          text-align: center;
-                          margin-bottom: 0.2em; }
-              html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info {
-                padding-bottom: 0.5em;
-                padding-top: 0.5em; }
-                @media screen and (max-width: 28em) {
-                  html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info {
-                    padding: 0;
-                    max-width: 100%;
-                    height: auto; } }
-              html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace {
-                flex-direction: column;
-                padding: 4em 10px; }
-                html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace .home-box-content {
-                  padding: 10px 15vw; }
-                html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace a.link-image {
-                  width: 100%; }
-                  html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace a.link-image img {
-                    max-width: 100%;
-                    margin: 50px 0; }
-    html body footer {
-      border-top: solid 0.1em #440381; }
-      html body footer #footer-content {
-        margin: 0 auto;
-        padding: 1em;
-        width: 70vw; }
-        html body footer #footer-content p {
-          margin: 0; }
-          html body footer #footer-content p button {
-            font-size: 0.8em; }
-            html body footer #footer-content p button i {
-              vertical-align: middle; }
-          html body footer #footer-content p #github-link:hover {
-            text-decoration: none; }
-        html body footer #footer-content #languageSwitch {
-          font-size: 0.7em; }
-          html body footer #footer-content #languageSwitch .language {
-            display: block; }
-            html body footer #footer-content #languageSwitch .language.active {
-              font-weight: bold; }
-          html body footer #footer-content #languageSwitch button {
-            color: #e63946; }
-            html body footer #footer-content #languageSwitch button.btn.btn-close {
-              font-size: 0.75em;
-              color: #e6efe9;
-              background-color: #e63946; }
+  font-family: "Catamaran", sans-serif;
+  /* use this instead of display:grid because of Edge - thank you, Microsoft*/
+}
+html body {
+  font-family: "Catamaran", sans-serif;
+  background-color: "white";
+}
+html body * {
+  color: "black";
+}
+html body.nittro-transition-bar::before {
+  background-color: #440381;
+}
+html body #snippet--admin-header-bar {
+  font-size: 0.7em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: "black";
+}
+html body #snippet--admin-header-bar:not(:empty) {
+  padding: 10px;
+}
+html body #snippet--admin-header-bar * {
+  color: "white";
+}
+html body #snippet--admin-header-bar #logout:hover > i {
+  color: #e63946;
+}
+html body header #header-content {
+  position: absolute;
+  background-color: #440381;
+  height: 2em;
+  width: 100%;
+  color: white;
+}
+html body header #header-content[data-page-id="1"] {
+  background-color: transparent;
+}
+html body header #header-content[data-page-id="1"] nav {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+html body header #header-content > input.header-toggler ~ label > i {
+  vertical-align: middle;
+}
+html body header #header-content input.header-toggler {
+  display: none;
+}
+html body header #header-content input.header-toggler:checked ~ label > i.collapse {
+  display: initial;
+}
+html body header #header-content input.header-toggler:not(:checked) ~ label > i.expand {
+  display: initial;
+}
+html body header #header-content input.header-toggler:checked ~ nav {
+  padding-top: 2em;
+  padding-left: 0.5em;
+  padding-bottom: 0.5em;
+  height: auto;
+  width: 100% !important;
+}
+html body header #header-content input.header-toggler:checked ~ ul {
+  height: initial;
+}
+html body header #header-content input.header-toggler:checked ~ nav, html body header #header-content input.header-toggler:checked ~ ul {
+  width: initial;
+}
+html body header #header-content label {
+  line-height: 1;
+  position: absolute;
+  top: 0.5em;
+  left: 0.5em;
+  margin: 0;
+  z-index: 3;
+}
+html body header #header-content label.small i.expand, html body header #header-content label.small i.collapse {
+  font-size: 1em;
+}
+html body header #header-content label i.expand, html body header #header-content label i.collapse {
+  font-size: 1em;
+  cursor: pointer;
+  display: none;
+}
+html body header #header-content nav {
+  z-index: 2;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #440381;
+}
+html body header #header-content nav > ul {
+  height: initial !important;
+  width: initial !important;
+}
+html body header #header-content nav ul {
+  list-style-type: none;
+  height: 0;
+  width: 0;
+  padding-left: 1em;
+  margin: 0;
+  overflow: hidden;
+}
+html body header #header-content nav ul li {
+  position: relative;
+}
+html body header #header-content nav ul li a, html body header #header-content nav ul li i {
+  font-size: 0.75em;
+  color: white;
+}
+html body header #header-content nav ul li label {
+  position: static;
+}
+html body main {
+  min-height: calc(100vh - 4.10625em);
+}
+html body main #content-wrapper {
+  padding-top: 2em;
+}
+html body main #content-wrapper[data-page-id="1"] {
+  padding-top: 0;
+}
+html body main #content-wrapper #snippet--breadcrumbs {
+  font-size: 0.7em;
+}
+html body main #content-wrapper #snippet--breadcrumbs .breadcrumb {
+  border-radius: 0;
+  padding: 0.75em 1em;
+  margin-bottom: 0;
+}
+html body main #content-wrapper #content {
+  margin: 0 auto;
+  padding: 1em;
+  width: 70vw;
+  min-width: 320px;
+}
+@media screen and (max-width: 46em) {
+  html body main #content-wrapper #content {
+    width: 100%;
+    padding: 0.5em;
+  }
+}
+html body main #content-wrapper #content h1#default {
+  font-size: 1.75em;
+}
+html body main #content-wrapper #content h1 {
+  font-size: 1.75em;
+}
+html body main #content-wrapper #content h2 {
+  font-size: 1.5em;
+}
+html body main #content-wrapper #content h3 {
+  font-size: 1.325em;
+}
+html body main #content-wrapper #content h4 {
+  font-size: 1.17em;
+}
+html body main #content-wrapper #content[data-page-id="1"] {
+  padding: 0;
+  width: 100%;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box {
+  width: 100%;
+  height: 100%;
+  padding: 2em 15vw;
+  margin: 0 auto;
+  display: flex;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box .home-box-content {
+  width: 100%;
+  padding: 1em;
+}
+@media screen and (max-width: 46em) {
+  html body main #content-wrapper #content[data-page-id="1"] .home-box .home-box-content {
+    padding: 0;
+  }
+}
+@media screen and (max-width: 46em) {
+  html body main #content-wrapper #content[data-page-id="1"] .home-box {
+    padding: 30px;
+  }
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading {
+  background: -webkit-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
+  background: -moz-linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
+  background: linear-gradient(-45deg, #ec368d 33%, transparent 0%), linear-gradient(-45deg, #440381 100%, transparent 33%);
+  min-height: 100vh;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content {
+  background-color: transparent;
+  color: #f5f6fa;
+  align-self: center;
+  justify-self: center;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
+  font-size: 2.5em;
+}
+@media screen and (max-width: 46em) {
+  html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content h1, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content h1 {
+    font-size: 11vw;
+  }
+}
+@media screen and (max-width: 46em) {
+  html body main #content-wrapper #content[data-page-id="1"] .home-box#nadpis .home-box-content p, html body main #content-wrapper #content[data-page-id="1"] .home-box#heading .home-box-content p {
+    font-size: 6vw;
+  }
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#proc, html body main #content-wrapper #content[data-page-id="1"] .home-box#why {
+  padding: 2em;
+}
+@media screen and (max-width: 46em) {
+  html body main #content-wrapper #content[data-page-id="1"] .home-box#proc, html body main #content-wrapper #content[data-page-id="1"] .home-box#why {
+    padding: 0.4em;
+  }
+}
+@media screen and (max-width: 28em) {
+  html body main #content-wrapper #content[data-page-id="1"] .home-box#proc, html body main #content-wrapper #content[data-page-id="1"] .home-box#why {
+    padding: 0.4em 0;
+  }
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: stretch;
+  align-content: stretch;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  align-content: stretch;
+  flex-wrap: wrap;
+  overflow-wrap: break-word;
+  flex-grow: 1;
+  /* important AF*/
+  flex-basis: 14.5em;
+  /* this needs to be 1*card-basis + 2*card-margin */
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
+  flex: 1 13.5em;
+  margin: 0.5em;
+}
+@media screen and (max-width: 46em) {
+  html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card {
+    margin: 0.5em 0;
+  }
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .icon, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .icon {
+  text-align: center;
+  padding: 0.1em 0;
+  background-color: #440381;
+  color: #e6efe9;
+  font-size: 1.5em;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
+  padding: 0.5em 1em;
+}
+@media screen and (max-width: 46em) {
+  html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content {
+    padding: 0.2em 0.6em;
+  }
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content h3, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content h3 {
+  font-size: 1.2em;
+  color: #440381;
+  font-weight: 600;
+  margin-bottom: 0.2em;
+  text-align: center;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#proc .home-box-content > div .half-block .card .content p, html body main #content-wrapper #content[data-page-id="1"] .home-box#why .home-box-content > div .half-block .card .content p {
+  font-size: 0.75em;
+  text-align: center;
+  margin-bottom: 0.2em;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info {
+  padding-bottom: 0.5em;
+  padding-top: 0.5em;
+}
+@media screen and (max-width: 28em) {
+  html body main #content-wrapper #content[data-page-id="1"] .home-box#more-info, html body main #content-wrapper #content[data-page-id="1"] .home-box#vice-info {
+    padding: 0;
+    max-width: 100%;
+    height: auto;
+  }
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace {
+  flex-direction: column;
+  padding: 4em 10px;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace .home-box-content {
+  padding: 10px 15vw;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace a.link-image {
+  width: 100%;
+}
+html body main #content-wrapper #content[data-page-id="1"] .home-box#specifikace a.link-image img {
+  max-width: 100%;
+  margin: 50px 0;
+}
+html body footer {
+  border-top: solid 0.1em #440381;
+}
+html body footer #footer-content {
+  margin: 0 auto;
+  padding: 1em;
+  width: 70vw;
+}
+html body footer #footer-content p {
+  margin: 0;
+}
+html body footer #footer-content p button {
+  font-size: 0.8em;
+}
+html body footer #footer-content p button i {
+  vertical-align: middle;
+}
+html body footer #footer-content p #github-link:hover {
+  text-decoration: none;
+}
+html body footer #footer-content #languageSwitch {
+  font-size: 0.7em;
+}
+html body footer #footer-content #languageSwitch .language {
+  display: block;
+}
+html body footer #footer-content #languageSwitch .language.active {
+  font-weight: bold;
+}
+html body footer #footer-content #languageSwitch button {
+  color: #e63946;
+}
+html body footer #footer-content #languageSwitch button.btn.btn-close {
+  font-size: 0.75em;
+  color: #e6efe9;
+  background-color: #e63946;
+}
 
 /*# sourceMappingURL=css.css.map */

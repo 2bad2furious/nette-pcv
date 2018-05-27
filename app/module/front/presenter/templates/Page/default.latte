@@ -73,11 +73,11 @@
     {/if}
 </head>
 <body class="nittro-transition-bar nittro-transition-auto">
-{if $isLoggedIn}
-    <div n:snippet="admin-header-bar">
+<div n:snippet="admin-header-bar">{*
+  *}{if $isLoggedIn}
         {control adminBar}
-    </div>
-{/if}
+    {/if}{*
+*}</div>
 <header n:snippet="header">
     <div id="header-content"
          data-language="{$page->getLanguage()->getCode()}"
@@ -88,11 +88,14 @@
 <main n:snippet="content">
     <script>
         _stack.push(function () {
-            jQuery(document).ready(function ($) {
-                $("html, body").animate({
-                    scrollTop: 0
-                }, 200);
-            })
+            if (typeof notFirstRun !== "undefined") {
+                jQuery(document).ready(function ($) {
+                    $("html, body").animate({
+                        scrollTop: 0
+                    }, 200);
+                })
+            } else
+                notFirstRun = true;
         })
     </script>
     <div id="content-wrapper" n:class="$page->isHomePage() ? homepage"

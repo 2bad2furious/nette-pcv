@@ -45,7 +45,10 @@ html {
       justify-content: space-between;
       //border-bottom: 2px solid $color2;
       background-color: $color2;
-      padding: 10px;
+
+      &:not(:empty){
+        padding: 10px;
+      }
 
       * {
         color: $color1;
