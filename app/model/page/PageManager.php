@@ -413,7 +413,7 @@ class PageManager extends Manager implements IPageManager {
                 //uncache parent
                 if ($page->getParentId()) {
                     $parent = $this->getPlainById($page->getParentId(), $page->getLanguageId(), true);
-                    $this->globalUncache($parent->getParentId(), $parent->getLanguageId());
+                    if ($parent->getParentId()) $this->globalUncache($parent->getParentId(), $parent->getLanguageId());
                     if ($parent instanceof APage) $this->urlUncache($parent->getUrl(), $page->getParentId());
                 }
                 //uncache future? parent
